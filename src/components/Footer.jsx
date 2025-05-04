@@ -9,7 +9,7 @@ const Footer = () => {
           Design and Craft by
           <b className="text-secondary px-1 cursor-pointer">M.Ahmed Fayyaz</b>
         </h3>
-        <p className="text-white text-sm">Copyright © 2024</p>
+        <p className="text-white text-sm">Copyright © 2025</p>
       </div>
     </>
   );
