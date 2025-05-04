@@ -2,14 +2,14 @@ const project = [
     {
         "title": "Picture Perfect Productions",
         "technolgy": "Next.js",
-        "img": "Portfolio_in_React/img/ppp.jpg",
+        "img": "/img/ppp.jpg",
         "preview": "https://www.pictureperfect-productions.co.uk/",
         "desc": "Discover your all-in-one solution for creative excellence at PicturePerfectProductions.com. From photography and video production to event management, we offer high-quality, personalized services tailored to your needs."
     },
     {
         "title": "Virtual Question Bank",
         "technolgy": "Next.js",
-        "img": "Portfolio_in_React/img/VQB.jpg",
+        "img": "/img/VQB.jpg",
         "preview": "https://virtual-question.vercel.app/",
         "desc": "Unlock your Potential with every Question. Our platform offers a comprehensive question bank designed to enhance your learning experience. Whether you're preparing for exams or seeking to expand your knowledge, our diverse range of questions will challenge and engage you."
     },
@@ -44,7 +44,7 @@ const project = [
     {
         "title": "Waffle & Cones",
         "technolgy": "WordPress",
-        "img": "Portfolio_in_React/img/waffle.jpg",
+        "img": "/img/waffle.jpg",
         "preview": "https://waffleandcones.com/",
         "desc": "Waffle & Cones is a premium dessert shop based just minutes from the beach in the heart of Whitley Bay, United Kingdom."
     },
