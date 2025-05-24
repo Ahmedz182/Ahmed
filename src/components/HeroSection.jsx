@@ -1,13 +1,15 @@
 import React, { useRef } from "react";
 import img from "../assets/img/self.jpg";
+import Nav from "./Nav";
 
 const HeroSection = () => {
   const handleScroll = () => {
     window.scrollBy({ top: 600, behavior: "smooth" });
   };
-
+  const Menu = ["Home", "About Me", "Skills", "Projects", "Contact Me"];
   return (
     <>
+      <Nav title="Ahmed.Dev" menuItem={Menu} />
       <div
         id="Home"
         className="flex flex-col md:flex-col lg:flex-row  lg:h-[90dvh] h-min-[100dvh] justify-center items-center mx-5 lg:mx-20">
