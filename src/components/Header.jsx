@@ -1,54 +1,53 @@
-import React, { useState } from "react";
-import logo from "../assets/img/logo_arabics.svg";
-import { Link } from "react-router-dom";
-// import "./header.css"; // Make sure your Tailwind CSS styles are imported
+import { Dropdown, Space } from "antd";
+import { MenuOutlined } from "@ant-design/icons";
 
-const Header = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+const Header = ({ title, menuItem }) => {
+  const dropdownItems = menuItem.map((item, index) => ({
+    key: index,
+    label: (
+      <span
+        onClick={() => {
+          const section = document.getElementById(item.replace(/\s+/g, "-"));
+          if (section) section.scrollIntoView({ behavior: "smooth" });
+        }}>
+        {item}
+      </span>
+    ),
+  }));
 
   return (
-    <div className="bg-primary flex justify-between  px-4">
-      <Link to="/">
-        <img
-          src={logo}
-          alt="logo"
-          className="h-20 rotate-2 p-2.5 hover:cursor-pointer"
-        />
-      </Link>
-      <div className="text-tertiary text-3xl flex font-bold p-2">
-        <button onClick={toggleSidebar}>{isSidebarOpen ? "X" : "☰"}</button>
+    <div className="flex justify-between items-center mx-5 lg:mx-10 md:mx-5 sm:mx-2 py-4">
+      <span className="font-medium text-2xl text-white bg-[#42a5e3] px-3 py-1 uppercase rounded-r-xl">
+        {title}
+      </span>
+
+      {/* Desktop Menu */}
+      <div className="gap-x-10 justify-end hidden lg:flex">
+        {menuItem.map((item, index) => (
+          <span
+            key={index}
+            onClick={() => {
+              const section = document.getElementById(
+                item.replace(/\s+/g, "-")
+              );
+              if (section) section.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="text-lg font-semibold text-gray-600 transition duration-200 ease-linear hover:text-[#389cd6] cursor-pointer">
+            {item}
+          </span>
+        ))}
       </div>
 
-      {isSidebarOpen && (
-        <div className="fixed top-0 text-xl   right-0 h-screen w-2/6 sm:w-2/3 md:w-2/4 bg-primary-light text-white p-5">
-          <button
-            className="text-tertiary absolute top-4 font-bold right-4"
-            onClick={toggleSidebar}>
-            X
-          </button>
-          <ul className="mt-8 px-5 text-tertiary">
-            <Link to="/">
-              <li className="mb-4 hover:font-bold hover:cursor-pointer ">
-                Home
-              </li>
-            </Link>
-            <Link to="/about">
-              <li className="mb-4 hover:font-bold hover:cursor-pointer ">
-                About
-              </li>
-            </Link>
-            <Link to="/contact-us">
-              <li className="mb-4 hover:font-bold hover:cursor-pointer ">
-                Contact
-              </li>
-            </Link>
-          </ul>
-        </div>
-      )}
+      {/* Mobile Dropdown Menu */}
+      <div className="lg:hidden">
+        <Dropdown menu={{ items: dropdownItems }}>
+          <a onClick={(e) => e.preventDefault()}>
+            <Space>
+              <i class="ri-menu-4-line cursor-pointer text-2xl"></i>
+            </Space>
+          </a>
+        </Dropdown>
+      </div>
     </div>
   );
 };

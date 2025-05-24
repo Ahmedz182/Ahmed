@@ -1,0 +1,17 @@
+[33maba5e7f[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m HEAD@{0}: pull origin main --rebase (finish): returning to refs/heads/main
+[33maba5e7f[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m HEAD@{1}: pull origin main --rebase (pick): Add .gitignore to exclude node_modules and build
+[33md6abae7[m[33m ([m[1;31mportfolio/main[m[33m)[m HEAD@{2}: pull origin main --rebase (start): checkout d6abae759805792b741dcc09b0f4680ab82ff354
+[33m76b7f36[m HEAD@{3}: commit: Add .gitignore to exclude node_modules and build
+[33m8f1fc33[m HEAD@{4}: commit: update
+[33mcefee36[m HEAD@{5}: Branch: renamed refs/heads/main to refs/heads/main
+[33mcefee36[m HEAD@{7}: commit: new
+[33mad80cfc[m[33m ([m[1;31mAhmed/main[m[33m)[m HEAD@{8}: Branch: renamed refs/heads/main to refs/heads/main
+[33mad80cfc[m[33m ([m[1;31mAhmed/main[m[33m)[m HEAD@{10}: Branch: renamed refs/heads/main to refs/heads/main
+[33mad80cfc[m[33m ([m[1;31mAhmed/main[m[33m)[m HEAD@{12}: commit: first commit
+[33me512ab8[m HEAD@{13}: Branch: renamed refs/heads/main to refs/heads/main
+[33me512ab8[m HEAD@{15}: Branch: renamed refs/heads/main to refs/heads/main
+[33me512ab8[m HEAD@{17}: Branch: renamed refs/heads/main to refs/heads/main
+[33me512ab8[m HEAD@{19}: Branch: renamed refs/heads/main to refs/heads/main
+[33me512ab8[m HEAD@{21}: Branch: renamed refs/heads/master to refs/heads/main
+[33me512ab8[m HEAD@{23}: commit: first commit
+[33m07810f4[m[33m ([m[1;31morigin/master[m[33m)[m HEAD@{24}: commit (initial): Initialize project using Create React App

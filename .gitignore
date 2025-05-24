@@ -1,2 +1,4 @@
 node_modules/
 build/
+old/node_modules/
+old/.config
