@@ -1,7 +1,7 @@
 import { Dropdown, Space } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
 
-const Header = ({ title, menuItem }) => {
+const Nav = ({ title, menuItem }) => {
   const dropdownItems = menuItem.map((item, index) => ({
     key: index,
     label: (
@@ -52,4 +52,4 @@ const Header = ({ title, menuItem }) => {
   );
 };
 
-export default Header;
+export default Nav;

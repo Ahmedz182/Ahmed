@@ -1,13 +1,14 @@
+import { useState } from "react";
 import "remixicon/fonts/remixicon.css";
 import "./App.css";
 import Home from "./pages/HomePage/Home";
-import Header from "./Components/Header";
+import Nav from "./Components/Nav";
 
 function App() {
   const Menu = ["Home", "About Me", "Skills", "Projects", "Contact Me"];
   return (
     <>
-      {/* <Header title="Ahmed.Dev" menuItem={Menu} /> */}
+      <Nav title="Ahmed.Dev" menuItem={Menu} />
       <Home />
     </>
   );
