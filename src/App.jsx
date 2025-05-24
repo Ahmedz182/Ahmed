@@ -1,4 +1,3 @@
-import { useState } from "react";
 import "remixicon/fonts/remixicon.css";
 import "./App.css";
 import Home from "./pages/HomePage/Home";
@@ -8,7 +7,7 @@ function App() {
   const Menu = ["Home", "About Me", "Skills", "Projects", "Contact Me"];
   return (
     <>
-      <Header title="Ahmed.Dev" menuItem={Menu} />
+      {/* <Header title="Ahmed.Dev" menuItem={Menu} /> */}
       <Home />
     </>
   );
