@@ -1,7 +1,7 @@
 import React from "react";
 import img from "../assets/img/self-bg2.png";
 import CV from "../assets/PDF/CV.pdf"; // Assuming you have a CV file in the assets folder
-const About_me = () => {
+const AboutMe = () => {
   const handlePdf = () => {
     const link = document.createElement("a");
     link.href = CV; // Make sure CV is a valid URL to the PDF
@@ -82,4 +82,4 @@ const About_me = () => {
   );
 };
 
-export default About_me;
+export default AboutMe;
