@@ -29,8 +29,8 @@ const About_me = () => {
 
         {/* Intro */}
         <p className="text-3xl md:text-4xl text-white font-medium">
-          Who is
-          <span className="font-bold italic text-amber-400">
+          Who is{" "}
+          <span className="font-bold  text-amber-400">
             Muhammad Ahmed Fayyaz
           </span>{" "}
           ?
