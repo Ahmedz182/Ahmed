@@ -38,48 +38,47 @@ const Title = ({ title, name, link }) => {
   };
 
   return (
-    <>
+    <motion.div
+      className="flex justify-between items-center px-6 lg:px-20 py-8 lg:py-12 mx-auto"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.5 }}>
       <motion.div
-        className="flex justify-between  items-center  me-5 lg:me-16"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.5 }}>
-        <motion.div
-          className="flex justify-start lg:ms-24 ms-5 gap-x-2 items-center lg:my-10 sm:my-5"
-          variants={titleVariants}>
-          <motion.span
-            className="w-5 h-[2px] bg-[#2694d4]"
-            variants={lineVariants}></motion.span>
-          <motion.span
-            className="text-4xl font-mono"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}>
-            {title}
-          </motion.span>
-        </motion.div>
-
-        {name && (
-          <motion.span
-            className="bg-[#0481bf] text-white font-medium  rounded-full px-3 py-2 hover:bg-[#2694d4] transition duration-200 ease-linear"
-            variants={buttonVariants}
-            whileHover={{
-              scale: 1.05,
-              backgroundColor: "#2694d4",
-            }}
-            whileTap={{ scale: 0.95 }}>
-            <a href={link}>
-              View All{" "}
-              <motion.i
-                className="ri-arrow-right-long-line"
-                animate={{ x: [0, 5, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity }}></motion.i>
-            </a>
-          </motion.span>
-        )}
+        className="flex justify-start gap-x-4 items-center"
+        variants={titleVariants}>
+        <motion.span
+          className="w-8 h-[3px] bg-gradient-to-r from-[#2694d4] to-[#0481bf] rounded-full"
+          variants={lineVariants}></motion.span>
+        <motion.h2
+          className="text-3xl lg:text-5xl font-bold text-white"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}>
+          {title}
+        </motion.h2>
       </motion.div>
-    </>
+
+      {name && (
+        <motion.button
+          className="glass-button text-white font-semibold rounded-full px-6 py-3 lg:px-8 lg:py-4 transition-all duration-300 hover:bg-white hover:bg-opacity-10"
+          variants={buttonVariants}
+          whileHover={{
+            scale: 1.05,
+          }}
+          whileTap={{ scale: 0.95 }}>
+          <a
+            href={link}
+            className="flex items-center gap-2 text-sm lg:text-base">
+            View All{" "}
+            <motion.i
+              className="ri-arrow-right-long-line text-lg"
+              animate={{ x: [0, 5, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}></motion.i>
+          </a>
+        </motion.button>
+      )}
+    </motion.div>
   );
 };
 

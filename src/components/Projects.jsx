@@ -97,7 +97,7 @@ const Projects = () => {
   return (
     <motion.div
       id="Projects"
-      className="flex flex-wrap justify-center lg:ps-24 sm:ps-5 items-center px-10 gap-5 my-10"
+      className="flex flex-wrap justify-center lg:ps-24 sm:ps-5 items-center px-10 gap-5 py-5"
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"

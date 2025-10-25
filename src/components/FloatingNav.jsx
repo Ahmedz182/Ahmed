@@ -38,6 +38,7 @@ const FloatingNav = () => {
     { id: "Home", icon: "ri-home-line", label: "Home" },
     { id: "About-Me", icon: "ri-user-line", label: "About" },
     { id: "Skills", icon: "ri-code-line", label: "Skills" },
+    { id: "Experience", icon: "ri-briefcase-line", label: "Experience" },
     { id: "Projects", icon: "ri-folder-line", label: "Projects" },
     { id: "Contact-Me", icon: "ri-mail-line", label: "Contact" },
   ];
@@ -87,7 +88,7 @@ const FloatingNav = () => {
                   <motion.button
                     key={item.id}
                     onClick={() => scrollToSection(item.id)}
-                    className="group flex items-center gap-3 bg-white/90 backdrop-blur-sm text-gray-700 px-4 py-3 rounded-full shadow-lg hover:bg-[#2694d4] hover:text-white transition-all duration-300"
+                    className="glass-nav group flex items-center gap-3 text-white px-4 py-3 rounded-full hover:glass-button transition-all duration-300"
                     variants={itemVariants}
                     whileHover={{ scale: 1.05, x: -10 }}
                     whileTap={{ scale: 0.95 }}>
@@ -104,7 +105,7 @@ const FloatingNav = () => {
           {/* Main Menu Button */}
           <motion.button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="w-14 h-14 bg-[#2694d4] text-white rounded-full shadow-lg flex items-center justify-center hover:bg-[#0481bf] transition-all duration-300"
+            className="glass-button w-14 h-14 text-white rounded-full flex items-center justify-center transition-all duration-300"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             animate={{ rotate: isExpanded ? 45 : 0 }}>
@@ -117,7 +118,7 @@ const FloatingNav = () => {
           {/* Scroll to Top Button */}
           <motion.button
             onClick={scrollToTop}
-            className="w-12 h-12 bg-gray-700 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-600 transition-all duration-300 mt-3"
+            className="glass-dark w-12 h-12 text-white rounded-full flex items-center justify-center transition-all duration-300 mt-3"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             title="Scroll to Top">

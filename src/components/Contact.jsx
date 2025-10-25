@@ -85,7 +85,7 @@ const Contact = () => {
   return (
     <motion.div
       id="Contact-Me"
-      className="min-h-[100vh] bg-gradient-to-br from-gray-50 to-gray-100 py-20 px-6 lg:px-20"
+      className="min-h-[100vh] py-20 px-6 lg:px-20"
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"
@@ -94,17 +94,17 @@ const Contact = () => {
         {/* Header */}
         <motion.div className="text-center mb-16" variants={itemVariants}>
           <motion.div
-            className="flex items-center justify-center gap-2 text-sm font-medium text-gray-600 mb-4"
+            className="flex items-center justify-center gap-2 text-sm font-medium text-white mb-4"
             variants={itemVariants}>
             <motion.span
-              className="inline-block w-6 h-[2px] bg-[#2694d4]"
+              className="inline-block w-6 h-[2px] bg-white"
               initial={{ width: 0 }}
               whileInView={{ width: 24 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.3 }}></motion.span>
             <span>Get In Touch</span>
             <motion.span
-              className="inline-block w-6 h-[2px] bg-[#2694d4]"
+              className="inline-block w-6 h-[2px] bg-white"
               initial={{ width: 0 }}
               whileInView={{ width: 24 }}
               viewport={{ once: true }}
@@ -112,13 +112,13 @@ const Contact = () => {
           </motion.div>
 
           <motion.h2
-            className="text-4xl lg:text-5xl font-bold text-gray-800 mb-4"
+            className="text-4xl lg:text-5xl font-bold text-white mb-4"
             variants={itemVariants}>
             Let's Work Together
           </motion.h2>
 
           <motion.p
-            className="text-lg text-gray-600 max-w-2xl mx-auto"
+            className="text-lg text-blue-100 max-w-2xl mx-auto"
             variants={itemVariants}>
             Have a project in mind? I'd love to hear about it. Send me a message
             and let's discuss how we can bring your ideas to life.
@@ -127,15 +127,13 @@ const Contact = () => {
 
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Contact Form */}
-          <motion.div
-            className="bg-white rounded-xl shadow-lg p-8"
-            variants={formVariants}>
+          <motion.div className="glass-card p-8" variants={formVariants}>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   whileFocus={{ scale: 1.02 }}>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-white mb-2">
                     Your Name
                   </label>
                   <input
@@ -144,7 +142,7 @@ const Contact = () => {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2694d4] focus:border-transparent transition duration-200"
+                    className="w-full px-4 py-3 glass border-0 text-white placeholder-blue-200 rounded-lg focus:ring-2 focus:ring-white focus:ring-opacity-50 transition duration-200"
                     placeholder="John Doe"
                   />
                 </motion.div>
@@ -152,7 +150,7 @@ const Contact = () => {
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   whileFocus={{ scale: 1.02 }}>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-white mb-2">
                     Email Address
                   </label>
                   <input
@@ -161,7 +159,7 @@ const Contact = () => {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2694d4] focus:border-transparent transition duration-200"
+                    className="w-full px-4 py-3 glass border-0 text-white placeholder-blue-200 rounded-lg focus:ring-2 focus:ring-white focus:ring-opacity-50 transition duration-200"
                     placeholder="john@example.com"
                   />
                 </motion.div>
@@ -170,7 +168,7 @@ const Contact = () => {
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 whileFocus={{ scale: 1.02 }}>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-white mb-2">
                   Subject
                 </label>
                 <input
@@ -179,7 +177,7 @@ const Contact = () => {
                   value={formData.subject}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2694d4] focus:border-transparent transition duration-200"
+                  className="w-full px-4 py-3 glass border-0 text-white placeholder-blue-200 rounded-lg focus:ring-2 focus:ring-white focus:ring-opacity-50 transition duration-200"
                   placeholder="Project Discussion"
                 />
               </motion.div>
@@ -187,7 +185,7 @@ const Contact = () => {
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 whileFocus={{ scale: 1.02 }}>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-white mb-2">
                   Message
                 </label>
                 <textarea
@@ -196,14 +194,14 @@ const Contact = () => {
                   onChange={handleChange}
                   required
                   rows={6}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2694d4] focus:border-transparent transition duration-200 resize-none"
+                  className="w-full px-4 py-3 glass border-0 text-white placeholder-blue-200 rounded-lg focus:ring-2 focus:ring-white focus:ring-opacity-50 transition duration-200 resize-none"
                   placeholder="Tell me about your project..."></textarea>
               </motion.div>
 
               <motion.button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-[#2694d4] text-white font-semibold py-3 px-6 rounded-lg hover:bg-[#0481bf] transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="glass-button w-full text-white font-semibold py-3 px-6 rounded-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}>
                 {isSubmitting ? (
@@ -234,50 +232,48 @@ const Contact = () => {
             {/* Contact Info Cards */}
             <div className="space-y-6">
               <motion.div
-                className="bg-white rounded-xl shadow-lg p-6 flex items-center gap-4"
+                className="glass-card p-6 flex items-center gap-4"
                 whileHover={{ scale: 1.02, y: -5 }}
                 transition={{ duration: 0.3 }}>
-                <div className="bg-[#2694d4] text-white p-3 rounded-lg">
-                  <i className="ri-mail-line text-2xl"></i>
+                <div className="glass-button p-3 rounded-lg">
+                  <i className="ri-mail-line text-2xl text-white"></i>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800">Email</h3>
-                  <p className="text-gray-600">ahmedmughal3182@gmail.com</p>
+                  <h3 className="font-semibold text-white">Email</h3>
+                  <p className="text-blue-100">ahmedmughal3182@gmail.com</p>
                 </div>
               </motion.div>
 
               <motion.div
-                className="bg-white rounded-xl shadow-lg p-6 flex items-center gap-4"
+                className="glass-card p-6 flex items-center gap-4"
                 whileHover={{ scale: 1.02, y: -5 }}
                 transition={{ duration: 0.3 }}>
-                <div className="bg-[#2694d4] text-white p-3 rounded-lg">
-                  <i className="ri-phone-line text-2xl"></i>
+                <div className="glass-button p-3 rounded-lg">
+                  <i className="ri-phone-line text-2xl text-white"></i>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800">Phone</h3>
-                  <p className="text-gray-600">+92 335 7035717</p>
+                  <h3 className="font-semibold text-white">Phone</h3>
+                  <p className="text-blue-100">+92 335 7035717</p>
                 </div>
               </motion.div>
 
               <motion.div
-                className="bg-white rounded-xl shadow-lg p-6 flex items-center gap-4"
+                className="glass-card p-6 flex items-center gap-4"
                 whileHover={{ scale: 1.02, y: -5 }}
                 transition={{ duration: 0.3 }}>
-                <div className="bg-[#2694d4] text-white p-3 rounded-lg">
-                  <i className="ri-map-pin-line text-2xl"></i>
+                <div className="glass-button p-3 rounded-lg">
+                  <i className="ri-map-pin-line text-2xl text-white"></i>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800">Location</h3>
-                  <p className="text-gray-600">Lahore, Punjab, Pakistan</p>
+                  <h3 className="font-semibold text-white">Location</h3>
+                  <p className="text-blue-100">Lahore, Punjab, Pakistan</p>
                 </div>
               </motion.div>
             </div>
 
             {/* Social Links */}
-            <motion.div
-              className="bg-white rounded-xl shadow-lg p-6"
-              variants={itemVariants}>
-              <h3 className="font-semibold text-gray-800 mb-4">Follow Me</h3>
+            <motion.div className="glass-card p-6" variants={itemVariants}>
+              <h3 className="font-semibold text-white mb-4">Follow Me</h3>
               <div className="flex gap-4">
                 {[
                   {
@@ -300,7 +296,7 @@ const Contact = () => {
                   <motion.a
                     key={index}
                     href={social.href}
-                    className={`w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-gray-600 transition duration-300 ${social.color} hover:text-white`}
+                    className={`glass-button w-12 h-12 rounded-lg flex items-center justify-center text-white transition duration-300 ${social.color}`}
                     whileHover={{ scale: 1.1, y: -2 }}
                     whileTap={{ scale: 0.95 }}>
                     <i className={`${social.icon} text-xl`}></i>
@@ -311,7 +307,7 @@ const Contact = () => {
 
             {/* Response Time */}
             <motion.div
-              className="bg-gradient-to-r from-[#2694d4] to-[#0481bf] rounded-xl shadow-lg p-6 text-white"
+              className="glass-blue p-6 text-white border border-white rounded-xl border-opacity-20"
               variants={itemVariants}>
               <div className="flex items-center gap-3 mb-3">
                 <i className="ri-time-line text-2xl"></i>

@@ -38,27 +38,50 @@ const Loading = () => {
       y: 0,
       transition: {
         duration: 0.8,
-        delay: 0.5,
+        delay: 0.3,
       },
     },
   };
 
   return (
     <motion.div
-      className="fixed inset-0 bg-[#2694d4] flex items-center justify-center z-50"
+      className="fixed inset-0 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 flex items-center justify-center z-50"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
       exit="exit">
-      <div className="text-center">
+      {/* Floating particles background */}
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 bg-white bg-opacity-20 rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, -100, 0],
+              opacity: [0, 0.8, 0],
+            }}
+            transition={{
+              duration: 3 + Math.random() * 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+            }}
+          />
+        ))}
+      </div>
+
+      <motion.div className="glass-card text-center p-12 rounded-3xl">
         {/* Loading Animation */}
         <motion.div
-          className="flex justify-center space-x-2 mb-8"
+          className="flex justify-center space-x-3 mb-8"
           variants={containerVariants}>
           {[0, 1, 2].map((index) => (
             <motion.div
               key={index}
-              className="w-4 h-4 bg-white rounded-full"
+              className="w-3 h-3 bg-white rounded-full"
               variants={dotVariants}
               style={{
                 animationDelay: `${index * 0.2}s`,
@@ -69,14 +92,11 @@ const Loading = () => {
 
         {/* Loading Text */}
         <motion.div variants={textVariants}>
-          <h2 className="text-2xl font-mono text-white mb-2">
-            Loading Portfolio
-          </h2>
           <motion.div
-            className="w-32 h-1 bg-white mx-auto rounded-full"
+            className="w-24 h-1 bg-gradient-to-r from-[#2694d4] to-[#0481bf] mx-auto rounded-full"
             initial={{ width: 0 }}
-            animate={{ width: 128 }}
-            transition={{ duration: 3, ease: "easeInOut" }}
+            animate={{ width: 96 }}
+            transition={{ duration: 2, ease: "easeInOut" }}
           />
         </motion.div>
 
@@ -85,13 +105,13 @@ const Loading = () => {
           className="mt-8"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 1 }}>
-          <h1 className="text-4xl font-bold text-white">
+          transition={{ duration: 0.8, delay: 0.5 }}>
+          <h1 className="text-3xl font-bold text-white">
             Muhammad Ahmed Fayyaz
           </h1>
-          <p className="text-lg text-blue-100 mt-2">Full Stack Developer</p>
+          <p className="text-base text-blue-100 mt-2">Full Stack Developer</p>
         </motion.div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 };

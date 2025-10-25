@@ -7,7 +7,7 @@ const HeroSection = () => {
   const handleScroll = () => {
     window.scrollBy({ top: 600, behavior: "smooth" });
   };
-  const Menu = ["Home", "About Me", "Skills", "Projects", "Contact Me"];
+  const Menu = ["Home", "About Me", "Skills", "Experience", "Projects", "Contact Me"];
 
   // Animation variants
   const containerVariants = {
@@ -60,104 +60,123 @@ const HeroSection = () => {
   return (
     <>
       <Nav title="Ahmed.Dev" menuItem={Menu} />
+      {/* Main Glass Container */}
       <motion.div
         id="Home"
-        className="flex flex-col md:flex-col lg:flex-row  lg:h-[90dvh] h-min-[100dvh] justify-center items-center mx-5 lg:mx-20"
+        className="min-h-screen flex justify-center items-center px-5 lg:px-10 md:px-5 sm:px-2 py-10 lg:py-20"
         variants={containerVariants}
         initial="hidden"
         animate="visible">
-        {/* Text Section */}
         <motion.div
-          className="flex flex-col justify-center w-full lg:w-2/3 lg:ms-32 gap-y-4 mt-10 lg:mt-0"
-          variants={textVariants}>
-          <motion.span
-            className="relative z-10 w-fit inline-block px-4 py-2 text-black -mb-3 text-sm font-semibold  border-1 border-black static-border"
-            variants={itemVariants}>
-            Hello There!
-          </motion.span>
-
-          <motion.p
-            className="text-4xl lg:text-4xl md:text-3xl font-bold "
-            variants={itemVariants}>
-            I'm{" "}
-            <motion.span
-              className="font-bold text-[#2694d4] rounded-tr-xl rounded-tl-lg rounded-bl-xl rounded-br-lg py-1 px-1"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.5 }}>
-              M. Ahmed Fayyaz
-            </motion.span>
-          </motion.p>
-
-          <motion.p
-            className="text-xl lg:text-2xl tracking-tighter"
-            variants={itemVariants}>
-            I am a <span className="text-gray-500">Frontend Developer</span>
-          </motion.p>
-
-          <motion.span
-            className="text-base lg:text-xl text-gray-500 font-light w-full lg:w-4/5"
-            variants={itemVariants}>
-            Proficient in web design and development, committed to producing
-            quality results
-          </motion.span>
-
+          className="glass-card w-full flex flex-col lg:flex-row items-center gap-8 lg:gap-16 p-8 lg:p-20 lg:py-28 rounded-3xl"
+          variants={containerVariants}>
+          {/* Text Section */}
           <motion.div
-            className="flex flex-col sm:flex-row gap-3 sm:gap-5 mt-4"
-            variants={itemVariants}>
+            className="flex flex-col justify-center w-full lg:w-3/5 gap-y-6 text-white"
+            variants={textVariants}>
             <motion.span
-              onClick={() => {
-                const section = document.getElementById("Contact-Me");
-                if (section) section.scrollIntoView({ behavior: "smooth" });
-              }}
-              className="relative inline-flex items-center justify-center overflow-hidden rounded-4xl group px-4 py-2 cursor-pointer text-white bg-[#2694d4]"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}>
-              <span className="absolute inset-0 bg-[#0481bf] transition-all duration-300 ease-in-out scale-x-0 origin-left group-hover:scale-x-100 z-0"></span>
-              <span className="relative z-10 flex items-center gap-2">
-                Contact Me
-                <motion.i
-                  className="ri-arrow-right-up-line w-4 h-4 mb-2"
-                  animate={{ x: [0, 5, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}></motion.i>
-              </span>
+              className="glass-button w-fit inline-block px-6 py-3 text-white text-sm font-semibold rounded-full"
+              variants={itemVariants}>
+              👋 Hello There!
             </motion.span>
-          </motion.div>
-        </motion.div>
 
-        {/* Image Section */}
-        <motion.div
-          className="w-full lg:w-1/2 flex justify-center p-5 lg:p-10 items-start lg:me-10"
-          variants={imageVariants}>
-          <motion.img
-            className="w-[100%]  max-w-xs lg:max-w-full rounded-xl splash"
-            src={img}
-            alt="Ahmed - Frontend Developer"
-            whileHover={{
-              scale: 1.05,
-              rotate: 2,
-              transition: { duration: 0.3 },
-            }}
-          />
+            <motion.div className="space-y-4" variants={itemVariants}>
+              <motion.h1
+                className="text-3xl lg:text-5xl md:text-4xl font-bold leading-tight"
+                variants={itemVariants}>
+                I'm{" "}
+                <motion.span
+                  className="font-bold bg-gradient-to-r from-[#2694d4] to-[#0481bf] bg-clip-text text-transparent"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.6, delay: 0.5 }}>
+                  M. Ahmed Fayyaz
+                </motion.span>
+              </motion.h1>
+
+              <motion.p
+                className="text-xl lg:text-3xl font-semibold text-blue-100"
+                variants={itemVariants}>
+                I am a{" "}
+                <span className="text-white font-bold">Frontend Developer</span>
+              </motion.p>
+            </motion.div>
+
+            <motion.p
+              className="text-lg lg:text-xl text-blue-100 font-light leading-relaxed"
+              variants={itemVariants}>
+              Proficient in web design and development, committed to producing
+              quality results that bring ideas to life through clean, modern
+              code.
+            </motion.p>
+
+            <motion.div
+              className="flex flex-col sm:flex-row gap-4 sm:gap-6 pt-4"
+              variants={itemVariants}>
+              <motion.button
+                onClick={() => {
+                  const section = document.getElementById("Contact-Me");
+                  if (section) section.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="glass-button relative inline-flex items-center justify-center overflow-hidden rounded-full group px-8 py-4 cursor-pointer text-white font-semibold text-lg"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}>
+                <span className="absolute inset-0 bg-gradient-to-r from-[#2694d4] to-[#0481bf] transition-all duration-300 ease-in-out scale-x-0 origin-left group-hover:scale-x-100 z-0 rounded-full"></span>
+                <span className="relative z-10 flex items-center gap-3">
+                  Let's Connect
+                  <i className="ri-arrow-right-up-line text-xl"></i>
+                </span>
+              </motion.button>
+
+              <motion.button
+                onClick={() => {
+                  const section = document.getElementById("About-Me");
+                  if (section) section.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="glass-button px-8 py-4 text-white font-semibold text-lg rounded-full border border-white border-opacity-30 hover:border-opacity-60 transition-all duration-300"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}>
+                Learn More
+              </motion.button>
+            </motion.div>
+          </motion.div>
+
+          {/* Image Section */}
+          <motion.div
+            className="w-full lg:w-2/5 flex justify-center"
+            variants={imageVariants}>
+            <div className="relative w-80 h-80 lg:w-96 lg:h-96 flex items-center justify-center">
+              {/* Colored outline ring */}
+              <div className="absolute inset-0 rounded-full ring-8 ring-[#2694d4] ring-opacity-60 pointer-events-none"></div>
+              <motion.img
+                className="w-80 h-80 lg:w-96 lg:h-96 rounded-full object-cover shadow-2xl relative z-10"
+                src={img}
+                alt="Ahmed - Frontend Developer"
+                whileHover={{
+                  scale: 1.05,
+                  transition: { duration: 0.3 },
+                }}
+              />
+            </div>
+          </motion.div>
         </motion.div>
       </motion.div>
 
       {/* Scroll Down Indicator */}
       <motion.div
-        className="flex justify-center items-center mt-5 lg:-mt-16 mb-10 cursor-pointer"
+        className="flex justify-center items-center pb-10 cursor-pointer"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 1 }}>
-        <motion.span
+        <motion.button
           onClick={handleScroll}
-          className="mt-1 text-gray-600 flex items-center justify-center gap-1"
+          className="glass-button flex items-center justify-center gap-2 px-6 py-3 text-white rounded-full hover:bg-white hover:bg-opacity-10 transition-all duration-300"
           whileHover={{ scale: 1.1 }}
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity }}>
-          Scroll
-          <i className="ri-scroll-to-bottom-fill text-2xl text-[#0481bf]"></i>
-          down
-        </motion.span>
+          <span className="text-sm font-medium">Explore More</span>
+          <i className="ri-scroll-to-bottom-fill text-xl text-[#2694d4]"></i>
+        </motion.button>
       </motion.div>
     </>
   );

@@ -9,28 +9,41 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate loading time
+    // Reduced loading time for better performance
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 3500);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, []);
 
   const pageVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      y: 0,
       transition: {
-        duration: 0.8,
+        duration: 0.5,
         ease: "easeOut",
       },
     },
   };
 
   return (
-    <div className="App">
+    <div className="App min-h-screen relative -mt-0">
+      {/* Reduced floating particles for performance */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(8)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 bg-white bg-opacity-10 rounded-full simple-float"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+          />
+        ))}
+      </div>
+
       <AnimatePresence mode="wait">
         {isLoading ? (
           <Loading key="loading" />
@@ -39,7 +52,8 @@ function App() {
             key="home"
             variants={pageVariants}
             initial="hidden"
-            animate="visible">
+            animate="visible"
+            className="relative z-10">
             <Home />
           </motion.div>
         )}

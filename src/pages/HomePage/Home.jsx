@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import Title from "../../Ui/Title";
 import AboutMe from "../../components/AboutMe";
 import Skills from "../../components/Skills";
+import Experience from "../../components/Experience";
 import Projects from "../../components/Projects";
 import Contact from "../../components/Contact";
 import HeroSection from "../../components/HeroSection";
@@ -49,6 +50,10 @@ const Home = () => {
 
       <motion.div variants={sectionVariants}>
         <Skills />
+      </motion.div>
+
+      <motion.div variants={sectionVariants}>
+        <Experience />
       </motion.div>
 
       <motion.div variants={sectionVariants}>

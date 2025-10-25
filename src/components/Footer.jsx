@@ -62,37 +62,40 @@ const Footer = () => {
 
   return (
     <motion.footer
-      className="bg-[#2694d4] text-white"
+      className="relative backdrop-blur-lg text-white"
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.3 }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {/* Glass overlay matching the theme */}
+      <div className="absolute inset-0 glass-card"></div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-20 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Brand Section */}
-          <motion.div variants={itemVariants} className="space-y-4">
+          <motion.div variants={itemVariants} className="space-y-6">
             <motion.h3
-              className="text-2xl font-bold text-white"
+              className="text-3xl font-bold text-white"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}>
               Muhammad Ahmed Fayyaz
             </motion.h3>
-            <p className="text-blue-100 leading-relaxed">
+            <p className="text-blue-100 leading-relaxed text-lg">
               Full Stack Developer passionate about creating innovative web
-              solutions and bringing ideas to life through code.
+              solutions and bringing ideas to life through clean, modern code.
             </p>
-            <motion.div className="flex space-x-4" variants={containerVariants}>
+            <motion.div className="flex space-x-6" variants={containerVariants}>
               {socialLinks.map((social, index) => (
                 <motion.a
                   key={social.name}
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`text-blue-200 ${social.color} transition-colors duration-300`}
+                  className="glass-button p-3 rounded-full text-white hover:bg-white hover:bg-opacity-20 transition-all duration-300"
                   variants={itemVariants}
                   whileHover={{
                     scale: 1.2,
-                    rotate: 5,
+                    rotate: 10,
                   }}
                   whileTap={{ scale: 0.9 }}>
                   <i className={`${social.icon} text-xl`}></i>
@@ -102,18 +105,18 @@ const Footer = () => {
           </motion.div>
 
           {/* Quick Links */}
-          <motion.div variants={itemVariants} className="space-y-4">
-            <h4 className="text-lg font-semibold text-white">Quick Links</h4>
-            <ul className="space-y-2">
+          <motion.div variants={itemVariants} className="space-y-6">
+            <h4 className="text-xl font-bold text-white">Quick Links</h4>
+            <ul className="space-y-4">
               {quickLinks.map((link, index) => (
                 <motion.li key={link.name} variants={itemVariants}>
                   <motion.a
                     href={link.href}
-                    className="text-blue-100 hover:text-white transition-colors duration-300 flex items-center group"
-                    whileHover={{ x: 5 }}
+                    className="text-blue-100 hover:text-white transition-colors duration-300 flex items-center group text-lg"
+                    whileHover={{ x: 10 }}
                     transition={{ duration: 0.2 }}>
                     <motion.i
-                      className="ri-arrow-right-line mr-2 opacity-0 group-hover:opacity-100"
+                      className="ri-arrow-right-line mr-3 opacity-0 group-hover:opacity-100 text-[#2694d4]"
                       animate={{ x: [0, 3, 0] }}
                       transition={{
                         duration: 1.5,
@@ -127,29 +130,37 @@ const Footer = () => {
           </motion.div>
 
           {/* Contact Info */}
-          <motion.div variants={itemVariants} className="space-y-4">
-            <h4 className="text-lg font-semibold text-white">Get In Touch</h4>
-            <div className="space-y-3">
+          <motion.div variants={itemVariants} className="space-y-6">
+            <h4 className="text-xl font-bold text-white">Get In Touch</h4>
+            <div className="space-y-4">
               <motion.div
-                className="flex items-center space-x-3 text-blue-100"
-                whileHover={{ x: 5 }}
+                className="glass-card flex items-center space-x-4 text-blue-100 p-4 rounded-xl hover:bg-white hover:bg-opacity-5 transition-all duration-300"
+                whileHover={{ x: 5, scale: 1.02 }}
                 transition={{ duration: 0.2 }}>
-                <i className="ri-map-pin-line text-white"></i>
-                <span>Lahore, Punjab, Pakistan</span>
+                <div className="glass-button p-2 rounded-full">
+                  <i className="ri-map-pin-line text-white text-lg"></i>
+                </div>
+                <span className="text-base">Lahore, Punjab, Pakistan</span>
               </motion.div>
+
               <motion.div
-                className="flex items-center space-x-3 text-blue-100"
-                whileHover={{ x: 5 }}
+                className="glass-card flex items-center space-x-4 text-blue-100 p-4 rounded-xl hover:bg-white hover:bg-opacity-5 transition-all duration-300"
+                whileHover={{ x: 5, scale: 1.02 }}
                 transition={{ duration: 0.2 }}>
-                <i className="ri-phone-line text-white"></i>
-                <span>+92 335 7035717</span>
+                <div className="glass-button p-2 rounded-full">
+                  <i className="ri-phone-line text-white text-lg"></i>
+                </div>
+                <span className="text-base">+92 335 7035717</span>
               </motion.div>
+
               <motion.div
-                className="flex items-center space-x-3 text-blue-100"
-                whileHover={{ x: 5 }}
+                className="glass-card flex items-center space-x-4 text-blue-100 p-4 rounded-xl hover:bg-white hover:bg-opacity-5 transition-all duration-300"
+                whileHover={{ x: 5, scale: 1.02 }}
                 transition={{ duration: 0.2 }}>
-                <i className="ri-mail-line text-white"></i>
-                <span>ahmedmughal3182@gmail.com</span>
+                <div className="glass-button p-2 rounded-full">
+                  <i className="ri-mail-line text-white text-lg"></i>
+                </div>
+                <span className="text-base">ahmedmughal3182@gmail.com</span>
               </motion.div>
             </div>
           </motion.div>
@@ -157,25 +168,27 @@ const Footer = () => {
 
         {/* Divider */}
         <motion.div
-          className="border-t border-blue-400 mt-8 pt-8"
+          className="border-t border-white border-opacity-20 mt-12 pt-8"
           variants={itemVariants}>
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
             {/* Copyright */}
-            <motion.p className="text-blue-200 text-sm" variants={itemVariants}>
+            <motion.p
+              className="text-blue-200 text-base"
+              variants={itemVariants}>
               © 2025 Muhammad Ahmed Fayyaz. All rights reserved.
             </motion.p>
 
             {/* Back to Top */}
             <motion.button
-              className="flex items-center space-x-2 text-white hover:text-blue-100 transition-colors duration-300"
+              className="glass-button flex items-center space-x-3 text-white font-semibold px-6 py-3 rounded-full hover:bg-white hover:bg-opacity-10 transition-all duration-300"
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               variants={itemVariants}
-              whileHover={{ y: -2 }}
+              whileHover={{ y: -5, scale: 1.05 }}
               whileTap={{ y: 0 }}>
-              <span className="text-sm">Back to Top</span>
+              <span className="text-base">Back to Top</span>
               <motion.i
-                className="ri-arrow-up-line"
-                animate={{ y: [0, -3, 0] }}
+                className="ri-arrow-up-line text-lg"
+                animate={{ y: [0, -5, 0] }}
                 transition={{ duration: 2, repeat: Infinity }}></motion.i>
             </motion.button>
           </div>
@@ -184,12 +197,35 @@ const Footer = () => {
 
       {/* Decorative Elements */}
       <motion.div
-        className="absolute bottom-0 left-0 w-full h-1 bg-white"
+        className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#2694d4] to-[#0481bf]"
         initial={{ scaleX: 0 }}
         whileInView={{ scaleX: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 1.5, ease: "easeInOut" }}
       />
+
+      {/* Floating particles for extra visual appeal */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 bg-white bg-opacity-20 rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, -20, 0],
+              opacity: [0.2, 0.8, 0.2],
+            }}
+            transition={{
+              duration: 3 + Math.random() * 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+            }}
+          />
+        ))}
+      </div>
     </motion.footer>
   );
 };

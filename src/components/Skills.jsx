@@ -10,6 +10,7 @@ import reactlogo from "../assets/img/logo/react.png";
 import tailwindlogo from "../assets/img/logo/tailwind.png";
 import wordpresslogo from "../assets/img/logo/wordpress.webp";
 import visuallogo from "../assets/img/logo/visual-studio-code.png";
+import next from "../assets/img/logo/next.png";
 import botstraplogo from "../assets/img/logo/bootstrap.webp";
 
 const Skills = () => {
@@ -19,6 +20,7 @@ const Skills = () => {
     { name: "JavaScript", img: jslogo },
     { name: "Python", img: pythonlogo },
     { name: "React.js", img: reactlogo },
+    { name: "Next.js", img: next },
     { name: "Tailwind", img: tailwindlogo },
     { name: "Bootstrap", img: botstraplogo },
     { name: "WordPress", img: wordpresslogo },
@@ -58,7 +60,7 @@ const Skills = () => {
   return (
     <motion.div
       id="Skills"
-      className="flex flex-wrap min-h-[80dvh] justify-center lg:ps-24 sm:ps-5 items-center px-10 gap-5 my-10"
+      className="flex flex-wrap min-h-[80dvh] justify-center lg:ps-24 sm:ps-5 items-center px-10 gap-5  py-5"
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"
@@ -66,7 +68,7 @@ const Skills = () => {
       {skills.map((skill, index) => (
         <motion.span
           key={index}
-          className="flex flex-col justify-center items-center cursor-pointer lg:min-h-54 sm:min-h-44 lg-w-32 sm:w-24  bg-gray-100 px-10 py-6 min-w-48  shadow-lg hover:bg-blue-500 hover:-translate-y-2 transition duration-200 ease-linear text-white rounded-lg  gap-4"
+          className="glass-card flex flex-col justify-center items-center cursor-pointer lg:min-h-40 sm:min-h-44 lg-w-32 sm:w-24 px-10 py-2 min-w-36 text-white rounded-lg "
           variants={skillVariants}
           whileHover={{
             scale: 1.05,
@@ -83,9 +85,7 @@ const Skills = () => {
               transition: { duration: 0.8 },
             }}
           />
-          <motion.span
-            className="text-lg font-medium text-black tracking-wider "
-            whileHover={{ color: "#ffffff" }}>
+          <motion.span className="text-lg font-medium text-white tracking-wider">
             {skill.name}
           </motion.span>
         </motion.span>

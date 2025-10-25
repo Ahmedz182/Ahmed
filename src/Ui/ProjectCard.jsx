@@ -40,7 +40,7 @@ const ProjectCard = ({
     <motion.div variants={cardVariants} whileHover="hover">
       <motion.div
         onClick={handlePreview}
-        className="relative group flex flex-col pb-5 cursor-pointer min-h-72 w-96 shadow-lg hover:bg-blue-500 hover:-translate-y-2 transition duration-200 ease-linear text-white rounded-lg"
+        className="glass-card relative group flex flex-col pb-5 cursor-pointer min-h-72 w-96 text-white rounded-lg overflow-hidden"
         variants={hoverVariants}>
         {/* Image Wrapper */}
         <div className="relative min-h-72 w-full">
@@ -53,8 +53,8 @@ const ProjectCard = ({
           />
 
           {/* Link Icon Overlay */}
-          <motion.span
-            className="absolute inset-0 flex justify-center items-center bg-black/40 opacity-0 group-hover:opacity-100 transition duration-200 ease-linear rounded-lg"
+          <motion.div
+            className="absolute inset-0 flex justify-center items-center glass-dark opacity-0 group-hover:opacity-100 transition duration-200 ease-linear rounded-lg"
             initial={{ opacity: 0 }}
             whileHover={{ opacity: 1 }}>
             <motion.i
@@ -65,7 +65,7 @@ const ProjectCard = ({
                 rotate: 360,
                 transition: { duration: 0.5 },
               }}></motion.i>
-          </motion.span>
+          </motion.div>
         </div>
 
         {/* Text Content */}
@@ -74,21 +74,21 @@ const ProjectCard = ({
           initial={{ opacity: 0.8 }}
           whileHover={{ opacity: 1 }}>
           <motion.span
-            className="text-lg font-medium line-clamp-1 group-hover:text-white text-black/80 tracking-wider"
+            className="text-lg font-medium line-clamp-1 text-white tracking-wider"
             whileHover={{ x: 5 }}>
             {title}
           </motion.span>
 
           <motion.span
-            className="text-sm line-clamp-1 text-gray-500 group-hover:text-white tracking-wider"
+            className="text-sm line-clamp-1 text-blue-100 tracking-wider"
             whileHover={{ x: 5 }}>
             {desc}
           </motion.span>
 
           <motion.span
-            className="text-sm font-medium text-gray-500 group-hover:text-white tracking-wider"
+            className="text-sm font-medium text-blue-100 tracking-wider"
             whileHover={{ x: 5 }}>
-            Build In: <span className="text-black uppercase">{BuildIn}</span>
+            Build In: <span className="text-white uppercase">{BuildIn}</span>
           </motion.span>
 
           <motion.div
@@ -98,7 +98,7 @@ const ProjectCard = ({
             {tags.slice(0, 4).map((tag, index) => (
               <motion.span
                 key={index}
-                className="text-sm bg-blue-500 group-hover:bg-white group-hover:text-black px-2 py-1 rounded text-white"
+                className="glass-button text-sm px-3 py-1 rounded text-white"
                 initial={{ scale: 0.9 }}
                 whileHover={{
                   scale: 1.05,

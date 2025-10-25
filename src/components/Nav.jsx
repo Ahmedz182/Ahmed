@@ -66,19 +66,21 @@ const Nav = ({ title, menuItem }) => {
 
   return (
     <motion.div
-      className="flex justify-between items-center mx-5 lg:mx-10 md:mx-5 sm:mx-2 py-4"
+      className="glass-nav flex justify-between items-center mx-5 lg:mx-10 md:mx-5 sm:mx-2 py-4 px-6 rounded-2xl mt-4 sticky top-4 z-50"
       variants={navVariants}
       initial="hidden"
       animate="visible">
-      <motion.span
-        className="font-medium text-2xl text-white bg-[#42a5e3] px-3 py-1 uppercase rounded-r-xl"
+      <motion.img
+        src="/logo.png"
+        alt="Logo"
+        className="glass-button w-14 h-14 object-contain rounded-xl shadow-lg p-2 bg-white/10"
         variants={logoVariants}
         whileHover={{
-          scale: 1.05,
+          scale: 1.08,
           transition: { duration: 0.2 },
-        }}>
-        {title}
-      </motion.span>
+        }}
+        whileTap={{ scale: 0.97 }}
+      />
 
       {/* Desktop Menu */}
       <motion.div
@@ -93,11 +95,11 @@ const Nav = ({ title, menuItem }) => {
               );
               if (section) section.scrollIntoView({ behavior: "smooth" });
             }}
-            className="text-lg font-semibold text-gray-600 transition duration-200 ease-linear hover:text-[#389cd6] cursor-pointer"
+            className="text-lg font-semibold text-white transition duration-200 ease-linear hover:text-blue-200 cursor-pointer"
             variants={menuItemVariants}
             whileHover={{
               scale: 1.1,
-              color: "#389cd6",
+              color: "#dbeafe",
               transition: { duration: 0.2 },
             }}
             whileTap={{ scale: 0.95 }}>
@@ -115,7 +117,7 @@ const Nav = ({ title, menuItem }) => {
         <Dropdown menu={{ items: dropdownItems }}>
           <a onClick={(e) => e.preventDefault()}>
             <Space>
-              <i className="ri-menu-4-line cursor-pointer text-2xl"></i>
+              <i className="ri-menu-4-line cursor-pointer text-2xl text-white"></i>
             </Space>
           </a>
         </Dropdown>
