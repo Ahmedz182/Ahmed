@@ -7,7 +7,14 @@ const HeroSection = () => {
   const handleScroll = () => {
     window.scrollBy({ top: 600, behavior: "smooth" });
   };
-  const Menu = ["Home", "About Me", "Skills", "Experience", "Projects", "Contact Me"];
+  const Menu = [
+    "Home",
+    "About Me",
+    "Skills",
+    "Experience",
+    "Projects",
+    "Contact Me",
+  ];
 
   // Animation variants
   const containerVariants = {
