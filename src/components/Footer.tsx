@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowUp } from "lucide-react";
+import Image from "next/image";
 
 export const Footer = () => {
     const scrollToTop = () => {
@@ -14,9 +15,14 @@ export const Footer = () => {
                     <a
                         href="#"
                         onClick={(e) => { e.preventDefault(); scrollToTop(); }}
-                        className="text-2xl font-bold tracking-tighter text-white hover:text-accent-mint transition-colors mb-2 inline-block"
+                        className="inline-block mb-4 hover:opacity-100 opacity-90 transition-opacity"
                     >
-                        MF<span className="text-accent-mint">.</span>
+                        <Image
+                            src="/logo.png"
+                            alt="Ahmed Fayyaz"
+                            width={140}
+                            height={48}
+                            className="object-contain drop-shadow-[0_0_10px_rgba(51,214,159,0.2)]" />
                     </a>
                     <p className="text-text-muted text-sm font-medium">
                         Building interfaces of the future.

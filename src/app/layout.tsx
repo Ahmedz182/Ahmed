@@ -3,10 +3,8 @@ import { Nunito_Sans } from "next/font/google";
 import "./globals.css";
 import clsx from "clsx";
 
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
-import { SplashScreen } from "@/components/SplashScreen";
 import NextTopLoader from "nextjs-toploader";
+import { ClientLayoutWrapper } from "@/components/ClientLayoutWrapper";
 
 const nunitoSans = Nunito_Sans({
   variable: "--font-nunito-sans",
@@ -27,7 +25,6 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark scroll-smooth">
       <body className={clsx(nunitoSans.variable, "antialiased bg-theme-dark overflow-x-hidden w-full min-h-screen text-white selection:bg-accent-mint/30")}>
-        <SplashScreen />
         <NextTopLoader
           color="#33D69F"
           initialPosition={0.08}
@@ -39,9 +36,9 @@ export default function RootLayout({
           speed={200}
           shadow="0 0 10px #33D69F,0 0 5px #33D69F"
         />
-        <Navbar />
-        {children}
-        <Footer />
+        <ClientLayoutWrapper>
+          {children}
+        </ClientLayoutWrapper>
       </body>
     </html>
   );

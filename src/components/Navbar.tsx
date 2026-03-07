@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Menu, X, Briefcase } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 export const Navbar = () => {
@@ -62,9 +63,14 @@ export const Navbar = () => {
                             window.scrollTo({ top: 0, behavior: 'smooth' });
                         }
                     }}
-                    className="text-2xl font-bold tracking-tighter group text-white hover:text-accent-mint transition-colors"
+                    className="flex items-center group relative z-50 h-10"
                 >
-                    AHMED <span className="text-accent-mint group-hover:text-white transition-colors">FAYYAZ</span> .
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                        src="/logo.png"
+                        alt="Ahmed Fayyaz"
+                        className="h-full w-auto object-contain drop-shadow-[0_0_8px_rgba(51,214,159,0.3)] opacity-90 group-hover:opacity-100 transition-opacity"
+                    />
                 </Link>
 
                 {/* Desktop Nav */}

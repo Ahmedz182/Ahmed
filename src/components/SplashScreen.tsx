@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 export const SplashScreen = () => {
     const [isLoading, setIsLoading] = useState(true);
@@ -54,9 +55,10 @@ export const SplashScreen = () => {
                             className="absolute w-24 h-24 rounded-full border-2 border-t-transparent border-r-soft-mint border-b-transparent border-l-soft-mint/30"
                         />
 
-                        {/* Center AF Logo */}
-                        <div className="w-16 h-16 rounded-full bg-theme-dark/80 backdrop-blur-sm border border-white/10 shadow-[0_0_20px_rgba(51,214,159,0.3)] flex items-center justify-center text-accent-mint font-black text-2xl tracking-tighter">
-                            AF
+                        {/* Center Logo */}
+                        <div className="w-20 h-20 rounded-full bg-theme-dark/80 backdrop-blur-sm border border-white/10 shadow-[0_0_20px_rgba(51,214,159,0.3)] flex items-center justify-center p-3">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src="/logo.png" alt="Ahmed Fayyaz" className="w-full h-full object-contain" />
                         </div>
                     </motion.div>
 
@@ -92,16 +94,6 @@ export const SplashScreen = () => {
                                 ))}
                             </span>
                         </h2>
-
-                        {/* Loading Bar */}
-                        <div className="w-48 h-1 bg-white/5 rounded-full mt-2 overflow-hidden relative shadow-inner">
-                            <motion.div
-                                initial={{ x: "-100%" }}
-                                animate={{ x: "100%" }}
-                                transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
-                                className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-transparent via-accent-mint to-transparent"
-                            />
-                        </div>
                     </motion.div>
                 </motion.div>
             )}
