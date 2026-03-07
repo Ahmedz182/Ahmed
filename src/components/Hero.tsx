@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { FileText, ArrowRight } from "lucide-react";
+import { FileText, ArrowRight, Briefcase } from "lucide-react";
 import { FaReact, FaNodeJs, FaHtml5, FaCss3Alt, FaGithub, FaFigma } from "react-icons/fa";
 import { SiNextdotjs, SiTailwindcss, SiJavascript, SiMongodb } from "react-icons/si";
 import { useEffect, useState } from "react";
@@ -93,6 +93,7 @@ export const Hero = () => {
                             href="/hire"
                             className="group flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-accent-mint text-theme-dark font-bold transition-all hover:bg-soft-mint shadow-[0_0_20px_rgba(51,214,159,0.4)] hover:shadow-[0_0_30px_rgba(51,214,159,0.6)] cursor-pointer"
                         >
+                            <Briefcase className="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" />
                             Hire Me
                         </Link>
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Briefcase } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -39,6 +39,7 @@ export const Navbar = () => {
         { name: "Skills", href: "/#skills" },
         { name: "Projects", href: "/#projects" },
         { name: "Experience", href: "/#experience" },
+        { name: "Blog", href: "/#blog" },
         { name: "Let's Talk", href: "/#contact" },
     ];
 
@@ -81,8 +82,9 @@ export const Navbar = () => {
 
                     <Link
                         href="/hire"
-                        className="px-5 py-2 rounded-full bg-accent-mint hover:bg-soft-mint text-theme-dark font-bold border border-transparent hover:border-accent-mint transition-all text-sm shadow-[0_0_15px_rgba(51,214,159,0.3)] cursor-pointer"
+                        className="flex items-center gap-2 px-5 py-2 rounded-full bg-accent-mint hover:bg-soft-mint text-theme-dark font-bold border border-transparent hover:border-accent-mint transition-all text-sm shadow-[0_0_15px_rgba(51,214,159,0.3)] cursor-pointer"
                     >
+                        <Briefcase className="w-4 h-4" />
                         Hire Me
                     </Link>
                 </div>
@@ -117,8 +119,9 @@ export const Navbar = () => {
                         <Link
                             href="/hire"
                             onClick={() => setIsMobileMenuOpen(false)}
-                            className="text-lg font-bold text-accent-mint hover:text-soft-mint cursor-pointer mt-2"
+                            className="flex items-center gap-2 text-lg font-bold text-accent-mint hover:text-soft-mint cursor-pointer mt-2"
                         >
+                            <Briefcase className="w-5 h-5" />
                             Hire Me
                         </Link>
                     </motion.div>
