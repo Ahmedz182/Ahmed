@@ -168,7 +168,7 @@ export default function BlogDetailPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4 }}
-                        className="prose prose-invert prose-mint max-w-none 
+                        className="markdown-content overflow-hidden break-words w-full max-w-full prose prose-invert prose-mint max-w-none 
                                    prose-p:text-text-secondary prose-p:leading-relaxed prose-p:text-lg
                                    prose-headings:text-white prose-headings:font-bold
                                    prose-strong:text-accent-mint prose-code:text-accent-mint 

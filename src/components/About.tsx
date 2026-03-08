@@ -23,7 +23,7 @@ export const About = () => {
                 transition={{ duration: 0.6 }}
                 className="grid md:grid-cols-2 gap-16 md:gap-12 lg:gap-24 items-stretch"
             >
-                <div className="space-y-6 flex flex-col justify-center text-center md:text-left">
+                <div className="space-y-6 flex flex-col justify-center text-left">
                     <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
                         About <span className="text-accent-mint">Me</span>
                     </h2>
@@ -65,7 +65,7 @@ export const About = () => {
                                     whileInView={{ opacity: 1, x: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ duration: 0.3, delay: idx * 0.1 }}
-                                    className="flex items-center justify-center md:justify-start text-text-secondary group"
+                                    className="flex items-center justify-start text-text-secondary group"
                                 >
                                     <div className="p-3 bg-white/5 border border-white/10 rounded-lg group-hover:scale-110 group-hover:border-accent-mint/40 transition-all shadow-[0_4px_12px_rgba(0,0,0,0.1)] shrink-0 flex items-center justify-center mr-4">
                                         {item.icon}

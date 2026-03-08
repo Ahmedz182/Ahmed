@@ -6,7 +6,7 @@ import { db } from "@/lib/firebase";
 import { motion } from "framer-motion";
 import { Github, ExternalLink, Search, Filter, Layout } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+import { SafeImage } from "@/components/SafeImage";
 import { useRouter } from "next/navigation";
 
 interface ProjectData {
@@ -100,12 +100,13 @@ export default function ProjectsListPage() {
                                 </div>
 
                                 {/* Image Container */}
-                                <div className="relative w-full aspect-[16/9] overflow-hidden bg-black/40">
-                                    <Image
+                                <div className="relative w-full aspect-[16/9] overflow-hidden">
+                                    <SafeImage
                                         src={proj.image}
                                         alt={proj.title}
                                         fill
-                                        className="object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000"
+                                        className="opacity-60 group-hover:opacity-100 group-hover:scale-110"
+                                        unoptimized
                                     />
 
                                     {/* Inner Gradient Overlay */}

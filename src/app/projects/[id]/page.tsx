@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Github, ExternalLink, Globe, Layout, Code, Zap, Smartphone, Server } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { SafeImage } from "@/components/SafeImage";
 
 interface ProjectData {
     id: string;
@@ -193,10 +194,10 @@ export default function ProjectDetailPage() {
                         className="relative lg:sticky lg:top-32 h-fit"
                     >
                         <div className="relative aspect-[4/3] rounded-[3rem] overflow-hidden border border-white/10 shadow-2xl group">
-                            <img
+                            <SafeImage
                                 src={project.image}
                                 alt={project.title}
-                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                                className="transition-transform duration-1000 group-hover:scale-110"
                             />
                             {/* Overlay gradient */}
                             <div className="absolute inset-0 bg-gradient-to-t from-theme-dark/80 via-transparent to-transparent" />
@@ -254,7 +255,7 @@ export default function ProjectDetailPage() {
                                     The complete narrative of why this project exists and the problems it addresses.
                                 </p>
                             </div>
-                            <div className="lg:col-span-2 markdown-content bg-white/[0.01] p-8 md:p-12 rounded-[2.5rem] border border-white/5">
+                            <div className="lg:col-span-2 markdown-content bg-white/[0.01] p-8 md:p-12 rounded-[2.5rem] border border-white/5 overflow-hidden break-words w-full max-w-full">
                                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                     {project.fullDescription}
                                 </ReactMarkdown>
@@ -290,7 +291,7 @@ export default function ProjectDetailPage() {
                                         ))}
                                     </div>
                                 </div>
-                                <div className="lg:col-span-2 markdown-content bg-black/40 p-8 md:p-12 rounded-[2.5rem] border border-white/5 shadow-2xl">
+                                <div className="lg:col-span-2 markdown-content bg-black/40 p-8 md:p-12 rounded-[2.5rem] border border-white/5 shadow-2xl overflow-hidden break-words w-full max-w-full">
                                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                         {project.architecture}
                                     </ReactMarkdown>
@@ -311,7 +312,7 @@ export default function ProjectDetailPage() {
                                 <h2 className="text-lg font-black uppercase tracking-tighter flex items-center gap-4 mb-6">
                                     <span className="text-accent-mint text-xs">03 /</span> Case Study
                                 </h2>
-                                <div className="markdown-content">
+                                <div className="markdown-content overflow-hidden break-words w-full max-w-full">
                                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                         {project.caseStudy}
                                     </ReactMarkdown>
@@ -329,7 +330,7 @@ export default function ProjectDetailPage() {
                                 <h2 className="text-lg font-black uppercase tracking-tighter flex items-center gap-4 mb-6 text-white">
                                     <span className="text-white/20 text-xs">04 /</span> Challenges
                                 </h2>
-                                <div className="markdown-content">
+                                <div className="markdown-content overflow-hidden break-words w-full max-w-full">
                                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                         {project.challenges}
                                     </ReactMarkdown>

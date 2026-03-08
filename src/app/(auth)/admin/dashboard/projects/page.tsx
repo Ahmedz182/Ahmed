@@ -178,13 +178,13 @@ export default function ProjectsAdmin() {
     const handleEdit = (project: Project) => {
         setEditingProject(project);
         setFormData({
-            title: project.title,
-            description: project.description,
-            techStack: project.techStack,
-            image: project.image,
+            title: project.title || "",
+            description: project.description || "",
+            techStack: project.techStack || [],
+            image: project.image || "",
             images: project.images || [],
-            liveDemo: project.liveDemo,
-            github: project.github,
+            liveDemo: project.liveDemo || "",
+            github: project.github || "",
             fullDescription: project.fullDescription || "",
             architecture: project.architecture || "",
             caseStudy: project.caseStudy || "",
@@ -243,20 +243,27 @@ export default function ProjectsAdmin() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Sanitize data: Ensure no undefined values are sent to Firestore
+        const sanitizedData = Object.fromEntries(
+            Object.entries(formData).map(([key, value]) => [key, value ?? ""])
+        );
+
         try {
             if (editingProject) {
-                await updateDoc(doc(db, "projects", editingProject.id), formData);
+                await updateDoc(doc(db, "projects", editingProject.id), sanitizedData);
                 sileo.success({ description: "Project updated successfully." });
             } else {
                 await addDoc(collection(db, "projects"), {
-                    ...formData,
+                    ...sanitizedData,
                     createdAt: serverTimestamp()
                 });
                 sileo.success({ description: "Project added successfully." });
             }
             resetForm();
-        } catch (error) {
-            sileo.error({ description: "Failed to save project." });
+        } catch (error: any) {
+            console.error("Firestore Save Error:", error);
+            sileo.error({ description: error.message || "Failed to save project." });
         }
     };
 
@@ -361,62 +368,60 @@ export default function ProjectsAdmin() {
                                             </div>
                                         </div>
 
-                                        <div className="space-y-6 border-t border-white/5 pt-8">
-                                            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-accent-mint flex items-center gap-3">
-                                                <div className="w-2 h-2 rounded-full bg-accent-mint" />
-                                                Technical Details
-                                            </h3>
-                                            <div className="grid grid-cols-2 gap-6">
-                                                <div>
-                                                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Role</label>
-                                                    <input
-                                                        type="text"
-                                                        className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-accent-mint/30 transition-colors"
-                                                        value={formData.role}
-                                                        onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                                                        placeholder="Lead Developer"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Timeline</label>
-                                                    <input
-                                                        type="text"
-                                                        className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-accent-mint/30 transition-colors"
-                                                        value={formData.timeline}
-                                                        onChange={(e) => setFormData({ ...formData, timeline: e.target.value })}
-                                                        placeholder="e.g. 2024"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Tech Stack</label>
-                                                <div className="bg-white/[0.03] border border-white/5 rounded-3xl p-4">
-                                                    <input
-                                                        type="text"
-                                                        className="w-full bg-transparent border-none focus:outline-none text-sm mb-4"
-                                                        value={techInput}
-                                                        onChange={(e) => setTechInput(e.target.value)}
-                                                        onKeyDown={addTech}
-                                                        placeholder="Add tech & press enter..."
-                                                    />
-                                                    <div className="flex flex-wrap gap-2">
-                                                        {formData.techStack.map(tech => (
-                                                            <span key={tech} className="flex items-center gap-1.5 pl-3 pr-2 py-1.5 bg-accent-mint/10 text-accent-mint rounded-xl text-[10px] font-black uppercase tracking-widest border border-accent-mint/20">
-                                                                {tech}
-                                                                <button type="button" onClick={() => removeTech(tech)} className="hover:text-white transition-colors">
-                                                                    <X className="w-3 h-3" />
-                                                                </button>
-                                                            </span>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+
                                     </div>
 
                                     {/* Right Side: Media & Links */}
                                     <div className="space-y-12">
+                                        {/* Main Cover Section */}
                                         <div className="space-y-6">
+                                            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-accent-mint flex items-center gap-3">
+                                                <div className="w-2 h-2 rounded-full bg-accent-mint" />
+                                                Main Showcase (Cover)
+                                            </h3>
+
+                                            <div className="space-y-4">
+                                                <div className="relative aspect-video rounded-3xl overflow-hidden bg-black/40 border border-white/10 group">
+                                                    {formData.image ? (
+                                                        <div className="w-full h-full relative flex items-center justify-center">
+                                                            <div className="absolute inset-0 flex items-center justify-center opacity-10">
+                                                                <img src="/logo.png" alt="Fallback" className="w-1/3 object-contain" />
+                                                            </div>
+                                                            <img
+                                                                src={formData.image}
+                                                                alt="Cover Preview"
+                                                                className="relative z-10 w-full h-full object-cover"
+                                                                onError={(e) => {
+                                                                    (e.target as HTMLImageElement).classList.add('invisible');
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    ) : (
+                                                        <div className="w-full h-full flex flex-col items-center justify-center text-white/10">
+                                                            <ImageIcon className="w-8 h-8 mb-2" />
+                                                            <p className="text-[10px] font-black uppercase tracking-widest">No Cover Selected</p>
+                                                        </div>
+                                                    )}
+                                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/60">Live Preview</p>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Cover Image URL</label>
+                                                    <input
+                                                        type="url"
+                                                        className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-accent-mint/30 transition-colors"
+                                                        value={formData.image}
+                                                        onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                                                        placeholder="Paste main cover URL..."
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Gallery Section */}
+                                        <div className="space-y-6 border-t border-white/5 pt-8">
                                             <h3 className="text-sm font-black uppercase tracking-[0.2em] text-accent-mint flex items-center gap-3">
                                                 <div className="w-2 h-2 rounded-full bg-accent-mint" />
                                                 Project Gallery
@@ -424,15 +429,25 @@ export default function ProjectsAdmin() {
 
                                             <div className="grid grid-cols-2 gap-4">
                                                 <AnimatePresence>
-                                                    {formData.images?.map((img, idx) => (
+                                                    {(formData.images || []).map((img, idx) => (
                                                         <motion.div
                                                             key={img}
                                                             initial={{ opacity: 0, scale: 0.9 }}
                                                             animate={{ opacity: 1, scale: 1 }}
                                                             exit={{ opacity: 0, scale: 0.9 }}
-                                                            className="relative aspect-video rounded-2xl overflow-hidden group border border-white/10"
+                                                            className="relative aspect-video rounded-2xl overflow-hidden group border border-white/10 bg-black/40 flex items-center justify-center"
                                                         >
-                                                            <Image src={img} alt="Gallery" fill className="object-cover" />
+                                                            <div className="absolute inset-0 flex items-center justify-center opacity-10">
+                                                                <img src="/logo.png" alt="Fallback" className="w-1/3 object-contain" />
+                                                            </div>
+                                                            <img
+                                                                src={img}
+                                                                alt="Gallery"
+                                                                className="relative z-10 w-full h-full object-cover"
+                                                                onError={(e) => {
+                                                                    (e.target as HTMLImageElement).classList.add('invisible');
+                                                                }}
+                                                            />
                                                             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                                                                 <button
                                                                     type="button"
@@ -448,7 +463,7 @@ export default function ProjectsAdmin() {
                                                                     type="button"
                                                                     onClick={() => setFormData(prev => ({
                                                                         ...prev,
-                                                                        images: prev.images.filter(i => i !== img),
+                                                                        images: (prev.images || []).filter(i => i !== img),
                                                                         image: prev.image === img ? (prev.images.find(i => i !== img) || "") : prev.image
                                                                     }))}
                                                                     className="p-2 bg-red-500/80 text-white rounded-lg hover:bg-red-500 transition-all"
@@ -467,31 +482,33 @@ export default function ProjectsAdmin() {
                                                     <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
                                                     {uploading ? <Loader2 className="w-6 h-6 text-accent-mint animate-spin" /> : <Plus className="w-6 h-6 text-accent-mint/40" />}
                                                     <div className="text-center">
-                                                        <p className="text-[10px] font-bold text-white uppercase tracking-widest">Add Image</p>
+                                                        <p className="text-[10px] font-bold text-white uppercase tracking-widest">Upload to Gallery</p>
                                                     </div>
                                                 </label>
                                             </div>
 
                                             <div className="pt-4">
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Direct Image URL</label>
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Add Gallery URL</label>
                                                 <input
                                                     type="url"
                                                     className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-accent-mint/30 transition-colors"
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter') {
                                                             e.preventDefault();
-                                                            const url = (e.target as HTMLInputElement).value;
-                                                            if (url && !formData.images.includes(url)) {
+                                                            const url = (e.target as HTMLInputElement).value.trim();
+                                                            if (url && !(formData.images || []).includes(url)) {
                                                                 setFormData(prev => ({
                                                                     ...prev,
-                                                                    images: [...prev.images, url],
+                                                                    images: [...(prev.images || []), url],
+                                                                    // Only update main image if one doesn't exist
                                                                     image: prev.image || url
                                                                 }));
                                                                 (e.target as HTMLInputElement).value = "";
+                                                                sileo.success({ description: "URL added to gallery!" });
                                                             }
                                                         }
                                                     }}
-                                                    placeholder="Paste URL and press Enter..."
+                                                    placeholder="Paste gallery image URL & press Enter..."
                                                 />
                                             </div>
                                         </div>
@@ -531,6 +548,68 @@ export default function ProjectsAdmin() {
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Full Width: Technical Details */}
+                                <div className="space-y-6 border-t border-white/5 pt-12">
+                                    <h3 className="text-sm font-black uppercase tracking-[0.2em] text-accent-mint flex items-center gap-3">
+                                        <div className="w-2 h-2 rounded-full bg-accent-mint" />
+                                        Technical Details
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div className="space-y-6">
+                                            <div className="grid grid-cols-2 gap-6">
+                                                <div>
+                                                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Role</label>
+                                                    <input
+                                                        type="text"
+                                                        className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-accent-mint/30 transition-colors"
+                                                        value={formData.role}
+                                                        onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                                                        placeholder="Lead Developer"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Timeline</label>
+                                                    <input
+                                                        type="text"
+                                                        className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-accent-mint/30 transition-colors"
+                                                        value={formData.timeline}
+                                                        onChange={(e) => setFormData({ ...formData, timeline: e.target.value })}
+                                                        placeholder="e.g. 2024"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Tech Stack</label>
+                                                <div className="bg-white/[0.03] border border-white/5 rounded-3xl p-4 min-h-[120px]">
+                                                    <input
+                                                        type="text"
+                                                        className="w-full bg-transparent border-none focus:outline-none text-sm mb-4"
+                                                        value={techInput}
+                                                        onChange={(e) => setTechInput(e.target.value)}
+                                                        onKeyDown={addTech}
+                                                        placeholder="Add tech & press enter..."
+                                                    />
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {formData.techStack.map(tech => (
+                                                            <span key={tech} className="flex items-center gap-1.5 pl-3 pr-2 py-1.5 bg-accent-mint/10 text-accent-mint rounded-xl text-[10px] font-black uppercase tracking-widest border border-accent-mint/20">
+                                                                {tech}
+                                                                <button type="button" onClick={() => removeTech(tech)} className="hover:text-white transition-colors">
+                                                                    <X className="w-3 h-3" />
+                                                                </button>
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center justify-center p-8 bg-white/[0.02] border border-dashed border-white/10 rounded-3xl">
+                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/10 text-center">
+                                                Use this section to define the core technical identity of the project.
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -620,6 +699,7 @@ export default function ProjectsAdmin() {
                                                 alt={project.title}
                                                 fill
                                                 className="object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500"
+                                                unoptimized
                                             />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center">

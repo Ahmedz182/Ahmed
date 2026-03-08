@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ExternalLink, Github } from "lucide-react";
-import Image from "next/image";
+import { SafeImage } from "./SafeImage";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { collection, onSnapshot, query, orderBy, limit } from "firebase/firestore";
@@ -96,12 +96,13 @@ export const Projects = () => {
                                 </div>
 
                                 {/* Image Container */}
-                                <div className="relative w-full aspect-[16/9] overflow-hidden bg-black/40">
-                                    <Image
+                                <div className="relative w-full aspect-[16/9] overflow-hidden">
+                                    <SafeImage
                                         src={proj.image}
                                         alt={proj.title}
                                         fill
-                                        className="object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000"
+                                        className="opacity-60 group-hover:opacity-100 group-hover:scale-110"
+                                        unoptimized
                                     />
 
                                     {/* Inner Gradient Overlay */}
