@@ -11,6 +11,9 @@
   --color-text-muted: #8FB8AC;
 
   --font-sans: var(--font-nunito-sans), sans-serif;
+
+  /* Sileo Toast Brand Consistency */
+  --sileo-state-success: #33D69F;
 }
 
 @layer utilities {
@@ -44,4 +47,30 @@ html.lenis, html.lenis body {
 
 .lenis.lenis-smooth iframe {
   pointer-events: none;
+}
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-theme-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(51, 214, 159, 0.3); /* accent-mint at 30% */
+  border-radius: 9999px;
+  border: 2px solid var(--color-theme-dark); /* acts like padding */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(51, 214, 159, 0.7); /* accent-mint brighter on hover */
+}
+
+/* Firefox compatibility */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(51, 214, 159, 0.5) var(--color-theme-dark);
 }

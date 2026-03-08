@@ -3,10 +3,27 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send } from "lucide-react";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { sileo } from 'sileo';
 
 export const HireMeModal = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        phone: "",
+        budget: "",
+        details: "",
+        referenceLinks: "",
+        bookCall: false
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        const value = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value;
+        setFormData({ ...formData, [e.target.name]: value });
+    };
 
     useEffect(() => {
         const handleOpen = () => setIsOpen(true);
@@ -16,15 +33,29 @@ export const HireMeModal = () => {
 
     const closeModal = () => setIsOpen(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
-        // Mock API call
-        setTimeout(() => {
-            setIsSubmitting(false);
+
+        try {
+            await addDoc(collection(db, "hires"), {
+                ...formData,
+                projectType: "Hire Me Modal", // Default for the modal
+                createdAt: serverTimestamp(),
+                status: "pending"
+            });
+            sileo.success({ description: "Project request sent successfully!" });
             setIsOpen(false);
-            alert("Project request sent successfully!");
-        }, 1500);
+            setFormData({
+                name: "", email: "", phone: "", budget: "",
+                details: "", referenceLinks: "", bookCall: false
+            });
+        } catch (error) {
+            console.error("Error submitting project request:", error);
+            sileo.error({ description: "An error occurred while sending your request. Please try again later." });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -65,22 +96,22 @@ export const HireMeModal = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium text-text-secondary">Full Name <span className="text-accent-mint">*</span></label>
-                                        <input required type="text" placeholder="John Doe" className="w-full px-4 py-3 rounded-lg bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all" />
+                                        <input required name="name" value={formData.name} onChange={handleChange} type="text" placeholder="John Doe" className="w-full px-4 py-3 rounded-lg bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all" />
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium text-text-secondary">Email Address <span className="text-accent-mint">*</span></label>
-                                        <input required type="email" placeholder="john@example.com" className="w-full px-4 py-3 rounded-lg bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all" />
+                                        <input required name="email" value={formData.email} onChange={handleChange} type="email" placeholder="john@example.com" className="w-full px-4 py-3 rounded-lg bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all" />
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium text-text-secondary">Phone Number</label>
-                                        <input type="tel" placeholder="+1 (555) 000-0000" className="w-full px-4 py-3 rounded-lg bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all" />
+                                        <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="+1 (555) 000-0000" className="w-full px-4 py-3 rounded-lg bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all" />
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium text-text-secondary">Estimated Budget</label>
-                                        <select defaultValue="" className="w-full px-4 py-3 rounded-lg bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all appearance-none">
+                                        <select name="budget" value={formData.budget} onChange={handleChange} className="w-full px-4 py-3 rounded-lg bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all appearance-none [&>option]:bg-theme-dark">
                                             <option value="" disabled>Select a range</option>
                                             <option value="< $1000">Less than $1,000</option>
                                             <option value="$1k - $5k">$1,000 - $5,000</option>
@@ -92,17 +123,17 @@ export const HireMeModal = () => {
 
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium text-text-secondary">Project Idea / Details <span className="text-accent-mint">*</span></label>
-                                    <textarea required rows={4} placeholder="Describe your project requirements, goals, and timeline..." className="w-full px-4 py-3 rounded-lg bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all resize-none" />
+                                    <textarea required name="details" value={formData.details} onChange={handleChange} rows={4} placeholder="Describe your project requirements, goals, and timeline..." className="w-full px-4 py-3 rounded-lg bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all resize-none" />
                                 </div>
 
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium text-text-secondary">Any Reference Links?</label>
-                                    <input type="url" placeholder="https://example.com/inspiration" className="w-full px-4 py-3 rounded-lg bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all" />
+                                    <input type="url" name="referenceLinks" value={formData.referenceLinks} onChange={handleChange} placeholder="https://example.com/inspiration" className="w-full px-4 py-3 rounded-lg bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all" />
                                 </div>
 
                                 <label className="flex items-center gap-3 p-4 rounded-lg bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-colors">
                                     <div className="relative flex items-center">
-                                        <input type="checkbox" className="w-5 h-5 rounded border-white/20 bg-theme-dark text-accent-mint focus:ring-accent-mint/50 focus:ring-offset-0 transition-all cursor-pointer accent-accent-mint" />
+                                        <input type="checkbox" name="bookCall" checked={formData.bookCall} onChange={handleChange} className="w-5 h-5 rounded border-white/20 bg-theme-dark text-accent-mint focus:ring-accent-mint/50 focus:ring-offset-0 transition-all cursor-pointer accent-accent-mint" />
                                     </div>
                                     <span className="text-sm font-medium text-white">I want to book an introductory call</span>
                                 </label>

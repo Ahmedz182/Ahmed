@@ -1,135 +1,224 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { LogOut, LayoutDashboard, MessageSquare, Files, Settings } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Briefcase, TrendingUp, Users, ArrowUpRight } from "lucide-react";
+import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { sileo } from "sileo";
+import { db } from "@/lib/firebase";
 import Link from "next/link";
+import { format } from "date-fns";
+
+
 
 export default function AdminDashboard() {
+    const [stats, setStats] = useState({
+        contacts: 0,
+        hires: 0,
+        projects: 0,
+        unreadContacts: 0,
+        pendingHires: 0
+    });
+    const [recentHires, setRecentHires] = useState<any[]>([]);
+
+    useEffect(() => {
+        // Stats for Contacts
+        const unsubContacts = onSnapshot(collection(db, "contacts"), (snapshot) => {
+            const all = snapshot.docs;
+            setStats(prev => ({
+                ...prev,
+                contacts: all.length,
+                unreadContacts: all.filter(doc => !doc.data().read).length
+            }));
+        });
+
+        // Stats for Hires
+        const unsubHires = onSnapshot(collection(db, "hires"), (snapshot) => {
+            const all = snapshot.docs;
+            setStats(prev => ({
+                ...prev,
+                hires: all.length,
+                pendingHires: all.filter(doc => doc.data().status === "pending").length
+            }));
+
+            // Set recent hires for the right panel
+            const recent = all
+                .map(doc => ({ id: doc.id, ...doc.data() }))
+                .sort((a: any, b: any) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
+                .slice(0, 3);
+            setRecentHires(recent);
+        });
+
+        // Stats for Projects
+        const unsubProjects = onSnapshot(collection(db, "projects"), (snapshot) => {
+            setStats(prev => ({
+                ...prev,
+                projects: snapshot.docs.length
+            }));
+        });
+
+        return () => {
+            unsubContacts();
+            unsubHires();
+            unsubProjects();
+        };
+    }, []);
+
+
+
+    const statCards = [
+        {
+            title: "Total Inquiries",
+            value: stats.hires,
+            label: `${stats.pendingHires} Pending`,
+            icon: Briefcase,
+            color: "text-accent-mint",
+            link: "/admin/dashboard/hire-me"
+        },
+        {
+            title: "Messages",
+            value: stats.contacts,
+            label: `${stats.unreadContacts} New`,
+            icon: MessageSquare,
+            color: "text-blue-400",
+            link: "/admin/dashboard/contacts"
+        },
+        {
+            title: "Live Projects",
+            value: stats.projects,
+            label: "Public Portfolio",
+            icon: LayoutDashboard,
+            color: "text-amber-400",
+            link: "/admin/dashboard/projects"
+        },
+        {
+            title: "Project Conversion",
+            value: stats.hires > 0 ? `${Math.round((stats.hires / (stats.hires + stats.contacts)) * 100)}%` : "0%",
+            label: "Estimate",
+            icon: TrendingUp,
+            color: "text-purple-400",
+            link: "#"
+        }
+    ];
+
     return (
-        <div className="min-h-screen bg-theme-dark text-white font-sans flex text-sm">
-            {/* Sidebar */}
-            <aside className="w-64 border-r border-white/10 bg-theme-dark/50 backdrop-blur-md flex-col hidden md:flex z-20">
-                <div className="h-20 flex items-center px-8 border-b border-white/10 shrink-0">
-                    <span className="text-xl font-bold tracking-tighter">AF <span className="text-accent-mint">ADMIN</span></span>
+        <DashboardShell title="Overview">
+            <div className="space-y-8 pb-12">
+                {/* Stats Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {statCards.map((stat, i) => (
+                        <motion.div
+                            key={i}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: i * 0.1 }}
+                            className="group p-6 rounded-3xl bg-white/[0.02] border border-white/5 shadow-xl backdrop-blur-md hover:bg-white/[0.04] transition-all relative overflow-hidden"
+                        >
+                            <div className="flex items-start justify-between relative z-10">
+                                <div>
+                                    <h3 className="text-text-secondary font-bold text-xs uppercase tracking-widest mb-1 opacity-60 group-hover:opacity-100 transition-opacity">{stat.title}</h3>
+                                    <span className="text-4xl font-black text-white">{stat.value}</span>
+                                </div>
+                                <div className={`p-3 rounded-2xl bg-white/5 ${stat.color} group-hover:scale-110 transition-transform`}>
+                                    <stat.icon className="w-6 h-6" />
+                                </div>
+                            </div>
+
+                            <div className="mt-6 flex items-center justify-between relative z-10">
+                                <span className={`text-[10px] font-black uppercase tracking-tighter px-2 py-1 rounded-lg bg-white/5 ${stat.color}`}>
+                                    {stat.label}
+                                </span>
+                                <Link href={stat.link} className="text-text-muted hover:text-white transition-colors">
+                                    <ArrowUpRight className="w-4 h-4" />
+                                </Link>
+                            </div>
+
+                            {/* Accent Glow */}
+                            <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </motion.div>
+                    ))}
                 </div>
 
-                <nav className="flex-1 py-8 px-4 space-y-2 overflow-y-auto">
-                    <Link href="/admin/dashboard" className="flex items-center gap-3 px-4 py-3 rounded-xl bg-accent-mint/10 text-accent-mint font-medium">
-                        <LayoutDashboard className="w-5 h-5" />
-                        Dashboard
-                    </Link>
-                    <Link href="#" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 text-text-secondary hover:text-white font-medium transition-colors">
-                        <MessageSquare className="w-5 h-5" />
-                        Messages
-                    </Link>
-                    <Link href="#" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 text-text-secondary hover:text-white font-medium transition-colors">
-                        <Files className="w-5 h-5" />
-                        Projects
-                    </Link>
-                    <Link href="#" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 text-text-secondary hover:text-white font-medium transition-colors">
-                        <Settings className="w-5 h-5" />
-                        Settings
-                    </Link>
-                </nav>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Main Chart Placeholder */}
+                    <div className="lg:col-span-2 space-y-6">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: 0.3 }}
+                            className="p-8 rounded-[2.5rem] bg-white/[0.02] border border-white/5 min-h-[340px] flex items-center justify-center backdrop-blur-md shadow-2xl relative overflow-hidden"
+                        >
+                            <div className="absolute inset-0 bg-grid-pattern opacity-[0.02] pointer-events-none" />
+                            <div className="text-center relative z-10">
+                                <div className="w-20 h-20 rounded-full bg-accent-mint/5 border border-accent-mint/10 flex items-center justify-center mx-auto mb-6">
+                                    <LayoutDashboard className="w-10 h-10 text-accent-mint opacity-40" />
+                                </div>
+                                <h4 className="font-bold text-lg mb-2 text-white/80">Growth Analytics</h4>
+                                <p className="text-text-secondary text-sm max-w-xs mx-auto opacity-60">
+                                    Detailed visualization of your site traffic and inquiry trends will be displayed here soon.
+                                </p>
+                            </div>
+                        </motion.div>
 
-                <div className="p-4 border-t border-white/10 shrink-0">
-                    <button
-                        onClick={() => window.location.href = "/admin/login"}
-                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-500/10 text-text-secondary hover:text-red-400 font-medium transition-colors group"
+                    </div>
+
+                    {/* Recent Inquiries Panel */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: 0.4 }}
+                        className="p-8 rounded-[2.5rem] bg-white/[0.03] border border-white/10 flex flex-col backdrop-blur-3xl shadow-2xl"
                     >
-                        <LogOut className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-                        Sign Out
-                    </button>
-                </div>
-            </aside>
+                        <div className="flex items-center justify-between mb-8">
+                            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white/40 flex items-center gap-2">
+                                <Users className="w-4 h-4 text-accent-mint" />
+                                Recent Leads
+                            </h3>
+                            <Link href="/admin/dashboard/hire-me" className="text-[10px] font-black uppercase text-accent-mint hover:underline">
+                                View All
+                            </Link>
+                        </div>
 
-            {/* Main Content */}
-            <main className="flex-1 flex flex-col h-screen overflow-hidden relative">
-                <header className="h-20 border-b border-white/10 bg-theme-dark/80 backdrop-blur-md flex items-center justify-between px-8 shrink-0 z-20">
-                    <h2 className="text-lg font-bold">Overview</h2>
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-3">
-                            <span className="text-text-secondary font-medium hidden sm:inline-block">Welcome back, Admin</span>
-                            <div className="w-10 h-10 rounded-full bg-accent-mint/20 border border-accent-mint/30 flex items-center justify-center text-accent-mint font-bold shadow-[0_0_10px_rgba(51,214,159,0.2)]">
-                                AF
+                        <div className="space-y-4 flex-1">
+                            {recentHires.length === 0 ? (
+                                <div className="h-full flex flex-col items-center justify-center opacity-20 py-12 text-center">
+                                    <Briefcase className="w-10 h-10 mb-2" />
+                                    <p className="text-xs font-bold">No recent leads</p>
+                                </div>
+                            ) : (
+                                recentHires.map((req, i) => (
+                                    <div key={req.id} className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:bg-white/5 transition-all cursor-pointer group">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h4 className="text-xs font-black truncate group-hover:text-accent-mint transition-colors">{req.name}</h4>
+                                            <span className="text-[9px] font-bold text-text-muted opacity-50 uppercase" suppressHydrationWarning>
+                                                {req.createdAt?.seconds ? format(new Date(req.createdAt.seconds * 1000), "HH:mm") : "..."}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[10px] text-text-secondary px-2 py-0.5 rounded-md bg-white/5 border border-white/5">
+                                                {req.projectType}
+                                            </span>
+                                            <span className="text-[10px] font-black text-accent-mint">{req.budget}</span>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                        <div className="p-5 mt-6 rounded-2xl bg-accent-mint/5 border border-accent-mint/10 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="w-2 h-2 rounded-full bg-accent-mint animate-pulse" />
+                                <div>
+                                    <p className="text-[10px] font-black uppercase text-accent-mint">System Status</p>
+                                    <p className="text-[9px] text-accent-mint/70 font-bold">All services operational</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </header>
-
-                <div className="flex-1 overflow-y-auto p-6 md:p-8 relative z-10">
-                    <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none z-0" />
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-accent-mint/5 rounded-full blur-[128px] pointer-events-none z-0" />
-
-                    <div className="max-w-6xl mx-auto space-y-8 relative z-10">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {[
-                                { title: "Total Views", value: "12,405", trend: "+14%" },
-                                { title: "Project Inquiries", value: "48", trend: "+5%" },
-                                { title: "Messages", value: "12", trend: "-2%" }
-                            ].map((stat, i) => (
-                                <motion.div
-                                    key={i}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.4, delay: i * 0.1 }}
-                                    className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 shadow-xl backdrop-blur-md hover:bg-white/[0.04] transition-colors"
-                                >
-                                    <h3 className="text-text-secondary font-medium mb-2 opacity-80">{stat.title}</h3>
-                                    <div className="flex items-end justify-between">
-                                        <span className="text-3xl font-bold text-white">{stat.value}</span>
-                                        <span className={`text-sm font-bold px-2 py-1 rounded-full ${stat.trend.startsWith("+") ? "bg-accent-mint/10 text-accent-mint" : "bg-red-500/10 text-red-400"}`}>
-                                            {stat.trend}
-                                        </span>
-                                    </div>
-                                </motion.div>
-                            ))}
-                        </div>
-
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.4, delay: 0.3 }}
-                                className="lg:col-span-2 p-8 rounded-2xl bg-white/[0.02] border border-white/10 min-h-[400px] flex px-4 items-center justify-center backdrop-blur-md shadow-xl"
-                            >
-                                <div className="text-center text-text-secondary">
-                                    <LayoutDashboard className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                                    <p>Dashboard charts will actively render here.</p>
-                                </div>
-                            </motion.div>
-
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.4, delay: 0.4 }}
-                                className="p-8 rounded-2xl bg-white/[0.02] border border-white/10 min-h-[400px] flex flex-col backdrop-blur-md shadow-xl"
-                            >
-                                <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-                                    <MessageSquare className="w-5 h-5 text-accent-mint" />
-                                    Recent Inquiries
-                                </h3>
-
-                                <div className="space-y-4 flex-1">
-                                    {[1, 2, 3].map((i) => (
-                                        <div key={i} className="p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors cursor-pointer group">
-                                            <div className="flex justify-between items-start mb-1">
-                                                <h4 className="font-medium group-hover:text-accent-mint transition-colors">Client {i}</h4>
-                                                <span className="text-xs text-text-muted">2h ago</span>
-                                            </div>
-                                            <p className="text-xs text-text-secondary line-clamp-1">Looking for a Next.js developer for a new SaaS product...</p>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <button className="w-full mt-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-text-secondary hover:text-white transition-colors text-xs font-bold uppercase tracking-widest">
-                                    View All
-                                </button>
-                            </motion.div>
-                        </div>
-                    </div>
+                    </motion.div>
                 </div>
-            </main>
-        </div>
+            </div>
+        </DashboardShell>
     );
 }
+

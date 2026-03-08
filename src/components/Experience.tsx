@@ -1,34 +1,37 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+
+interface ExperienceData {
+    id: string;
+    title: string;
+    company: string;
+    date: string;
+    description: string;
+    order: number;
+}
 
 export const Experience = () => {
-    const experiences = [
-        {
-            title: "MERN Stack Developer",
-            company: "Artilence Lahore",
-            date: "Feb 2025 - Present",
-            description: "Developed scalable SaaS applications using Next.js (improved load time by 30% via SSR & code-splitting). Built reusable modular components reducing feature development time by 25%. Developed cross-platform mobile apps with React Native. Integrated third-party APIs (including Django services) improving workflow efficiency by 20%.",
-        },
-        {
-            title: "Frontend Web Developer",
-            company: "Smash Code Faisalabad",
-            date: "April 2024 - June 2024",
-            description: "Internship focused on building responsive and performant web applications. Implemented session persistence using React & Local Storage. Improved responsiveness using Tailwind & Bootstrap.",
-        },
-        {
-            title: "Freelance",
-            company: "Self-Employed",
-            date: "2022 - Present",
-            description: "Collaborated with international clients to deliver high-quality, user-friendly web applications. Contributed to multiple frontend and full-stack initiatives, optimizing performance, enhancing UI/UX, and ensuring scalable, maintainable code.",
-        },
-        {
-            title: "MERN Stack Course",
-            company: "Professional Freelancing Training Program (PFTP)",
-            date: "3 Months",
-            description: "Learned React.js & RESTful API development, gaining hands-on experience in building web applications. Awarded a Certificate and Medal for outstanding performance and dedication throughout the course.",
-        },
-    ];
+    const [experiences, setExperiences] = useState<ExperienceData[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const q = query(collection(db, "experience"), orderBy("order", "asc"));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const data = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            } as ExperienceData));
+            setExperiences(data);
+            setLoading(false);
+        });
+        return () => unsubscribe();
+    }, []);
+
+    if (loading && experiences.length === 0) return null;
 
     return (
         <section id="experience" className="w-full py-24 px-6 md:px-12 max-w-7xl mx-auto relative overflow-hidden">

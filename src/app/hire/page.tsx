@@ -7,9 +7,29 @@ import { motion } from "framer-motion";
 import Lenis from "@studio-freight/lenis";
 import { FaReact, FaNodeJs, FaHtml5, FaCss3Alt, FaGithub } from "react-icons/fa";
 import { SiNextdotjs, SiTailwindcss, SiJavascript, SiMongodb } from "react-icons/si";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { sileo } from 'sileo';
+import { useRouter } from "next/navigation";
 
 export default function HirePage() {
+    const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        phone: "",
+        budget: "",
+        projectType: "",
+        details: "",
+        referenceLinks: "",
+        bookCall: false
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        const value = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value;
+        setFormData({ ...formData, [e.target.name]: value });
+    };
 
     useEffect(() => {
         const lenis = new Lenis({
@@ -34,15 +54,43 @@ export default function HirePage() {
         };
     }, []);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
-        // Mock API call
-        setTimeout(() => {
+
+        try {
+            await addDoc(collection(db, "hires"), {
+                ...formData,
+                createdAt: serverTimestamp(),
+                status: "pending"
+            });
+            sileo.success({ description: "Project request sent successfully! We'll be in touch soon." });
+
+            // Clear form
+            setFormData({
+                name: "",
+                email: "",
+                phone: "",
+                budget: "",
+                projectType: "",
+                details: "",
+                referenceLinks: "",
+                bookCall: false
+            });
+
+            // Redirect after a short delay so the toast is visible
+            setTimeout(() => {
+                router.push("/");
+            }, 2000);
+        } catch (error: any) {
+            console.error("Error submitting project request:", error);
+            const errorMessage = error.code === 'permission-denied'
+                ? "Database access denied. Please check your Firestore rules."
+                : "An error occurred while sending your request. Please try again later.";
+            sileo.error({ description: errorMessage });
+        } finally {
             setIsSubmitting(false);
-            alert("Project request sent successfully!");
-            window.location.href = "/";
-        }, 1500);
+        }
     };
 
     const floatingIcons = [
@@ -104,22 +152,22 @@ export default function HirePage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-3">
                                     <label className="text-sm font-medium text-text-secondary tracking-wide">FULL NAME <span className="text-accent-mint">*</span></label>
-                                    <input required type="text" placeholder="John Doe" className="w-full px-5 py-4 rounded-xl bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all font-medium" />
+                                    <input required type="text" name="name" value={formData.name} onChange={handleChange} placeholder="John Doe" className="w-full px-5 py-4 rounded-xl bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all font-medium" />
                                 </div>
                                 <div className="space-y-3">
                                     <label className="text-sm font-medium text-text-secondary tracking-wide">EMAIL ADDRESS <span className="text-accent-mint">*</span></label>
-                                    <input required type="email" placeholder="john@example.com" className="w-full px-5 py-4 rounded-xl bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all font-medium" />
+                                    <input required type="email" name="email" value={formData.email} onChange={handleChange} placeholder="john@example.com" className="w-full px-5 py-4 rounded-xl bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all font-medium" />
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-3">
                                     <label className="text-sm font-medium text-text-secondary tracking-wide">PHONE NUMBER</label>
-                                    <input type="tel" placeholder="+1 (555) 000-0000" className="w-full px-5 py-4 rounded-xl bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all font-medium" />
+                                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="+1 (555) 000-0000" className="w-full px-5 py-4 rounded-xl bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all font-medium" />
                                 </div>
                                 <div className="space-y-3">
                                     <label className="text-sm font-medium text-text-secondary tracking-wide">ESTIMATED BUDGET</label>
-                                    <select defaultValue="" className="w-full px-5 py-4 rounded-xl bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all appearance-none font-medium [&>option]:bg-theme-dark">
+                                    <select name="budget" value={formData.budget} onChange={handleChange} className="w-full px-5 py-4 rounded-xl bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all appearance-none font-medium [&>option]:bg-theme-dark">
                                         <option value="" disabled className="text-text-muted/50">Select a range</option>
                                         <option value="< $1000">Less than $1,000</option>
                                         <option value="$1k - $5k">$1,000 - $5,000</option>
@@ -131,7 +179,7 @@ export default function HirePage() {
 
                             <div className="space-y-3">
                                 <label className="text-sm font-medium text-text-secondary tracking-wide">PROJECT TYPE <span className="text-accent-mint">*</span></label>
-                                <select required defaultValue="" className="w-full px-5 py-4 rounded-xl bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all appearance-none font-medium [&>option]:bg-theme-dark">
+                                <select required name="projectType" value={formData.projectType} onChange={handleChange} className="w-full px-5 py-4 rounded-xl bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all appearance-none font-medium [&>option]:bg-theme-dark">
                                     <option value="" disabled className="text-text-muted/50">How would you like to hire me?</option>
                                     <option value="Project Wise">Project Wise (Fixed Rate)</option>
                                     <option value="Monthly Hire">Monthly Hire (Retainer)</option>
@@ -141,17 +189,17 @@ export default function HirePage() {
 
                             <div className="space-y-3">
                                 <label className="text-sm font-medium text-text-secondary tracking-wide">PROJECT IDEA / DETAILS <span className="text-accent-mint">*</span></label>
-                                <textarea required rows={5} placeholder="Describe your project requirements, goals, and timeline..." className="w-full px-5 py-4 rounded-xl bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all resize-none font-medium" />
+                                <textarea required name="details" value={formData.details} onChange={handleChange} rows={5} placeholder="Describe your project requirements, goals, and timeline..." className="w-full px-5 py-4 rounded-xl bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all resize-none font-medium" />
                             </div>
 
                             <div className="space-y-3">
                                 <label className="text-sm font-medium text-text-secondary tracking-wide">ANY REFERENCE LINKS?</label>
-                                <input type="url" placeholder="https://example.com/inspiration" className="w-full px-5 py-4 rounded-xl bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all font-medium" />
+                                <input type="url" name="referenceLinks" value={formData.referenceLinks} onChange={handleChange} placeholder="https://example.com/inspiration" className="w-full px-5 py-4 rounded-xl bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all font-medium" />
                             </div>
 
                             <label className="flex items-center gap-4 p-5 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-colors">
                                 <div className="relative flex items-center">
-                                    <input type="checkbox" className="w-5 h-5 rounded border-white/20 bg-theme-dark text-accent-mint focus:ring-accent-mint/50 focus:ring-offset-0 transition-all cursor-pointer accent-accent-mint" />
+                                    <input type="checkbox" name="bookCall" checked={formData.bookCall} onChange={handleChange} className="w-5 h-5 rounded border-white/20 bg-theme-dark text-accent-mint focus:ring-accent-mint/50 focus:ring-offset-0 transition-all cursor-pointer accent-accent-mint" />
                                 </div>
                                 <span className="font-medium text-white">I want to book an introductory call</span>
                             </label>

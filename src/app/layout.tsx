@@ -5,6 +5,8 @@ import clsx from "clsx";
 
 import NextTopLoader from "nextjs-toploader";
 import { ClientLayoutWrapper } from "@/components/ClientLayoutWrapper";
+import { Toaster } from 'sileo';
+import 'sileo/styles.css';
 
 const nunitoSans = Nunito_Sans({
   variable: "--font-nunito-sans",
@@ -35,6 +37,20 @@ export default function RootLayout({
           easing="ease"
           speed={200}
           shadow="0 0 10px #33D69F,0 0 5px #33D69F"
+        />
+        <Toaster
+          position="bottom-right"
+          options={{
+            fill: "#ffffffff",
+            roundness: 16,
+            styles: {
+
+              title: "text-black font-sans!",
+              description: "text-black/80 font-sans!",
+              badge: "bg-black/10!",
+              button: "bg-black/10! hover:bg-black/20!",
+            },
+          }}
         />
         <ClientLayoutWrapper>
           {children}

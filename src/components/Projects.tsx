@@ -1,36 +1,40 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ExternalLink, Github } from "lucide-react";
 import Image from "next/image";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+
+interface ProjectData {
+    id: string;
+    title: string;
+    description: string;
+    techStack: string[];
+    image: string;
+    liveDemo: string;
+    github: string;
+}
 
 export const Projects = () => {
-    const projects = [
-        {
-            title: "All English SeTranslator",
-            description: "Mobile & Web App. Built structured English learning platform with progress tracking & subscription system. Implemented JWT authentication & payment integration. Integrated media resources (video/PDF) with scalable API architecture.",
-            techStack: ["React Native", "Next.js", "JWT", "REST API"],
-            image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc4MDAnIGhlaWdodD0nNDAwJyB2aWV3Qm94PScwIDAgODAwIDQwMCc+PHJlY3Qgd2lkdGg9JzgwMCcgaGVpZ2h0PSc0MDAnIGZpbGw9JyMwQjNEMkUnLz48dGV4dCB4PSc0MDAlJyB5PSc1MCUnIGZvbnQtZmFtaWx5PSdOdW5pdG8gU2FucywnIGZvbnQtc2l6ZT0nMzJweCcgZmlsbD0nIzdGRThDNycgZDominantLWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnPkFsbCBFbmdsaXNoIFNlVHJhbnNsYXRvcjwvdGV4dD48L3N2Zz4+",
-            liveDemo: "#",
-            github: "#",
-        },
-        {
-            title: "Vortex",
-            description: "Web App. Developed role-based dashboards for booking & staff management. Implemented real-time chat & audio support. Designed modular, scalable architecture.",
-            techStack: ["Next.js", "REST API", "Web Sockets"],
-            image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc4MDAnIGhlaWdodD0nNDAwJyB2aWV3Qm94PScwIDAgODAwIDQwMCc+PHJlY3Qgd2lkdGg9JzgwMCcgaGVpZ2h0PSc0MDAnIGZpbGw9JyMwRTVBNDUnLz48dGV4dCB4PSc0MDAlJyB5PSc1MCUnIGZvbnQtZmFtaWx5PSdOdW5pdG8gU2FucywnIGZvbnQtc2l6ZT0nMzJweCcgZmlsbD0nIzMzRDY5RicgZDominantLWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnPlZvcnRleDwvdGV4dD48L3N2Zz4=",
-            liveDemo: "#",
-            github: "#",
-        },
-        {
-            title: "Coin Theaters",
-            description: "Web App. Integrated low-latency live streaming (AWS IVS). Built crowdfunding workflows & secure authentication (AWS Cognito). Optimized APIs & real-time data handling for scalability.",
-            techStack: ["Next.js", "REST API", "AWS Cognito", "AWS IVS"],
-            image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc4MDAnIGhlaWdodD0nNDAwJyB2aWV3Qm94PScwIDAgODAwIDQwMCc+PHJlY3Qgd2lkdGg9JzgwMCcgaGVpZ2h0PSc0MDAnIGZpbGw9JyMwNzFFMkYnLz48dGV4dCB4PSc0MDAlJyB5PSc1MCUnIGZvbnQtZmFtaWx5PSdOdW5pdG8gU2FucywnIGZvbnQtc2l6ZT0nMzJweCcgZmlsbD0nI0M4RTZEQicgZDominantLWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnPkNvaW4gVGhlYXRlcnM8L3RleHQ+PC9zdmc+",
-            liveDemo: "#",
-            github: "#",
-        },
-    ];
+    const [projects, setProjects] = useState<ProjectData[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const q = query(collection(db, "projects"), orderBy("createdAt", "desc"));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const data = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            } as ProjectData));
+            setProjects(data);
+            setLoading(false);
+        });
+        return () => unsubscribe();
+    }, []);
+
+    if (loading && projects.length === 0) return null;
 
     return (
         <section id="projects" className="w-full py-24 px-6 md:px-12 max-w-7xl mx-auto">
@@ -53,7 +57,7 @@ export const Projects = () => {
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {projects.map((proj, idx) => (
                         <motion.div
-                            key={proj.title}
+                            key={proj.id}
                             initial={{ opacity: 0, y: 40 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}

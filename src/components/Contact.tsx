@@ -3,18 +3,43 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Send, Mail, Linkedin, Github, Phone } from "lucide-react";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { sileo } from 'sileo';
 
 export const Contact = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        message: ""
+    });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
-        // Mock simulation of sending a message
-        setTimeout(() => {
+
+        try {
+            await addDoc(collection(db, "contacts"), {
+                ...formData,
+                createdAt: serverTimestamp(),
+                read: false
+            });
+            sileo.success({ description: "Message sent successfully!" });
+            setFormData({ name: "", email: "", message: "" });
+        } catch (error: any) {
+            console.error("Error sending message:", error);
+            const errorMessage = error.code === 'permission-denied'
+                ? "Database access denied. Please check your Firestore rules."
+                : "An error occurred while sending your message. Please try again later.";
+            sileo.error({ description: errorMessage });
+        } finally {
             setIsSubmitting(false);
-            alert("Message sent successfully (Mocked)");
-        }, 1500);
+        }
     };
 
     return (
@@ -78,8 +103,11 @@ export const Contact = () => {
                             <label htmlFor="name" className="text-sm font-medium text-text-secondary">Full Name</label>
                             <input
                                 id="name"
+                                name="name"
                                 required
                                 type="text"
+                                value={formData.name}
+                                onChange={handleChange}
                                 placeholder="John Doe"
                                 className="w-full px-4 py-3 rounded-lg bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 focus:border-transparent transition-all"
                             />
@@ -89,8 +117,11 @@ export const Contact = () => {
                             <label htmlFor="email" className="text-sm font-medium text-text-secondary">Email Address</label>
                             <input
                                 id="email"
+                                name="email"
                                 required
                                 type="email"
+                                value={formData.email}
+                                onChange={handleChange}
                                 placeholder="john@example.com"
                                 className="w-full px-4 py-3 rounded-lg bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 focus:border-transparent transition-all"
                             />
@@ -100,8 +131,11 @@ export const Contact = () => {
                             <label htmlFor="message" className="text-sm font-medium text-text-secondary">Message</label>
                             <textarea
                                 id="message"
+                                name="message"
                                 required
                                 rows={5}
+                                value={formData.message}
+                                onChange={handleChange}
                                 placeholder="Tell me about your project..."
                                 className="w-full px-4 py-3 rounded-lg bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 focus:border-transparent transition-all resize-none"
                             />
