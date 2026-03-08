@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
-import { MessageSquare, Calendar, User, Mail, Trash2, CheckCircle2 } from "lucide-react";
+import { MessageSquare, Calendar, User, Mail, Trash2, CheckCircle2, ArrowUpRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { collection, query, orderBy, onSnapshot, doc, deleteDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -80,9 +80,12 @@ export default function ContactsPage() {
 
     return (
         <DashboardShell title="Inbound Messages" noScroll>
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 h-full overflow-hidden">
+            <div className="flex flex-col lg:grid lg:grid-cols-12 gap-5 h-full overflow-hidden relative">
                 {/* Messages List */}
-                <div className="lg:col-span-3 h-full overflow-hidden flex flex-col bg-white/[0.02] border border-white/5 rounded-2xl">
+                <div className={clsx(
+                    "lg:col-span-3 h-full overflow-hidden flex flex-col bg-white/[0.02] border border-white/5 rounded-2xl",
+                    selectedMessage ? "hidden lg:flex" : "flex"
+                )}>
                     <div className="p-4 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
                         <h3 className="font-black flex items-center gap-2 text-[10px] uppercase tracking-widest text-white/40">
                             Inbox
@@ -145,7 +148,10 @@ export default function ContactsPage() {
                 </div>
 
                 {/* Message Details */}
-                <div className="lg:col-span-9 h-full flex flex-col bg-white/[0.03] border border-white/5 rounded-3xl overflow-hidden relative">
+                <div className={clsx(
+                    "lg:col-span-9 h-full flex flex-col bg-white/[0.02] border border-white/5 rounded-[3rem] overflow-hidden relative backdrop-blur-sm",
+                    !selectedMessage ? "hidden lg:flex" : "flex"
+                )}>
                     <AnimatePresence mode="wait">
                         {selectedMessage ? (
                             <motion.div
@@ -153,67 +159,74 @@ export default function ContactsPage() {
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -20 }}
-                                className="h-full flex flex-col"
+                                className="h-full overflow-y-auto flex flex-col pt-10 px-10 pb-12 custom-scrollbar"
                             >
-                                <div className="p-6 border-b border-white/5">
-                                    <div className="flex items-start justify-between mb-6">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-14 h-14 rounded-full bg-accent-mint/10 flex items-center justify-center border border-accent-mint/20">
-                                                <User className="w-6 h-6 text-accent-mint" />
+                                {/* Mobile Back Button */}
+                                <div className="lg:hidden mb-8">
+                                    <button
+                                        onClick={() => setSelectedMessage(null)}
+                                        className="text-accent-mint text-[10px] font-black uppercase tracking-widest flex items-center gap-1 bg-accent-mint/10 px-5 py-2.5 rounded-2xl border border-accent-mint/20 shadow-lg shadow-accent-mint/5"
+                                    >
+                                        &larr; Back to Inbox
+                                    </button>
+                                </div>
+
+                                <div className="space-y-10">
+                                    {/* Compact Header */}
+                                    <div className="flex items-start justify-between gap-6">
+                                        <div className="flex items-center gap-6">
+                                            <div className="w-14 h-14 rounded-2xl bg-accent-mint/10 flex items-center justify-center border border-accent-mint/20 shadow-xl shadow-accent-mint/5 group">
+                                                <User className="w-6 h-6 text-accent-mint group-hover:scale-110 transition-transform" />
                                             </div>
-                                            <div>
-                                                <h2 className="text-xl font-bold">{selectedMessage.name}</h2>
-                                                <div className="flex items-center gap-3 text-sm text-text-secondary mt-1">
-                                                    <span className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" /> {selectedMessage.email}</span>
-                                                    <span className="opacity-20">|</span>
-                                                    <span className="flex items-center gap-1.5" suppressHydrationWarning><Calendar className="w-3.5 h-3.5" /> {selectedMessage.createdAt?.toDate ? format(selectedMessage.createdAt.toDate(), "PPP p") : "Pending..."}</span>
+                                            <div className="space-y-2">
+                                                <h2 className="text-2xl font-black tracking-tighter text-white leading-none mb-2">{selectedMessage.name}</h2>
+                                                <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-text-muted">
+                                                    <span className="flex items-center gap-2 bg-white/[0.03] px-3 py-1 rounded-xl border border-white/5"><Mail className="w-3.5 h-3.5 text-accent-mint/40" /> {selectedMessage.email}</span>
+                                                    <span className="flex items-center gap-2 bg-white/[0.03] px-3 py-1 rounded-xl border border-white/5" suppressHydrationWarning><Calendar className="w-3.5 h-3.5 text-accent-mint/40" /> {selectedMessage.createdAt?.toDate ? format(selectedMessage.createdAt.toDate(), "MMM dd, p") : "Pending..."}</span>
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="flex gap-2">
+                                            <a
+                                                href={`mailto:${selectedMessage.email}`}
+                                                className="h-10 px-5 bg-accent-mint text-theme-dark font-black rounded-xl hover:scale-105 transition-all shadow-lg shadow-accent-mint/5 flex items-center gap-2 text-[10px] uppercase tracking-widest"
+                                            >
+                                                Reply
+                                                <ArrowUpRight className="w-4 h-4" />
+                                            </a>
                                             <button
                                                 onClick={() => toggleReadStatus(selectedMessage)}
                                                 className={clsx(
-                                                    "p-2.5 rounded-xl transition-all border",
+                                                    "w-10 h-10 rounded-xl transition-all border flex items-center justify-center",
                                                     selectedMessage.read
-                                                        ? "bg-white/5 border-white/10 text-text-muted hover:text-white"
+                                                        ? "bg-white/5 border-white/10 text-text-muted hover:text-white hover:bg-white/10"
                                                         : "bg-accent-mint/10 border-accent-mint/30 text-accent-mint hover:bg-accent-mint/20"
                                                 )}
                                                 title={selectedMessage.read ? "Mark as Unread" : "Mark as Read"}
                                             >
-                                                <CheckCircle2 className="w-5 h-5" />
+                                                <CheckCircle2 className="w-4 h-4" />
                                             </button>
                                             <button
                                                 onClick={() => deleteMessage(selectedMessage.id)}
-                                                className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 transition-all"
+                                                className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-lg shadow-red-500/5 flex items-center justify-center group"
                                                 title="Delete Message"
                                             >
-                                                <Trash2 className="w-5 h-5" />
+                                                <Trash2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
                                             </button>
                                         </div>
                                     </div>
 
-                                    <div className="space-y-4">
+                                    {/* Message Body */}
+                                    <div className="space-y-6 pt-2">
+                                        <h4 className="text-[9px] font-black uppercase tracking-[0.4em] text-accent-mint/30 ml-1">Transmission Data</h4>
                                         <div className="relative">
-                                            <div className="absolute top-0 left-0 w-1 h-full bg-accent-mint/20 rounded-full" />
-                                            <p className="pl-6 text-sm leading-relaxed text-text-secondary whitespace-pre-wrap font-medium">
-                                                {selectedMessage.message}
-                                            </p>
+                                            <div className="absolute top-0 left-0 w-1 h-full bg-accent-mint/5 rounded-full" />
+                                            <div className="pl-8">
+                                                <p className="text-lg leading-relaxed text-white/70 whitespace-pre-wrap font-medium">
+                                                    {selectedMessage.message}
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div className="mt-auto p-6 bg-black/20">
-                                    <h4 className="text-xs font-black uppercase tracking-widest text-text-muted mb-4 opacity-50">Quick Actions</h4>
-                                    <div className="flex gap-3">
-                                        <a
-                                            href={`mailto:${selectedMessage.email}`}
-                                            className="px-6 py-3 bg-accent-mint text-theme-dark font-black rounded-xl hover:scale-105 transition-transform"
-                                        >
-                                            Reply via Email
-                                        </a>
-                                        <button className="px-6 py-3 bg-white/5 text-white font-bold rounded-xl hover:bg-white/10 transition-all border border-white/10">
-                                            Archive Message
-                                        </button>
                                     </div>
                                 </div>
                             </motion.div>

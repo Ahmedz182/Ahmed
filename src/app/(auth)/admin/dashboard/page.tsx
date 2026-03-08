@@ -91,14 +91,6 @@ export default function AdminDashboard() {
             icon: LayoutDashboard,
             color: "text-amber-400",
             link: "/admin/dashboard/projects"
-        },
-        {
-            title: "Project Conversion",
-            value: stats.hires > 0 ? `${Math.round((stats.hires / (stats.hires + stats.contacts)) * 100)}%` : "0%",
-            label: "Estimate",
-            icon: TrendingUp,
-            color: "text-purple-400",
-            link: "#"
         }
     ];
 

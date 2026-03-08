@@ -73,9 +73,12 @@ export default function HireMePage() {
 
     return (
         <DashboardShell title="Hire Me Inquiries" noScroll>
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 h-full overflow-hidden">
+            <div className="flex flex-col lg:grid lg:grid-cols-12 gap-5 h-full overflow-hidden relative">
                 {/* List View */}
-                <div className="lg:col-span-3 h-full flex flex-col bg-white/[0.02] border border-white/5 rounded-2xl overflow-hidden">
+                <div className={clsx(
+                    "lg:col-span-3 h-full flex flex-col bg-white/[0.02] border border-white/5 rounded-2xl overflow-hidden",
+                    selectedRequest ? "hidden lg:flex" : "flex"
+                )}>
                     <div className="p-4 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
                         <h3 className="font-black flex items-center gap-2 text-[10px] uppercase tracking-widest text-white/40">
                             Recent Leads
@@ -136,121 +139,134 @@ export default function HireMePage() {
                 </div>
 
                 {/* Detail View */}
-                <div className="lg:col-span-9 h-full bg-white/[0.03] border border-white/5 rounded-[2rem] overflow-hidden flex flex-col relative">
+                <div className={clsx(
+                    "lg:col-span-9 h-full bg-white/[0.02] border border-white/5 rounded-[3rem] overflow-hidden relative backdrop-blur-sm",
+                    !selectedRequest ? "hidden lg:flex" : "flex"
+                )}>
                     <AnimatePresence mode="wait">
                         {selectedRequest ? (
                             <motion.div
                                 key={selectedRequest.id}
-                                initial={{ opacity: 0, y: 10 }}
+                                initial={{ opacity: 0, y: 15 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                className="h-full flex flex-col"
+                                exit={{ opacity: 0, y: -15 }}
+                                className="h-full overflow-y-auto flex flex-col pt-10 px-10 pb-12 custom-scrollbar"
                             >
-                                <div className="p-6 border-b border-white/5 bg-white/[0.01]">
-                                    <div className="flex items-start justify-between">
-                                        <div className="space-y-3">
-                                            <div className="inline-flex items-center gap-2 px-3 py-1 bg-accent-mint/10 rounded-full border border-accent-mint/20">
+                                {/* Mobile Back Button */}
+                                <div className="lg:hidden mb-8">
+                                    <button
+                                        onClick={() => setSelectedRequest(null)}
+                                        className="text-accent-mint text-[10px] font-black uppercase tracking-widest flex items-center gap-1 bg-accent-mint/10 px-5 py-2.5 rounded-2xl border border-accent-mint/20 shadow-lg shadow-accent-mint/5"
+                                    >
+                                        &larr; Back to Leads
+                                    </button>
+                                </div>
+
+                                <div className="space-y-10">
+                                    {/* Compact Header */}
+                                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+                                        <div className="space-y-4">
+                                            <div className="inline-flex items-center gap-2 px-3 py-1 bg-accent-mint/5 rounded-full border border-accent-mint/10">
                                                 <div className="w-1.5 h-1.5 rounded-full bg-accent-mint animate-pulse" />
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-accent-mint">
-                                                    Project Inquiry
+                                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-accent-mint">
+                                                    Inquiry Detected
                                                 </span>
                                             </div>
-                                            <h2 className="text-3xl font-black tracking-tight">{selectedRequest.name}</h2>
+                                            <h2 className="text-3xl font-black tracking-tighter text-white leading-none">{selectedRequest.name}</h2>
 
-                                            <div className="flex flex-wrap gap-4 text-sm text-text-secondary pr-4">
-                                                <a href={`mailto:${selectedRequest.email}`} className="flex items-center gap-2 hover:text-accent-mint transition-colors">
-                                                    <Mail className="w-4 h-4" /> {selectedRequest.email}
+                                            <div className="flex flex-wrap items-center gap-5 text-xs text-text-muted font-medium">
+                                                <a href={`mailto:${selectedRequest.email}`} className="flex items-center gap-2 hover:text-accent-mint transition-colors group">
+                                                    <Mail className="w-3.5 h-3.5 text-accent-mint/40 group-hover:text-accent-mint" /> {selectedRequest.email}
                                                 </a>
                                                 {selectedRequest.phone && (
-                                                    <a href={`tel:${selectedRequest.phone}`} className="flex items-center gap-2 hover:text-accent-mint transition-colors">
-                                                        <Phone className="w-4 h-4" /> {selectedRequest.phone}
+                                                    <a href={`tel:${selectedRequest.phone}`} className="flex items-center gap-2 hover:text-accent-mint transition-colors group">
+                                                        <Phone className="w-3.5 h-3.5 text-accent-mint/40 group-hover:text-accent-mint" /> {selectedRequest.phone}
                                                     </a>
                                                 )}
-                                                <div className="flex items-center gap-2" suppressHydrationWarning>
-                                                    <Calendar className="w-4 h-4" />
-                                                    {selectedRequest.createdAt?.toDate ? format(selectedRequest.createdAt.toDate(), "PPP") : "Pending..."}
+                                                <div className="flex items-center gap-2">
+                                                    <Calendar className="w-3.5 h-3.5 text-accent-mint/40" />
+                                                    <span suppressHydrationWarning className="text-[11px]">{selectedRequest.createdAt?.toDate ? format(selectedRequest.createdAt.toDate(), "MMMM dd, yyyy") : "Processing..."}</span>
                                                 </div>
                                             </div>
 
-                                            <div className="flex gap-3">
-                                                <div className="px-3 py-1.5 bg-white/5 border border-white/5 rounded-xl flex items-center gap-2">
-                                                    <Box className="w-3.5 h-3.5 text-accent-mint" />
-                                                    <span className="text-xs font-bold">{selectedRequest.projectType}</span>
+                                            <div className="flex flex-wrap gap-3 pt-1">
+                                                <div className="px-4 py-1.5 bg-white/[0.03] border border-white/5 rounded-xl flex items-center gap-2.5">
+                                                    <Box className="w-3.5 h-3.5 text-accent-mint/60" />
+                                                    <span className="text-[10px] font-black uppercase tracking-widest">{selectedRequest.projectType}</span>
                                                 </div>
-                                                <div className="px-3 py-1.5 bg-white/5 border border-white/5 rounded-xl flex items-center gap-2">
-                                                    <DollarSign className="w-3.5 h-3.5 text-accent-mint" />
-                                                    <span className="text-xs font-bold">{selectedRequest.budget || "N/A"}</span>
+                                                <div className="px-4 py-1.5 bg-white/[0.03] border border-white/5 rounded-xl flex items-center gap-2.5">
+                                                    <DollarSign className="w-3.5 h-3.5 text-accent-mint/60" />
+                                                    <span className="text-[10px] font-black uppercase tracking-widest">{selectedRequest.budget || "N/A"}</span>
                                                 </div>
+                                                <a
+                                                    href={`mailto:${selectedRequest.email}?subject=Collaboration Discussion - ${selectedRequest.projectType}`}
+                                                    className="px-5 py-1.5 bg-accent-mint text-theme-dark font-black rounded-xl hover:scale-[1.05] transition-all flex items-center gap-2 shadow-lg shadow-accent-mint/10 text-[10px] uppercase tracking-widest"
+                                                >
+                                                    Initiate Discussion
+                                                    <CheckCircle className="w-4 h-4" />
+                                                </a>
                                             </div>
                                         </div>
 
-                                        <div className="flex flex-col gap-2 shrink-0">
+                                        <div className="flex flex-col gap-3 shrink-0">
                                             <div className="flex gap-2">
                                                 <div className="relative group/select">
                                                     <select
                                                         value={selectedRequest.status}
                                                         onChange={(e) => updateStatus(selectedRequest.id, e.target.value as any)}
-                                                        className="appearance-none bg-[#111] border border-white/10 rounded-xl px-4 py-2 pr-10 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-accent-mint/50 cursor-pointer hover:bg-white/5 transition-colors text-white"
+                                                        className="appearance-none bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 pr-10 text-[10px] font-black uppercase tracking-widest focus:outline-none focus:ring-1 focus:ring-accent-mint/20 cursor-pointer hover:bg-white/10 transition-all text-white min-w-[130px]"
                                                     >
-                                                        <option value="pending" className="bg-[#111]">Pending</option>
-                                                        <option value="reviewing" className="bg-[#111]">Reviewing</option>
-                                                        <option value="completed" className="bg-[#111]">Completed</option>
+                                                        <option value="pending" className="bg-theme-dark">Pending</option>
+                                                        <option value="reviewing" className="bg-theme-dark">Reviewing</option>
+                                                        <option value="completed" className="bg-theme-dark">Completed</option>
                                                     </select>
-                                                    <ChevronRight className="w-3 h-3 absolute right-3 top-1/2 -translate-y-1/2 rotate-90 pointer-events-none opacity-40" />
+                                                    <ChevronRight className="w-3 h-3 absolute right-4 top-1/2 -translate-y-1/2 rotate-90 pointer-events-none opacity-40" />
                                                 </div>
                                                 <button
                                                     onClick={() => deleteRequest(selectedRequest.id)}
-                                                    className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 transition-all"
+                                                    className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center group"
                                                 >
-                                                    <Trash2 className="w-5 h-5" />
+                                                    <Trash2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
                                                 </button>
                                             </div>
                                             {selectedRequest.bookCall && (
-                                                <div className="bg-accent-mint text-theme-dark px-3 py-2 rounded-xl text-[10px] font-black uppercase text-center flex items-center gap-2 justify-center">
+                                                <div className="bg-accent-mint/10 text-accent-mint border border-accent-mint/20 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-center flex items-center gap-2 justify-center">
                                                     <Clock className="w-3 h-3" /> Call Requested
                                                 </div>
                                             )}
                                         </div>
                                     </div>
-                                </div>
 
-                                <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-                                    <div className="space-y-6">
-                                        <div>
-                                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 mb-3">Inquiry Brief</h4>
-                                            <div className="bg-white/[0.02] p-6 rounded-2xl border border-white/5">
-                                                <p className="text-sm leading-relaxed text-text-secondary whitespace-pre-wrap font-medium">
-                                                    {selectedRequest.details}
-                                                </p>
+                                    {/* Content Flow */}
+                                    <div className="space-y-8 pt-4">
+                                        <div className="space-y-4">
+                                            <h4 className="text-[9px] font-black uppercase tracking-[0.4em] text-accent-mint/30 ml-1">Inquiry Brief</h4>
+                                            <div className="relative">
+                                                <div className="absolute top-0 left-0 w-1 h-full bg-accent-mint/5 rounded-full" />
+                                                <div className="pl-6">
+                                                    <p className="text-base leading-relaxed text-white/60 whitespace-pre-wrap font-medium">
+                                                        {selectedRequest.details}
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
 
                                         {selectedRequest.referenceLinks && (
-                                            <div>
-                                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 mb-3">Reference Assets</h4>
-                                                <div className="flex gap-4">
+                                            <div className="space-y-4">
+                                                <h4 className="text-[9px] font-black uppercase tracking-[0.4em] text-accent-mint/30 ml-1">Strategic Assets</h4>
+                                                <div className="pl-1">
                                                     <a
                                                         href={selectedRequest.referenceLinks}
                                                         target="_blank"
-                                                        className="inline-flex items-center gap-2.5 px-5 py-2.5 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-all group"
+                                                        className="inline-flex items-center gap-3 px-5 py-2.5 bg-white/[0.02] rounded-xl border border-white/5 hover:border-accent-mint/30 hover:bg-accent-mint/5 transition-all group"
                                                     >
-                                                        <ExternalLink className="w-3.5 h-3.5 text-accent-mint" />
-                                                        <span className="text-xs font-bold">View Reference</span>
+                                                        <ExternalLink className="w-4 h-4 text-accent-mint" />
+                                                        <span className="text-[10px] font-black uppercase tracking-widest">External Assets</span>
                                                     </a>
                                                 </div>
                                             </div>
                                         )}
                                     </div>
-                                </div>
-
-                                <div className="p-8 border-t border-white/5 bg-black/20 flex gap-4">
-                                    <a
-                                        href={`mailto:${selectedRequest.email}?subject=Project inquiry - ${selectedRequest.projectType}`}
-                                        className="flex-1 py-4 bg-accent-mint text-theme-dark font-black rounded-2xl hover:scale-[1.02] transition-transform text-center flex items-center justify-center gap-2"
-                                    >
-                                        Initiate Discussion
-                                        <CheckCircle className="w-5 h-5" />
-                                    </a>
                                 </div>
                             </motion.div>
                         ) : (

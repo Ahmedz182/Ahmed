@@ -39,7 +39,7 @@ export const Stats = () => {
     ];
 
     return (
-        <section className="w-full py-24 px-6 md:px-12 max-w-7xl mx-auto">
+        <section className="w-full py-5 px-6 md:px-12 max-w-7xl mx-auto">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                 {stats.map((stat, idx) => (
                     <motion.div

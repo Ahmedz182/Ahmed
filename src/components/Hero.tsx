@@ -6,6 +6,9 @@ import { FaReact, FaNodeJs, FaHtml5, FaCss3Alt, FaGithub, FaFigma } from "react-
 import { SiNextdotjs, SiTailwindcss, SiJavascript, SiMongodb } from "react-icons/si";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { ResumeDownloadButton } from "./ResumeDownloadButton";
 
 export const Hero = () => {
     // Generate icons configuration
@@ -36,6 +39,7 @@ export const Hero = () => {
     }));
 
     const [mounted, setMounted] = useState(false);
+
     useEffect(() => {
         setMounted(true);
     }, []);
@@ -105,15 +109,7 @@ export const Hero = () => {
                             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </a>
 
-                        <a
-                            href="/resume.pdf"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-white/5 text-white font-medium border border-white/10 hover:bg-white/10 transition-colors"
-                        >
-                            <FileText className="w-4 h-4" />
-                            Resume
-                        </a>
+                        <ResumeDownloadButton />
                     </motion.div>
                 </div>
 

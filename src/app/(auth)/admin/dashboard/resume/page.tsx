@@ -25,15 +25,16 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { collection, query, orderBy, onSnapshot, doc, setDoc, addDoc, serverTimestamp, deleteDoc, getDoc } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage } from "@/lib/firebase";
+import { db } from "@/lib/firebase";
 import { sileo } from "sileo";
 import { format } from "date-fns";
 import clsx from "clsx";
 import * as pdfjsLib from "pdfjs-dist";
+import { generateResumePDF } from "@/lib/pdf-generator";
+import { useRef } from "react";
 
-// Set worker source for pdfjs - Using unpkg with explicit version and .mjs for v4+ ESM compatibility
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs`;
+// Set worker source for pdfjs - Using unpkg with dynamic version for compatibility
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 console.log("PDF Worker Source Set to:", pdfjsLib.GlobalWorkerOptions.workerSrc);
 
 interface ResumeVersion {
@@ -119,6 +120,8 @@ export default function ResumePage() {
         ],
         activePdfUrl: ""
     });
+
+    const resumeRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const q = query(collection(db, "resumes"), orderBy("uploadedAt", "desc"));
@@ -233,23 +236,47 @@ export default function ResumePage() {
         }
     };
 
-    const handleDownloadCV = () => {
+    // PDF Generation logic is now imported from @/lib/pdf-generator
+
+    const handleDownloadCV = async () => {
+        setSaving(true);
         try {
-            const dataStr = JSON.stringify(resumeData, null, 4);
-            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-
-            const exportFileDefaultName = `${resumeData.fullName.replace(/\s+/g, '_')}_Resume_Data.json`;
-
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-
-            sileo.success({ description: "Resume data exported successfully!" });
+            const doc = await generateResumePDF(resumeData as any);
+            if (doc) {
+                doc.save(`${resumeData.fullName.replace(/\s+/g, '_')}_Resume.pdf`);
+                sileo.success({ description: "ATS-Friendly Modern Resume Ready!" });
+            }
         } catch (error) {
-            sileo.error({ description: "Export failed." });
+            console.error("PDF engine error:", error);
+            sileo.error({ description: "PDF generation failed." });
+        } finally {
+            setSaving(false);
         }
     };
+
+    const updateExp = (idx: number, field: keyof Experience, v: any) => {
+        const fresh = [...resumeData.experience];
+        (fresh[idx] as any)[field] = v;
+        setResumeData({ ...resumeData, experience: fresh });
+    }
+
+    const updateProj = (idx: number, field: keyof Project, v: any) => {
+        const fresh = [...resumeData.projects];
+        (fresh[idx] as any)[field] = v;
+        setResumeData({ ...resumeData, projects: fresh });
+    }
+
+    const updateAch = (idx: number, field: keyof Achievement, v: string) => {
+        const fresh = [...resumeData.achievements];
+        (fresh[idx] as any)[field] = v;
+        setResumeData({ ...resumeData, achievements: fresh });
+    }
+
+    const updateEdu = (idx: number, field: keyof Education, v: string) => {
+        const fresh = [...resumeData.education];
+        (fresh[idx] as any)[field] = v;
+        setResumeData({ ...resumeData, education: fresh });
+    }
 
     if (loading) return <DashboardLoader />;
 
@@ -266,34 +293,44 @@ export default function ResumePage() {
                             <p className="text-[9px] text-text-muted font-bold uppercase tracking-widest leading-none mt-0.5">Strategic Career Assets</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                        {/* 1. Manual Upload */}
                         <button
                             onClick={() => setShowUploadModal(true)}
-                            className="flex items-center gap-2 px-6 py-2.5 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all text-accent-mint"
+                            className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-white/10 transition-all text-accent-mint/70"
                         >
-                            <Upload className="w-4 h-4" />
-                            PDF Synchronizer
+                            <Upload className="w-3.5 h-3.5" />
+                            <span className="hidden lg:inline">Upload PDF</span>
                         </button>
+
+                        {/* 2. Export PDF (Local Download) */}
                         <button
                             onClick={handleDownloadCV}
-                            className="flex items-center gap-2 px-6 py-2.5 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all text-white/70"
+                            disabled={saving}
+                            className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-white/10 transition-all text-white/50"
                         >
-                            <Download className="w-4 h-4" />
-                            Export Data
+                            <Download className="w-3.5 h-3.5" />
+                            <span className="hidden lg:inline">Local Export</span>
                         </button>
+
+                        {/* 3. Save Metadata */}
                         <button
                             onClick={handleSaveBuilder}
                             disabled={saving}
-                            className="flex items-center gap-2 px-8 py-2.5 bg-accent-mint text-theme-dark rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-accent-mint/10 disabled:opacity-50"
+                            className="flex items-center gap-2 px-6 py-2 bg-accent-mint text-theme-dark rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-accent-mint/10 disabled:opacity-50 ml-2"
                         >
                             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                            Sync Database
+                            <span className="hidden md:inline">Sync Data</span>
                         </button>
                     </div>
                 </div>
 
                 <div className="flex-1 overflow-hidden">
-                    <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="h-full overflow-y-auto custom-scrollbar pr-4 pb-32 space-y-12">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="h-full overflow-y-auto custom-scrollbar pr-4 pb-32 space-y-12"
+                    >
 
                         {/* Personal & Social Identity */}
                         <section className="grid grid-cols-1 lg:grid-cols-2 gap-10">
@@ -485,30 +522,6 @@ export default function ResumePage() {
             </div>
         </DashboardShell>
     );
-
-    function updateExp(idx: number, field: keyof Experience, v: any) {
-        const fresh = [...resumeData.experience];
-        (fresh[idx] as any)[field] = v;
-        setResumeData({ ...resumeData, experience: fresh });
-    }
-
-    function updateProj(idx: number, field: keyof Project, v: any) {
-        const fresh = [...resumeData.projects];
-        (fresh[idx] as any)[field] = v;
-        setResumeData({ ...resumeData, projects: fresh });
-    }
-
-    function updateAch(idx: number, field: keyof Achievement, v: string) {
-        const fresh = [...resumeData.achievements];
-        (fresh[idx] as any)[field] = v;
-        setResumeData({ ...resumeData, achievements: fresh });
-    }
-
-    function updateEdu(idx: number, field: keyof Education, v: string) {
-        const fresh = [...resumeData.education];
-        (fresh[idx] as any)[field] = v;
-        setResumeData({ ...resumeData, education: fresh });
-    }
 }
 
 // Reusable Components

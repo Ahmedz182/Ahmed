@@ -19,12 +19,16 @@ import {
     Layers,
     Database,
     Wrench,
-    Trash2
+    Trash2,
+    User as UserIcon,
+    LogOut
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { doc, getDoc, setDoc, serverTimestamp, collection, addDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage } from "@/lib/firebase";
+import { auth, db, storage } from "@/lib/firebase";
+import { useAuth } from "@/hooks/useAuth";
+import { signOut } from "firebase/auth";
 import { sileo } from "sileo";
 import clsx from "clsx";
 
@@ -51,7 +55,8 @@ interface SiteSettings {
 export default function SettingsPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [activeTab, setActiveTab] = useState<"general" | "tech">("general");
+    const [activeTab, setActiveTab] = useState<"general" | "tech" | "profile">("profile");
+    const { user } = useAuth();
 
     const [settings, setSettings] = useState<SiteSettings>({
         contact: {
@@ -139,6 +144,16 @@ export default function SettingsPage() {
         }));
     };
 
+    const handleSignOut = async () => {
+        try {
+            await signOut(auth);
+            window.location.href = "/login";
+        } catch (error) {
+            console.error("Logout error:", error);
+            sileo.error({ description: "Failed to sign out." });
+        }
+    };
+
     if (loading) {
         return (
             <DashboardShell title="Settings">
@@ -152,30 +167,85 @@ export default function SettingsPage() {
     return (
         <DashboardShell title="System Configuration">
             <div className="max-w-4xl space-y-8 pb-20">
-                {/* Tabs */}
-                <div className="flex bg-white/[0.03] p-1.5 rounded-2xl border border-white/5 w-fit">
-                    {[
-                        { id: "general", label: "Contact Info", icon: Mail },
-                        { id: "tech", label: "Tech Arsenal", icon: Layers },
-                    ].map((tab) => (
+                {/* Header Actions */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    {/* Tabs */}
+                    <div className="flex bg-white/[0.03] p-1.5 rounded-2xl border border-white/5 w-fit">
+                        {[
+                            { id: "profile", label: "Profile", icon: UserIcon },
+                            { id: "general", label: "Contact Info", icon: Mail },
+                            { id: "tech", label: "Tech Arsenal", icon: Layers },
+                        ].map((tab) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id as any)}
+                                className={clsx(
+                                    "flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all",
+                                    activeTab === tab.id
+                                        ? "bg-accent-mint text-theme-dark shadow-lg"
+                                        : "text-text-muted hover:text-white hover:bg-white/5"
+                                )}
+                            >
+                                <tab.icon className="w-4 h-4" />
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    {activeTab !== "profile" && (
                         <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id as any)}
-                            className={clsx(
-                                "flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all",
-                                activeTab === tab.id
-                                    ? "bg-accent-mint text-theme-dark shadow-lg"
-                                    : "text-text-muted hover:text-white hover:bg-white/5"
-                            )}
+                            onClick={handleSave}
+                            disabled={saving}
+                            className="flex items-center gap-2 px-8 py-3 bg-accent-mint text-theme-dark font-black rounded-2xl hover:scale-105 transition-all shadow-lg shadow-accent-mint/10 disabled:opacity-50 text-[10px] uppercase tracking-widest"
                         >
-                            <tab.icon className="w-4 h-4" />
-                            {tab.label}
+                            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                            Save Changes
                         </button>
-                    ))}
+                    )}
                 </div>
 
                 <div className="min-h-[400px]">
                     <AnimatePresence mode="wait">
+                        {activeTab === "profile" && (
+                            <motion.div
+                                key="profile"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="space-y-8"
+                            >
+                                <div className="flex flex-col items-center justify-center p-12 bg-white/[0.02] border border-white/5 rounded-[3rem] text-center space-y-6">
+                                    <div className="relative group">
+                                        <div className="absolute inset-0 bg-accent-mint/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        <div className="w-32 h-32 rounded-full border-2 border-accent-mint/30 p-2 relative z-10">
+                                            {user?.photoURL ? (
+                                                <img src={user.photoURL} alt="Profile" className="w-full h-full rounded-full object-cover" />
+                                            ) : (
+                                                <div className="w-full h-full rounded-full bg-accent-mint/10 flex items-center justify-center">
+                                                    <UserIcon className="w-12 h-12 text-accent-mint" />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <h2 className="text-3xl font-black tracking-tight text-white">{user?.displayName || "Admin User"}</h2>
+                                        <p className="text-text-muted font-medium">{user?.email}</p>
+                                    </div>
+
+                                    <div className="pt-6">
+                                        <button
+                                            onClick={handleSignOut}
+                                            className="px-10 py-4 bg-red-500/10 border border-red-500/20 text-red-500 font-black rounded-3xl hover:bg-red-500 hover:text-white transition-all flex items-center gap-3 uppercase text-xs tracking-widest shadow-xl shadow-red-500/5 group"
+                                        >
+                                            <LogOut className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                                            Terminate Session
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+
                         {activeTab === "general" && (
                             <motion.div
                                 key="general"
@@ -303,18 +373,6 @@ export default function SettingsPage() {
                         )}
 
                     </AnimatePresence>
-                </div>
-
-                {/* Save Button */}
-                <div className="flex justify-end pt-10 border-t border-white/5">
-                    <button
-                        onClick={handleSave}
-                        disabled={saving}
-                        className="flex items-center gap-2 px-10 py-4 bg-accent-mint text-theme-dark font-black rounded-3xl hover:scale-105 transition-all shadow-[0_10px_40px_rgba(51,214,159,0.2)] disabled:opacity-50"
-                    >
-                        {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-                        Save Changes
-                    </button>
                 </div>
             </div>
         </DashboardShell>
