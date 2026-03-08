@@ -33,6 +33,66 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { sileo } from "sileo";
 import Image from "next/image";
 import clsx from "clsx";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
+interface MarkdownEditorProps {
+    label: string;
+    value: string;
+    onChange: (val: string) => void;
+    placeholder?: string;
+    rows?: number;
+}
+
+const MarkdownEditor = ({ label, value, onChange, placeholder, rows = 10 }: MarkdownEditorProps) => {
+    const [isPreview, setIsPreview] = useState(false);
+
+    return (
+        <div className="space-y-4">
+            <div className="flex items-center justify-between">
+                <label className="text-[10px] font-black uppercase tracking-widest text-white/30 block">{label}</label>
+                <div className="flex bg-white/5 rounded-lg p-0.5">
+                    <button
+                        type="button"
+                        onClick={() => setIsPreview(false)}
+                        className={clsx(
+                            "px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-md transition-all",
+                            !isPreview ? "bg-accent-mint text-theme-dark" : "text-white/40 hover:text-white"
+                        )}
+                    >
+                        Edit
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setIsPreview(true)}
+                        className={clsx(
+                            "px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-md transition-all",
+                            isPreview ? "bg-accent-mint text-theme-dark" : "text-white/40 hover:text-white"
+                        )}
+                    >
+                        Preview
+                    </button>
+                </div>
+            </div>
+
+            {isPreview ? (
+                <div className="w-full bg-white/[0.01] border border-white/5 rounded-2xl px-5 py-4 min-h-[150px] markdown-content">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {value || "_No content to preview_"}
+                    </ReactMarkdown>
+                </div>
+            ) : (
+                <textarea
+                    rows={rows}
+                    className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-accent-mint/30 transition-colors font-mono"
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                    placeholder={placeholder}
+                />
+            )}
+        </div>
+    );
+};
 
 interface Project {
     id: string;
@@ -40,8 +100,16 @@ interface Project {
     description: string;
     techStack: string[];
     image: string;
+    images?: string[];
     liveDemo: string;
     github: string;
+    // Detailed sections
+    fullDescription?: string;
+    architecture?: string;
+    caseStudy?: string;
+    challenges?: string;
+    role?: string;
+    timeline?: string;
     createdAt: any;
 }
 
@@ -58,8 +126,15 @@ export default function ProjectsAdmin() {
         description: "",
         techStack: [] as string[],
         image: "",
+        images: [] as string[],
         liveDemo: "",
-        github: ""
+        github: "",
+        fullDescription: "",
+        architecture: "",
+        caseStudy: "",
+        challenges: "",
+        role: "",
+        timeline: ""
     });
     const [techInput, setTechInput] = useState("");
     const [uploading, setUploading] = useState(false);
@@ -84,6 +159,14 @@ export default function ProjectsAdmin() {
             techStack: [],
             image: "",
             liveDemo: "",
+            github: "",
+            fullDescription: "",
+            architecture: "",
+            caseStudy: "",
+            challenges: "",
+            role: "",
+            timeline: "",
+            images: [],
             github: ""
         });
         setTechInput("");
@@ -98,8 +181,15 @@ export default function ProjectsAdmin() {
             description: project.description,
             techStack: project.techStack,
             image: project.image,
+            images: project.images || [],
             liveDemo: project.liveDemo,
-            github: project.github
+            github: project.github,
+            fullDescription: project.fullDescription || "",
+            architecture: project.architecture || "",
+            caseStudy: project.caseStudy || "",
+            challenges: project.challenges || "",
+            role: project.role || "",
+            timeline: project.timeline || ""
         });
         setIsAdding(true);
     };
@@ -125,8 +215,13 @@ export default function ProjectsAdmin() {
             const snapshot = await uploadBytes(storageRef, file);
             const downloadURL = await getDownloadURL(snapshot.ref);
 
-            setFormData(prev => ({ ...prev, image: downloadURL }));
-            sileo.success({ description: "Image uploaded successfully!" });
+            setFormData(prev => ({
+                ...prev,
+                images: [...(prev.images || []), downloadURL],
+                // Set as main image if none exists
+                image: prev.image || downloadURL
+            }));
+            sileo.success({ description: "Image added to gallery!" });
         } catch (error) {
             console.error("Upload error:", error);
             sileo.error({ description: "Failed to upload image." });
@@ -187,30 +282,316 @@ export default function ProjectsAdmin() {
         <DashboardShell title="Portfolio Projects" noScroll>
             <div className="h-full flex flex-col gap-6">
                 {/* Header Actions */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
-                    <div className="relative flex-1 max-w-md">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
-                        <input
-                            type="text"
-                            placeholder="Search projects or stack..."
-                            className="w-full bg-white/[0.03] border border-white/5 rounded-2xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:border-accent-mint/30 transition-colors"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
+                {!isAdding && (
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
+                        <div className="relative flex-1 max-w-md">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+                            <input
+                                type="text"
+                                placeholder="Search projects or stack..."
+                                className="w-full bg-white/[0.03] border border-white/5 rounded-2xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:border-accent-mint/30 transition-colors"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+
+                        <button
+                            onClick={() => setIsAdding(true)}
+                            className="flex items-center justify-center gap-2 px-6 py-3 bg-accent-mint text-theme-dark font-black rounded-2xl hover:scale-105 transition-transform"
+                        >
+                            <Plus className="w-5 h-5" />
+                            Add New Project
+                        </button>
                     </div>
+                )}
 
-                    <button
-                        onClick={() => setIsAdding(true)}
-                        className="flex items-center justify-center gap-2 px-6 py-3 bg-accent-mint text-theme-dark font-black rounded-2xl hover:scale-105 transition-transform"
-                    >
-                        <Plus className="w-5 h-5" />
-                        Add New Project
-                    </button>
-                </div>
-
-                {/* Projects Grid */}
+                {/* Projects Grid or Full Page Form */}
                 <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
-                    {loading ? (
+                    {isAdding ? (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="max-w-5xl mx-auto pb-20"
+                        >
+                            <div className="flex items-center justify-between mb-8">
+                                <h2 className="text-3xl font-black uppercase tracking-tighter">
+                                    {editingProject ? "Edit Project" : "Create New Project"}
+                                </h2>
+                                <button
+                                    onClick={resetForm}
+                                    className="flex items-center gap-2 px-4 py-2 hover:bg-white/5 rounded-xl transition-colors text-white/40 hover:text-white"
+                                >
+                                    <X className="w-5 h-5" />
+                                    <span>Cancel</span>
+                                </button>
+                            </div>
+
+                            <form onSubmit={handleSubmit} className="space-y-12">
+                                <div className="grid lg:grid-cols-2 gap-12">
+                                    {/* Left Side: General & Tech */}
+                                    <div className="space-y-12">
+                                        <div className="space-y-6">
+                                            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-accent-mint flex items-center gap-3">
+                                                <div className="w-2 h-2 rounded-full bg-accent-mint" />
+                                                Basic Information
+                                            </h3>
+                                            <div>
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Project Title</label>
+                                                <input
+                                                    required
+                                                    type="text"
+                                                    className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-accent-mint/30 transition-colors"
+                                                    value={formData.title}
+                                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                                    placeholder="Project Name"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Short Description</label>
+                                                <textarea
+                                                    required
+                                                    rows={3}
+                                                    className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-accent-mint/30 transition-colors resize-none"
+                                                    value={formData.description}
+                                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                                    placeholder="A brief overview for the listing page..."
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-6 border-t border-white/5 pt-8">
+                                            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-accent-mint flex items-center gap-3">
+                                                <div className="w-2 h-2 rounded-full bg-accent-mint" />
+                                                Technical Details
+                                            </h3>
+                                            <div className="grid grid-cols-2 gap-6">
+                                                <div>
+                                                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Role</label>
+                                                    <input
+                                                        type="text"
+                                                        className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-accent-mint/30 transition-colors"
+                                                        value={formData.role}
+                                                        onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                                                        placeholder="Lead Developer"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Timeline</label>
+                                                    <input
+                                                        type="text"
+                                                        className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-accent-mint/30 transition-colors"
+                                                        value={formData.timeline}
+                                                        onChange={(e) => setFormData({ ...formData, timeline: e.target.value })}
+                                                        placeholder="e.g. 2024"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Tech Stack</label>
+                                                <div className="bg-white/[0.03] border border-white/5 rounded-3xl p-4">
+                                                    <input
+                                                        type="text"
+                                                        className="w-full bg-transparent border-none focus:outline-none text-sm mb-4"
+                                                        value={techInput}
+                                                        onChange={(e) => setTechInput(e.target.value)}
+                                                        onKeyDown={addTech}
+                                                        placeholder="Add tech & press enter..."
+                                                    />
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {formData.techStack.map(tech => (
+                                                            <span key={tech} className="flex items-center gap-1.5 pl-3 pr-2 py-1.5 bg-accent-mint/10 text-accent-mint rounded-xl text-[10px] font-black uppercase tracking-widest border border-accent-mint/20">
+                                                                {tech}
+                                                                <button type="button" onClick={() => removeTech(tech)} className="hover:text-white transition-colors">
+                                                                    <X className="w-3 h-3" />
+                                                                </button>
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Right Side: Media & Links */}
+                                    <div className="space-y-12">
+                                        <div className="space-y-6">
+                                            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-accent-mint flex items-center gap-3">
+                                                <div className="w-2 h-2 rounded-full bg-accent-mint" />
+                                                Project Gallery
+                                            </h3>
+
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <AnimatePresence>
+                                                    {formData.images?.map((img, idx) => (
+                                                        <motion.div
+                                                            key={img}
+                                                            initial={{ opacity: 0, scale: 0.9 }}
+                                                            animate={{ opacity: 1, scale: 1 }}
+                                                            exit={{ opacity: 0, scale: 0.9 }}
+                                                            className="relative aspect-video rounded-2xl overflow-hidden group border border-white/10"
+                                                        >
+                                                            <Image src={img} alt="Gallery" fill className="object-cover" />
+                                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => setFormData(prev => ({ ...prev, image: img }))}
+                                                                    className={clsx(
+                                                                        "p-2 rounded-lg transition-all text-[10px] font-black uppercase tracking-tighter",
+                                                                        formData.image === img ? "bg-accent-mint text-theme-dark" : "bg-white/10 text-white hover:bg-white/20"
+                                                                    )}
+                                                                >
+                                                                    {formData.image === img ? "Main" : "Set Main"}
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => setFormData(prev => ({
+                                                                        ...prev,
+                                                                        images: prev.images.filter(i => i !== img),
+                                                                        image: prev.image === img ? (prev.images.find(i => i !== img) || "") : prev.image
+                                                                    }))}
+                                                                    className="p-2 bg-red-500/80 text-white rounded-lg hover:bg-red-500 transition-all"
+                                                                >
+                                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                                </button>
+                                                            </div>
+                                                        </motion.div>
+                                                    ))}
+                                                </AnimatePresence>
+
+                                                <label className={clsx(
+                                                    "flex flex-col items-center justify-center gap-3 aspect-video rounded-2xl border-2 border-dashed transition-all cursor-pointer",
+                                                    uploading ? "opacity-30 pointer-events-none" : "border-white/10 hover:border-accent-mint/30 hover:bg-accent-mint/5"
+                                                )}>
+                                                    <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+                                                    {uploading ? <Loader2 className="w-6 h-6 text-accent-mint animate-spin" /> : <Plus className="w-6 h-6 text-accent-mint/40" />}
+                                                    <div className="text-center">
+                                                        <p className="text-[10px] font-bold text-white uppercase tracking-widest">Add Image</p>
+                                                    </div>
+                                                </label>
+                                            </div>
+
+                                            <div className="pt-4">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Direct Image URL</label>
+                                                <input
+                                                    type="url"
+                                                    className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-accent-mint/30 transition-colors"
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            const url = (e.target as HTMLInputElement).value;
+                                                            if (url && !formData.images.includes(url)) {
+                                                                setFormData(prev => ({
+                                                                    ...prev,
+                                                                    images: [...prev.images, url],
+                                                                    image: prev.image || url
+                                                                }));
+                                                                (e.target as HTMLInputElement).value = "";
+                                                            }
+                                                        }
+                                                    }}
+                                                    placeholder="Paste URL and press Enter..."
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-6 border-t border-white/5 pt-8">
+                                            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-accent-mint flex items-center gap-3">
+                                                <div className="w-2 h-2 rounded-full bg-accent-mint" />
+                                                External Links
+                                            </h3>
+                                            <div className="space-y-4">
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">GitHub Repo</label>
+                                                        <div className="relative">
+                                                            <Github className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+                                                            <input
+                                                                type="url"
+                                                                className="w-full bg-white/[0.03] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-accent-mint/30 transition-colors"
+                                                                value={formData.github}
+                                                                onChange={(e) => setFormData({ ...formData, github: e.target.value })}
+                                                                placeholder="https://..."
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Live Demo</label>
+                                                        <div className="relative">
+                                                            <ExternalLink className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+                                                            <input
+                                                                type="url"
+                                                                className="w-full bg-white/[0.03] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-accent-mint/30 transition-colors"
+                                                                value={formData.liveDemo}
+                                                                onChange={(e) => setFormData({ ...formData, liveDemo: e.target.value })}
+                                                                placeholder="https://..."
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Full Width: Detailed Markdown Content */}
+                                <div className="space-y-12 border-t border-white/5 pt-12 mt-12">
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="text-sm font-black uppercase tracking-[0.2em] text-accent-mint flex items-center gap-3">
+                                            <div className="w-2 h-2 rounded-full bg-accent-mint" />
+                                            Case Study & Deep Dive
+                                        </h3>
+                                        <span className="text-[10px] font-black px-3 py-1 bg-white/5 rounded-full text-white/20 uppercase tracking-widest">Supports Rich Markdown</span>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-12">
+                                        <MarkdownEditor
+                                            label="Full Project Story / Overview"
+                                            value={formData.fullDescription}
+                                            onChange={(val) => setFormData({ ...formData, fullDescription: val })}
+                                            placeholder="Introduce the project, the mission, and the core value..."
+                                            rows={12}
+                                        />
+
+                                        <MarkdownEditor
+                                            label="Architecture & System Design"
+                                            value={formData.architecture}
+                                            onChange={(val) => setFormData({ ...formData, architecture: val })}
+                                            placeholder="Explain how it was built, the stack choices, and logic flow..."
+                                            rows={8}
+                                        />
+
+                                        <div className="grid md:grid-cols-2 gap-12">
+                                            <MarkdownEditor
+                                                label="Case Study / Business Logic"
+                                                value={formData.caseStudy}
+                                                onChange={(val) => setFormData({ ...formData, caseStudy: val })}
+                                                placeholder="What were the goals? What was the outcome?"
+                                                rows={8}
+                                            />
+                                            <MarkdownEditor
+                                                label="Technical Challenges & Solutions"
+                                                value={formData.challenges}
+                                                onChange={(val) => setFormData({ ...formData, challenges: val })}
+                                                placeholder="Detail specific blockers and how you engineered around them..."
+                                                rows={8}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Save Button at the very end */}
+                                <div className="pt-12 border-t border-white/10">
+                                    <button
+                                        type="submit"
+                                        className="w-full flex items-center justify-center gap-4 py-6 bg-accent-mint text-theme-dark font-black rounded-[2.5rem] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_20px_60px_rgba(51,214,159,0.2)] group text-lg uppercase tracking-widest"
+                                    >
+                                        <Save className="w-6 h-6 group-hover:rotate-12 transition-transform" />
+                                        <span>{editingProject ? "Update Project Showcase" : "Publish to Portfolio"}</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    ) : loading ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {[1, 2, 3].map(i => (
                                 <div key={i} className="aspect-video bg-white/5 rounded-3xl animate-pulse" />
@@ -245,7 +626,7 @@ export default function ProjectsAdmin() {
                                         )}
                                     </div>
 
-                                    <div className="flex-1 min-w-0">
+                                    <div className="flex-1 min-w-0 text-left">
                                         <h3 className="text-base font-bold mb-1 truncate">{project.title}</h3>
                                         <div className="flex flex-wrap gap-1.5 mb-2">
                                             {project.techStack.slice(0, 4).map(tech => (
@@ -284,195 +665,6 @@ export default function ProjectsAdmin() {
                     )}
                 </div>
             </div>
-
-            {/* Slide-over Form */}
-            <AnimatePresence>
-                {isAdding && (
-                    <>
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={resetForm}
-                            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100]"
-                        />
-                        <motion.div
-                            initial={{ x: "100%" }}
-                            animate={{ x: 0 }}
-                            exit={{ x: "100%" }}
-                            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                            className="fixed right-0 top-0 h-screen w-full max-w-xl bg-theme-dark border-l border-white/5 z-[101] flex flex-col shadow-2xl"
-                        >
-                            <div className="p-8 border-b border-white/5 flex items-center justify-between shrink-0 bg-white/[0.01]">
-                                <h2 className="text-xl font-black uppercase tracking-tighter">
-                                    {editingProject ? "Edit Project" : "New Project"}
-                                </h2>
-                                <button onClick={resetForm} className="p-2 hover:bg-white/5 rounded-xl text-white/40">
-                                    <X className="w-6 h-6" />
-                                </button>
-                            </div>
-
-                            <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-8">
-                                {/* Basic Info */}
-                                <div className="space-y-6">
-                                    <div>
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Project Title</label>
-                                        <input
-                                            required
-                                            type="text"
-                                            className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-accent-mint/30 transition-colors"
-                                            value={formData.title}
-                                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                            placeholder="e.g. My Awesome Dashboard"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Description</label>
-                                        <textarea
-                                            required
-                                            rows={4}
-                                            className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-accent-mint/30 transition-colors resize-none"
-                                            value={formData.description}
-                                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                            placeholder="Keep it concise but impactful..."
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Media & Links */}
-                                <div className="space-y-6">
-                                    <div>
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Project Preview Image</label>
-                                        <div className="space-y-4">
-                                            {/* Preview Area */}
-                                            {formData.image && (
-                                                <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black/40 border border-white/5">
-                                                    <Image
-                                                        src={formData.image}
-                                                        alt="Preview"
-                                                        fill
-                                                        className="object-cover"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setFormData(prev => ({ ...prev, image: "" }))}
-                                                        className="absolute top-4 right-4 p-2 bg-red-500 text-white rounded-xl hover:scale-110 transition-transform shadow-xl"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
-                                                </div>
-                                            )}
-
-                                            {/* Upload / URL Toggle */}
-                                            <div className="flex gap-4">
-                                                <label className={clsx(
-                                                    "flex-1 flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 border-dashed transition-all cursor-pointer",
-                                                    uploading ? "opacity-50 cursor-not-allowed border-white/5" : "border-white/10 hover:border-accent-mint/30 hover:bg-accent-mint/5"
-                                                )}>
-                                                    <input
-                                                        type="file"
-                                                        className="hidden"
-                                                        accept="image/*"
-                                                        onChange={handleImageUpload}
-                                                        disabled={uploading}
-                                                    />
-                                                    {uploading ? (
-                                                        <Loader2 className="w-8 h-8 text-accent-mint animate-spin" />
-                                                    ) : (
-                                                        <Upload className="w-8 h-8 text-accent-mint/40" />
-                                                    )}
-                                                    <div className="text-center">
-                                                        <p className="text-sm font-bold text-white">Upload New Image</p>
-                                                        <p className="text-[10px] text-text-muted">Directly to Firebase Storage</p>
-                                                    </div>
-                                                </label>
-
-                                                <div className="w-1/3 flex flex-col gap-2">
-                                                    <p className="text-[10px] font-black uppercase text-white/30 text-center">Or Use URL</p>
-                                                    <input
-                                                        type="url"
-                                                        className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-accent-mint/30 transition-colors h-full"
-                                                        value={formData.image}
-                                                        onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                                                        placeholder="https://..."
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">GitHub Repo</label>
-                                            <input
-                                                type="url"
-                                                className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-accent-mint/30 transition-colors"
-                                                value={formData.github}
-                                                onChange={(e) => setFormData({ ...formData, github: e.target.value })}
-                                                placeholder="https://github.com/..."
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Live Demo</label>
-                                            <input
-                                                type="url"
-                                                className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-accent-mint/30 transition-colors"
-                                                value={formData.liveDemo}
-                                                onChange={(e) => setFormData({ ...formData, liveDemo: e.target.value })}
-                                                placeholder="https://..."
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Tech Stack */}
-                                <div>
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Tech Stack (Press Enter)</label>
-                                    <div className="bg-white/[0.03] border border-white/5 rounded-3xl p-4">
-                                        <input
-                                            type="text"
-                                            className="w-full bg-transparent border-none focus:outline-none text-sm mb-4"
-                                            value={techInput}
-                                            onChange={(e) => setTechInput(e.target.value)}
-                                            onKeyDown={addTech}
-                                            placeholder="Add tech: Next.js, Firebase..."
-                                        />
-                                        <div className="flex flex-wrap gap-2">
-                                            {formData.techStack.map(tech => (
-                                                <span
-                                                    key={tech}
-                                                    className="flex items-center gap-1.5 pl-3 pr-2 py-1.5 bg-accent-mint/10 text-accent-mint rounded-xl text-[10px] font-black uppercase tracking-widest border border-accent-mint/20"
-                                                >
-                                                    {tech}
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => removeTech(tech)}
-                                                        className="hover:text-white transition-colors"
-                                                    >
-                                                        <X className="w-3 h-3" />
-                                                    </button>
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Submission */}
-                                <div className="pt-8">
-                                    <button
-                                        type="submit"
-                                        className="w-full py-5 bg-accent-mint text-theme-dark font-black rounded-3xl hover:scale-[1.02] transition-all flex items-center justify-center gap-3 shadow-[0_10px_40px_rgba(51,214,159,0.2)]"
-                                    >
-                                        <Save className="w-5 h-5" />
-                                        {editingProject ? "Update Project" : "Publish Project"}
-                                    </button>
-                                </div>
-                            </form>
-                        </motion.div>
-                    </>
-                )}
-            </AnimatePresence>
         </DashboardShell>
     );
 }
