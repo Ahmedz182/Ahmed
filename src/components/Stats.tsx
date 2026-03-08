@@ -32,7 +32,7 @@ const AnimatedCounter = ({ value }: { value: number }) => {
 
 export const Stats = () => {
     const stats = [
-        { label: "Production Apps", value: 3 },
+        { label: "Production Apps", value: 10 },
         { label: "Technologies Mastered", value: 15 },
         { label: "Components Built", value: 120 },
         { label: "Years Experience", value: 2 },

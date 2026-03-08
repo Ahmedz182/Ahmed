@@ -77,7 +77,7 @@ export const Blog = () => {
                 </motion.div>
             </div>
 
-            <div className="columns-1 md:columns-2 lg:columns-3 gap-8 relative z-10 space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
                 {blogPosts.map((post, idx) => (
                     <motion.div
                         key={post.id}
@@ -85,7 +85,7 @@ export const Blog = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-100px" }}
                         transition={{ duration: 0.5, delay: idx * 0.15 }}
-                        className="break-inside-avoid mb-8"
+                        className="mb-8"
                     >
                         <Link
                             href={`/blog/${post.id}`}

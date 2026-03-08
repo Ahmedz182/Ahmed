@@ -31,8 +31,8 @@ const getSkillIcon = (name: string) => {
     if (n.includes("react")) return <FaReact className="w-4 h-4" />;
     if (n.includes("next.js") || n.includes("nextjs")) return <SiNextdotjs className="w-4 h-4" />;
     if (n.includes("html")) return <FaHtml5 className="w-4 h-4" />;
-    if (n.includes("css")) return <FaCss3Alt className="w-4 h-4" />;
     if (n.includes("tailwind")) return <SiTailwindcss className="w-4 h-4" />;
+    if (n.includes("css")) return <FaCss3Alt className="w-4 h-4" />;
     if (n.includes("javascript") || n === "js") return <SiJavascript className="w-4 h-4" />;
     if (n.includes("typescript") || n === "ts") return <SiTypescript className="w-4 h-4" />;
     if (n.includes("node")) return <FaNodeJs className="w-4 h-4" />;

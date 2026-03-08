@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { FaReact, FaNodeJs, FaDatabase, FaMobileAlt, FaDesktop, FaServer } from "react-icons/fa";
+import { FaReact, FaNodeJs, FaDatabase, FaMobileAlt, FaDesktop, FaServer, FaCreditCard } from "react-icons/fa";
 
 export const About = () => {
     const highlights = [
@@ -11,6 +11,7 @@ export const About = () => {
         { title: "MERN Stack Dev", icon: <FaNodeJs className="w-5 h-5 text-accent-mint" /> },
         { title: "Database Integration", icon: <FaDatabase className="w-5 h-5 text-accent-mint" /> },
         { title: "REST APIs & Servers", icon: <FaServer className="w-5 h-5 text-accent-mint" /> },
+        { title: "Custom Payment Solutions", icon: <FaCreditCard className="w-5 h-5 text-accent-mint" /> },
     ];
 
     return (
@@ -22,7 +23,7 @@ export const About = () => {
                 transition={{ duration: 0.6 }}
                 className="grid md:grid-cols-2 gap-16 md:gap-12 lg:gap-24 items-stretch"
             >
-                <div className="space-y-6 flex flex-col justify-center">
+                <div className="space-y-6 flex flex-col justify-center text-center md:text-left">
                     <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
                         About <span className="text-accent-mint">Me</span>
                     </h2>
@@ -40,10 +41,12 @@ export const About = () => {
                             I make sure it feels intuitive and runs efficiently.
                         </p>
                         <p>
-                            Currently, I'm expanding my backend expertise with Django while
-                            continuously exploring system design and scalable application
-                            development to build comprehensive end-to-end solutions combining
-                            both powerful servers and compelling frontends.
+                            I specialize in creating end-to-end solutions that combine
+                            performant backends with compelling frontends, including complex
+                            implementations like <strong className="text-white font-semibold">localized payment gateways (PayHere, Stripe)</strong> and
+                            cross-platform synchronization. Currently, I'm expanding my
+                            backend expertise with Django while continuously exploring
+                            system design and scalable development.
                         </p>
                     </div>
                 </div>
@@ -62,7 +65,7 @@ export const About = () => {
                                     whileInView={{ opacity: 1, x: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ duration: 0.3, delay: idx * 0.1 }}
-                                    className="flex items-center text-text-secondary group"
+                                    className="flex items-center justify-center md:justify-start text-text-secondary group"
                                 >
                                     <div className="p-3 bg-white/5 border border-white/10 rounded-lg group-hover:scale-110 group-hover:border-accent-mint/40 transition-all shadow-[0_4px_12px_rgba(0,0,0,0.1)] shrink-0 flex items-center justify-center mr-4">
                                         {item.icon}

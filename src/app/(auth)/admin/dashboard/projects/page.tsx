@@ -14,7 +14,8 @@ import {
     LayoutGrid,
     Search,
     Upload,
-    Loader2
+    Loader2,
+    RefreshCw
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -138,6 +139,43 @@ export default function ProjectsAdmin() {
     });
     const [techInput, setTechInput] = useState("");
     const [uploading, setUploading] = useState(false);
+    const [isSyncing, setIsSyncing] = useState(false);
+
+    const handleSyncFromLocal = async () => {
+        if (!confirm("This will import/update projects from local markdown files. Continue?")) return;
+
+        setIsSyncing(true);
+        try {
+            const res = await fetch('/api/sync-projects');
+            const data = await res.json();
+
+            if (data.error) throw new Error(data.error);
+
+            for (const projectData of data.projects) {
+                // Check if project with same title already exists
+                const existing = projects.find(p => p.title === projectData.title);
+
+                if (existing) {
+                    await updateDoc(doc(db, "projects", existing.id), {
+                        ...projectData,
+                        updatedAt: serverTimestamp()
+                    });
+                } else {
+                    await addDoc(collection(db, "projects"), {
+                        ...projectData,
+                        createdAt: serverTimestamp()
+                    });
+                }
+            }
+
+            sileo.success({ description: "Synced successfully from local files!" });
+        } catch (error: any) {
+            console.error("Sync error:", error);
+            sileo.error({ description: error.message || "Failed to sync local files." });
+        } finally {
+            setIsSyncing(false);
+        }
+    };
 
     useEffect(() => {
         const q = query(collection(db, "projects"), orderBy("createdAt", "desc"));
@@ -166,8 +204,7 @@ export default function ProjectsAdmin() {
             challenges: "",
             role: "",
             timeline: "",
-            images: [],
-            github: ""
+            images: []
         });
         setTechInput("");
         setIsAdding(false);
@@ -295,13 +332,23 @@ export default function ProjectsAdmin() {
                             />
                         </div>
 
-                        <button
-                            onClick={() => setIsAdding(true)}
-                            className="flex items-center justify-center gap-2 px-6 py-3 bg-accent-mint text-theme-dark font-black rounded-2xl hover:scale-105 transition-transform"
-                        >
-                            <Plus className="w-5 h-5" />
-                            Add New Project
-                        </button>
+                        <div className="flex gap-4">
+                            <button
+                                onClick={handleSyncFromLocal}
+                                disabled={isSyncing}
+                                className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest text-xs hover:bg-white/10 transition-all disabled:opacity-50"
+                            >
+                                <RefreshCw className={clsx("w-4 h-4", isSyncing && "animate-spin")} />
+                                {isSyncing ? "Syncing..." : "Sync Local Docs"}
+                            </button>
+                            <button
+                                onClick={() => setIsAdding(true)}
+                                className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-accent-mint text-theme-dark font-black uppercase tracking-widest text-xs hover:bg-soft-mint transition-all shadow-[0_0_20px_rgba(51,214,159,0.2)]"
+                            >
+                                <Plus className="w-4 h-4" />
+                                Add Project
+                            </button>
+                        </div>
                     </div>
                 )}
 

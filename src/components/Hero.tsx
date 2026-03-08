@@ -67,8 +67,10 @@ export const Hero = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.1 }}
-                        className="text-4xl md:text-6xl font-bold tracking-tight text-white leading-[1.1]"
+                        className="text-4xl md:text-5xl font-black tracking-tight text-white leading-[1.1]"
                     >
+                        I'm <span className="text-accent-mint group-hover:text-soft-mint transition-colors cursor-default">Ahmed Fayyaz</span>.
+                        <br />
                         Building scalable modern web applications with{" "}
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-mint to-soft-mint">
                             clean UI
