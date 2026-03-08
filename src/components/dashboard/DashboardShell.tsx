@@ -24,8 +24,29 @@ export function DashboardShell({ children, title = "Overview", noScroll = false 
 
             {/* Main Content */}
             <main className="flex-1 flex flex-col h-screen overflow-hidden relative">
+                {/* Mobile Header */}
+                <header className="md:hidden flex items-center justify-between p-6 sticky top-0 bg-[#030303]/80 backdrop-blur-md z-30 border-b border-white/5">
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => setIsSidebarOpen(true)}
+                            className="p-3 rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all active:scale-95"
+                        >
+                            <Menu className="w-5 h-5" />
+                        </button>
+                        <h1 className="text-lg font-black uppercase tracking-[0.2em] text-accent-mint/80">{title}</h1>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <div className="w-10 h-10 rounded-2xl bg-accent-mint/10 border border-accent-mint/20 flex items-center justify-center">
+                            <span className="text-xs font-black text-accent-mint uppercase">
+                                {title.substring(0, 2)}
+                            </span>
+                        </div>
+                    </div>
+                </header>
+
                 <div className={clsx(
-                    "flex-1 relative z-20 custom-scrollbar p-4 md:p-6",
+                    "flex-1 relative z-20 custom-scrollbar p-6",
                     noScroll ? "overflow-hidden h-full" : "overflow-y-auto"
                 )}>
                     {/* Background decorative elements */}
