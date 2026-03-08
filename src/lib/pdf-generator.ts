@@ -20,6 +20,11 @@ export interface Education {
     duration: string;
 }
 
+export interface Achievement {
+    title: string;
+    desc: string;
+}
+
 export interface ResumeData {
     fullName: string;
     title: string;
@@ -36,6 +41,7 @@ export interface ResumeData {
     experience: Experience[];
     projects: Project[];
     education: Education[];
+    achievements?: Achievement[];
 }
 
 export const generateResumePDF = async (resumeData: ResumeData) => {
@@ -66,13 +72,13 @@ export const generateResumePDF = async (resumeData: ResumeData) => {
     doc.setFontSize(22);
     doc.setTextColor(33, 33, 33);
     doc.text(resumeData.fullName.toUpperCase(), margin, cursorY);
-    cursorY += 8;
+    cursorY += 5;
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(11);
     doc.setTextColor(100, 100, 100);
     doc.text(resumeData.title, margin, cursorY);
-    cursorY += 8;
+    cursorY += 5;
 
     // Contact Info
     doc.setFontSize(9);
@@ -102,7 +108,7 @@ export const generateResumePDF = async (resumeData: ResumeData) => {
         }
     });
 
-    cursorY += 7;
+    cursorY += 5;
     addSeparator();
     cursorY += 1;
 
@@ -116,7 +122,7 @@ export const generateResumePDF = async (resumeData: ResumeData) => {
     doc.setFontSize(sectionTitleSize);
     doc.setTextColor(0, 0, 0);
     doc.text("PROFESSIONAL SUMMARY", margin, cursorY);
-    cursorY += 5;
+    cursorY += 7;
     doc.setFont("helvetica", "normal");
     doc.setFontSize(bodySize);
     doc.setTextColor(66, 66, 66);
@@ -129,7 +135,7 @@ export const generateResumePDF = async (resumeData: ResumeData) => {
     doc.setFontSize(sectionTitleSize);
     doc.setTextColor(0, 0, 0);
     doc.text("TECHNICAL SKILLS", margin, cursorY);
-    cursorY += 6;
+    cursorY += 7;
 
     doc.setFontSize(bodySize);
     const skillsItems = [
@@ -139,12 +145,13 @@ export const generateResumePDF = async (resumeData: ResumeData) => {
 
     skillsItems.forEach(s => {
         doc.setFont("helvetica", "bold");
+        doc.setTextColor(0, 0, 0);
         doc.text(s.label, margin, cursorY);
         const lw = doc.getTextWidth(s.label);
         doc.setFont("helvetica", "normal");
-        doc.setTextColor(66, 66, 66);
+        doc.setTextColor(33, 33, 33);
         doc.text(s.value, margin + lw, cursorY);
-        cursorY += 6;
+        cursorY += 5;
     });
     cursorY += 4;
 
@@ -157,23 +164,24 @@ export const generateResumePDF = async (resumeData: ResumeData) => {
         cursorY += 7;
 
         resumeData.experience.forEach((exp) => {
-            if (cursorY > 260) { doc.addPage(); cursorY = 20; }
+            if (cursorY > 280) { doc.addPage(); cursorY = 15; }
             doc.setFont("helvetica", "bold");
             doc.setFontSize(subTitleSize);
+            doc.setTextColor(0, 0, 0);
             doc.text(exp.role, margin, cursorY);
             const roleW = doc.getTextWidth(exp.role);
             doc.setFont("helvetica", "normal");
-            doc.setTextColor(100, 100, 100);
+            doc.setTextColor(50, 50, 50);
             doc.text(` | ${exp.company}`, margin + roleW, cursorY);
             doc.setFontSize(dateSize);
             const dW = doc.getTextWidth(exp.duration);
             doc.text(exp.duration, 210 - margin - dW, cursorY);
             cursorY += 6;
             doc.setFontSize(bodySize);
-            doc.setTextColor(66, 66, 66);
+            doc.setTextColor(33, 33, 33);
             exp.highlights.forEach((h: string) => {
                 if (!h.trim()) return;
-                if (cursorY > 275) { doc.addPage(); cursorY = 20; }
+                if (cursorY > 285) { doc.addPage(); cursorY = 15; }
                 const bullets = doc.splitTextToSize(`\u2022 ${h}`, 210 - (margin * 2) - 4);
                 doc.text(bullets, margin + 4, cursorY, { lineHeightFactor: 1.25 });
                 cursorY += (bullets.length * 5) + 1;
@@ -185,28 +193,29 @@ export const generateResumePDF = async (resumeData: ResumeData) => {
 
     // Projects
     if (resumeData.projects && resumeData.projects.length > 0) {
-        if (cursorY > 250) { doc.addPage(); cursorY = 20; }
+        if (cursorY > 280) { doc.addPage(); cursorY = 15; }
         doc.setFont("helvetica", "bold");
         doc.setFontSize(sectionTitleSize);
         doc.setTextColor(0, 0, 0);
         doc.text("KEY PROJECTS", margin, cursorY);
         cursorY += 7;
         resumeData.projects.forEach((proj) => {
-            if (cursorY > 265) { doc.addPage(); cursorY = 20; }
+            if (cursorY > 280) { doc.addPage(); cursorY = 15; }
             doc.setFont("helvetica", "bold");
             doc.setFontSize(subTitleSize);
+            doc.setTextColor(0, 0, 0);
             doc.text(proj.name, margin, cursorY);
             doc.setFont("helvetica", "normal");
-            doc.setTextColor(100, 100, 100);
+            doc.setTextColor(50, 50, 50);
             doc.setFontSize(dateSize);
             const tW = doc.getTextWidth(proj.tech);
             doc.text(proj.tech, 210 - margin - tW, cursorY);
             cursorY += 6;
             doc.setFontSize(bodySize);
-            doc.setTextColor(66, 66, 66);
+            doc.setTextColor(33, 33, 33);
             proj.details.forEach((d: string) => {
                 if (!d.trim()) return;
-                if (cursorY > 275) { doc.addPage(); cursorY = 20; }
+                if (cursorY > 285) { doc.addPage(); cursorY = 15; }
                 const lines = doc.splitTextToSize(`\u2022 ${d}`, 210 - (margin * 2) - 4);
                 doc.text(lines, margin + 3, cursorY, { lineHeightFactor: 1.25 });
                 cursorY += (lines.length * 4.5) + 0.5;
@@ -218,28 +227,56 @@ export const generateResumePDF = async (resumeData: ResumeData) => {
 
     // Education
     if (resumeData.education && resumeData.education.length > 0) {
-        if (cursorY > 250) { doc.addPage(); cursorY = 20; }
+        if (cursorY > 280) { doc.addPage(); cursorY = 15; }
         doc.setFont("helvetica", "bold");
         doc.setFontSize(sectionTitleSize);
         doc.setTextColor(0, 0, 0);
         doc.text("EDUCATION", margin, cursorY);
         cursorY += 7;
         resumeData.education.forEach((edu) => {
-            if (cursorY > 275) { doc.addPage(); cursorY = 20; }
+            if (cursorY > 285) { doc.addPage(); cursorY = 15; }
             doc.setFont("helvetica", "bold");
             doc.setFontSize(subTitleSize);
+            doc.setTextColor(0, 0, 0);
             doc.text(edu.degree, margin, cursorY);
             doc.setFont("helvetica", "normal");
-            doc.setTextColor(100, 100, 100);
+            doc.setTextColor(50, 50, 50);
             doc.setFontSize(dateSize);
             const edW = doc.getTextWidth(edu.duration);
             doc.text(edu.duration, 210 - margin - edW, cursorY);
             cursorY += 5;
             doc.setFontSize(bodySize);
-            doc.setTextColor(66, 66, 66);
+            doc.setTextColor(33, 33, 33);
             doc.text(edu.institution, margin, cursorY);
             cursorY += 8;
         });
+        cursorY += 4;
     }
+
+    // Achievements
+    if (resumeData.achievements && resumeData.achievements.length > 0) {
+        if (cursorY > 280) { doc.addPage(); cursorY = 15; }
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(sectionTitleSize);
+        doc.setTextColor(0, 0, 0);
+        doc.text("CERTIFICATES & ACHIEVEMENTS", margin, cursorY);
+        cursorY += 7;
+        resumeData.achievements.forEach((ach) => {
+            if (!ach.title.trim()) return;
+            if (cursorY > 285) { doc.addPage(); cursorY = 15; }
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(subTitleSize);
+            doc.setTextColor(0, 0, 0);
+            doc.text(ach.title, margin, cursorY);
+            cursorY += 5;
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(bodySize);
+            doc.setTextColor(33, 33, 33);
+            const achLines = doc.splitTextToSize(ach.desc, 210 - (margin * 2));
+            doc.text(achLines, margin, cursorY, { lineHeightFactor: 1.2 });
+            cursorY += (achLines.length * 5) + 4;
+        });
+    }
+
     return doc;
 };

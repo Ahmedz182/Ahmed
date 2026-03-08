@@ -135,9 +135,8 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
 
                 {/* Content Container */}
                 <div className={clsx(
-                    "w-full flex flex-col py-6 overflow-hidden",
-                    !isOpen && "md:items-center px-2",
-                    isOpen && "px-4"
+                    "w-full flex flex-col py-6 transition-all duration-300",
+                    isOpen ? "overflow-hidden px-4" : "overflow-visible md:items-center px-2"
                 )}>
                     {/* Brand/Logo Section (visible when open) */}
                     <AnimatePresence>
@@ -160,7 +159,10 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                     </AnimatePresence>
 
                     {/* Nav Icons */}
-                    <nav className="flex-1 w-full space-y-1.5 overflow-y-auto scrollbar-hide no-scrollbar">
+                    <nav className={clsx(
+                        "flex-1 w-full space-y-1.5 no-scrollbar transition-all",
+                        isOpen ? "overflow-y-auto" : "overflow-visible"
+                    )}>
                         {navItems.map((item) => {
                             const isActive = item.href === "/admin/dashboard"
                                 ? pathname === item.href
@@ -208,8 +210,20 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                                     {isActive && (
                                         <motion.div
                                             layoutId="active-indicator"
-                                            className="absolute -left-2 w-1 h-6 bg-accent-mint rounded-r-full shadow-[0_0_10px_rgba(51,214,159,0.5)]"
+                                            className="absolute -left-1 w-1 h-6 bg-accent-mint rounded-r-full shadow-[0_0_10px_rgba(51,214,159,0.5)]"
                                         />
+                                    )}
+
+                                    {/* Tooltip for collapsed state */}
+                                    {!isOpen && (
+                                        <div className="absolute left-full ml-6 px-3 py-2 bg-[#0A0A0A] border border-white/10 rounded-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 translate-x-2 group-hover:translate-x-0 z-[100] shadow-2xl min-w-max">
+                                            <div className="flex flex-col whitespace-nowrap">
+                                                <p className="font-black text-[10px] uppercase tracking-widest text-white">{item.label}</p>
+                                                <p className="text-[9px] text-accent-mint font-bold uppercase tracking-tight">{item.description}</p>
+                                            </div>
+                                            {/* Tooltip Arrow */}
+                                            <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-[#0A0A0A] border-l border-b border-white/10 rotate-45" />
+                                        </div>
                                     )}
                                 </Link>
                             );
@@ -231,6 +245,18 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                                 <div className="text-left">
                                     <p className="font-black text-[10px] uppercase tracking-widest">Terminate</p>
                                     <p className="text-[10px] opacity-60">Close Session</p>
+                                </div>
+                            )}
+
+                            {/* Tooltip for collapsed state */}
+                            {!isOpen && (
+                                <div className="absolute left-full ml-6 px-3 py-2 bg-[#1A0A0A] border border-red-500/10 rounded-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 translate-x-2 group-hover:translate-x-0 z-[100] shadow-2xl min-w-max">
+                                    <div className="flex flex-col whitespace-nowrap text-left">
+                                        <p className="font-black text-[10px] uppercase tracking-widest text-red-500">Sign Out</p>
+                                        <p className="text-[9px] text-white/40 font-bold uppercase tracking-tight">Close Session</p>
+                                    </div>
+                                    {/* Tooltip Arrow */}
+                                    <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-[#1A0A0A] border-l border-b border-red-500/10 rotate-45" />
                                 </div>
                             )}
                         </button>
