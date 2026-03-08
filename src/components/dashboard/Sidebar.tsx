@@ -123,7 +123,9 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                     {/* Nav Icons */}
                     <nav className="flex-1 w-full px-3 space-y-2">
                         {navItems.map((item) => {
-                            const isActive = pathname === item.href;
+                            const isActive = item.href === "/admin/dashboard"
+                                ? pathname === item.href
+                                : pathname.startsWith(item.href);
                             const Icon = item.icon;
 
                             return (

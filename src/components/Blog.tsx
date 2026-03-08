@@ -1,39 +1,46 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { collection, query, orderBy, onSnapshot, limit, where } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { ArrowRight, Calendar, Clock, ArrowUpRight } from "lucide-react";
-import Image from "next/image";
+import Link from "next/link";
+
+interface BlogPost {
+    id: string;
+    title: string;
+    excerpt: string;
+    date: any;
+    readTime: string;
+    category: string;
+    image: string;
+}
 
 export const Blog = () => {
-    const blogPosts = [
-        {
-            title: "Mastering Next.js 14 Server Actions",
-            excerpt: "Learn how to build full-stack applications with simplified data mutations and enhanced security using the latest Server Actions in Next.js 14.",
-            date: "Oct 12, 2023",
-            readTime: "5 min read",
-            category: "Next.js",
-            image: "https://images.unsplash.com/photo-1618477388954-7852f32655ec?auto=format&fit=crop&q=80&w=800",
-            link: "#"
-        },
-        {
-            title: "The Future of CSS: Tailwind vs Custom Architecture",
-            excerpt: "An in-depth comparison of utility-first CSS frameworks like Tailwind against modern custom CSS architecture and when to use which approach.",
-            date: "Sep 28, 2023",
-            readTime: "8 min read",
-            category: "Styling",
-            image: "https://images.unsplash.com/photo-1507721999472-8ed4421c4af2?auto=format&fit=crop&q=80&w=800",
-            link: "#"
-        },
-        {
-            title: "Building Accessible UI Components in React",
-            excerpt: "A comprehensive guide on creating inclusive and accessible web applications following ARIA guidelines and best practices in React.",
-            date: "Sep 15, 2023",
-            readTime: "6 min read",
-            category: "Accessibility",
-            image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800",
-            link: "#"
-        }
-    ];
+    const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const q = query(
+            collection(db, "blogs"),
+            limit(3)
+        );
+
+        const unsub = onSnapshot(q,
+            (snapshot) => {
+                setBlogPosts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost)));
+                setLoading(false);
+            },
+            (error) => {
+                console.error("Home Blog Error:", error);
+                setLoading(false);
+            }
+        );
+
+        return () => unsub();
+    }, []);
 
     return (
         <section id="blog" className="w-full py-24 px-6 md:px-12 max-w-7xl mx-auto relative overflow-hidden">
@@ -60,73 +67,78 @@ export const Blog = () => {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                 >
-                    <a
-                        href="#"
+                    <Link
+                        href="/blog"
                         className="group flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-accent-mint/30 transition-all font-medium whitespace-nowrap"
                     >
                         View All Posts
                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </a>
+                    </Link>
                 </motion.div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
                 {blogPosts.map((post, idx) => (
                     <motion.div
-                        key={idx}
+                        key={post.id}
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-100px" }}
                         transition={{ duration: 0.5, delay: idx * 0.15 }}
-                        className="group flex flex-col bg-white/[0.03] border border-white/5 rounded-3xl overflow-hidden hover:bg-white/[0.05] hover:border-accent-mint/30 transition-all duration-300 shadow-xl"
                     >
-                        {/* Image Container */}
-                        <div className="relative h-56 w-full overflow-hidden">
-                            <div className="absolute inset-0 bg-theme-dark/40 group-hover:bg-transparent transition-colors z-10" />
-                            <img
-                                src={post.image}
-                                alt={post.title}
-                                className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
-                            />
-                            <div className="absolute top-4 left-4 z-20">
-                                <span className="px-3 py-1 text-xs font-bold tracking-wider text-accent-mint bg-theme-dark/80 backdrop-blur-md rounded-full border border-white/10 uppercase">
-                                    {post.category}
-                                </span>
-                            </div>
-                        </div>
-
-                        {/* Content Container */}
-                        <div className="p-6 flex flex-col flex-grow">
-                            <div className="flex items-center gap-4 text-text-muted text-sm mb-4">
-                                <div className="flex items-center gap-1.5">
-                                    <Calendar className="w-4 h-4" />
-                                    <span>{post.date}</span>
-                                </div>
-                                <div className="flex items-center gap-1.5">
-                                    <Clock className="w-4 h-4" />
-                                    <span>{post.readTime}</span>
+                        <Link
+                            href={`/blog/${post.id}`}
+                            className="group flex flex-col bg-white/[0.03] border border-white/5 rounded-3xl overflow-hidden hover:bg-white/[0.05] hover:border-accent-mint/30 transition-all duration-300 shadow-xl h-full"
+                        >
+                            {/* Image Container */}
+                            <div className="relative h-56 w-full overflow-hidden">
+                                <div className="absolute inset-0 bg-theme-dark/40 group-hover:bg-transparent transition-colors z-10" />
+                                <img
+                                    src={post.image || "https://images.unsplash.com/photo-1618477388954-7852f32655ec?auto=format&fit=crop&q=80&w=800"}
+                                    alt={post.title}
+                                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
+                                />
+                                <div className="absolute top-4 left-4 z-20">
+                                    <span className="px-3 py-1 text-xs font-bold tracking-wider text-accent-mint bg-theme-dark/80 backdrop-blur-md rounded-full border border-white/10 uppercase">
+                                        {post.category}
+                                    </span>
                                 </div>
                             </div>
 
-                            <h3 className="text-xl font-bold text-white mb-3 group-hover:text-accent-mint transition-colors line-clamp-2">
-                                {post.title}
-                            </h3>
+                            <div className="p-6 flex flex-col flex-grow">
+                                <div className="flex items-center gap-4 text-text-muted text-sm mb-4">
+                                    <div className="flex items-center gap-1.5">
+                                        <Calendar className="w-4 h-4" />
+                                        <span>{post.date?.toDate ? format(post.date.toDate(), "MMM dd, yyyy") : "Recent"}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <Clock className="w-4 h-4" />
+                                        <span>{post.readTime}</span>
+                                    </div>
+                                </div>
 
-                            <p className="text-text-secondary leading-relaxed text-sm mb-6 flex-grow line-clamp-3">
-                                {post.excerpt}
-                            </p>
+                                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-accent-mint transition-colors line-clamp-2">
+                                    {post.title}
+                                </h3>
 
-                            <a
-                                href={post.link}
-                                className="inline-flex items-center text-sm font-bold text-accent-mint mt-auto group/link"
-                            >
-                                Read Article
-                                <ArrowUpRight className="w-4 h-4 ml-1 opacity-0 -translate-y-1 translate-x-1 group-hover/link:opacity-100 group-hover/link:translate-y-0 group-hover/link:translate-x-0 transition-all" />
-                            </a>
-                        </div>
+                                <p className="text-text-secondary leading-relaxed text-sm mb-6 flex-grow line-clamp-3">
+                                    {post.excerpt}
+                                </p>
+
+                                <div className="inline-flex items-center text-sm font-bold text-accent-mint mt-auto group/link">
+                                    Read Article
+                                    <ArrowUpRight className="w-4 h-4 ml-1 opacity-100 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                                </div>
+                            </div>
+                        </Link>
                     </motion.div>
                 ))}
             </div>
+            {loading && blogPosts.length === 0 && (
+                <div className="flex justify-center items-center py-20">
+                    <div className="w-8 h-8 rounded-full border-2 border-accent-mint/20 border-t-accent-mint animate-spin" />
+                </div>
+            )}
         </section>
     );
 };
