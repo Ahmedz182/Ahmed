@@ -65,7 +65,7 @@ export default function BlogListPage() {
 
     return (
         <div className="min-h-screen bg-theme-dark text-white">
-            <Navbar />
+
 
             <main className="pt-32 pb-24 px-6 md:px-12 max-w-7xl mx-auto">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
@@ -159,7 +159,6 @@ export default function BlogListPage() {
                 )}
             </main>
 
-            <Footer />
         </div>
     );
 }

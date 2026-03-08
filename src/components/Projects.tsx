@@ -37,7 +37,8 @@ export const Projects = () => {
         return () => unsubscribe();
     }, []);
 
-    if (loading && projects.length === 0) return null;
+    // We always render the section container so the ID is available for hash navigation
+    // and to prevent layout shifts during initial load.
 
     return (
         <section id="projects" className="w-full py-24 px-6 md:px-12 max-w-7xl mx-auto">
@@ -74,89 +75,95 @@ export const Projects = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
-                    {projects.map((proj, idx) => (
-                        <motion.div
-                            key={proj.id}
-                            initial={{ opacity: 0, y: 40 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: idx * 0.1, duration: 0.8 }}
-                            onClick={() => router.push(`/projects/${proj.id}`)}
-                            className="group relative flex flex-col bg-white/[0.02] border border-white/5 rounded-[2.5rem] overflow-hidden hover:border-accent-mint/30 transition-all duration-500 cursor-pointer mb-8"
-                        >
-                            {/* Numbering Overlay */}
-                            <div className="absolute top-6 left-6 z-20 text-[10px] font-black uppercase tracking-[0.3em] text-white/20 group-hover:text-accent-mint transition-colors">
-                                Project / 0{idx + 1}
-                            </div>
-
-                            {/* Image Container */}
-                            <div className="relative w-full aspect-[16/9] overflow-hidden bg-black/40">
-                                <Image
-                                    src={proj.image}
-                                    alt={proj.title}
-                                    fill
-                                    className="object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000"
-                                />
-
-                                {/* Inner Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-theme-dark via-transparent to-transparent opacity-60" />
-
-                                {/* Quick Links Hover Overlay */}
-                                <div className="absolute inset-0 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    {proj.github && (
-                                        <a
-                                            href={proj.github}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            onClick={(e) => e.stopPropagation()}
-                                            className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 hover:bg-accent-mint hover:text-theme-dark transition-all hover:scale-110 shadow-2xl"
-                                        >
-                                            <Github className="w-5 h-5 text-white" />
-                                        </a>
-                                    )}
-                                    {proj.liveDemo && (
-                                        <a
-                                            href={proj.liveDemo}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            onClick={(e) => e.stopPropagation()}
-                                            className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 hover:bg-accent-mint hover:text-theme-dark transition-all hover:scale-110 shadow-2xl"
-                                        >
-                                            <ExternalLink className="w-5 h-5 text-white" />
-                                        </a>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Content Section */}
-                            <div className="p-8 flex flex-col flex-1 relative">
-                                <h3 className="text-2xl font-black uppercase tracking-tighter mb-4 group-hover:text-accent-mint transition-colors text-center">
-                                    {proj.title}
-                                </h3>
-
-                                <p className="text-text-secondary/60 text-sm leading-relaxed mb-6 block text-center">
-                                    {proj.description}
-                                </p>
-
-                                {/* Tech Stack - Premium Tags */}
-                                <div className="flex flex-wrap justify-center gap-2 mb-4">
-                                    {proj.techStack.map((tech) => (
-                                        <span
-                                            key={tech}
-                                            className="px-2.5 py-1 text-[9px] font-black uppercase tracking-widest rounded-md bg-white/[0.03] border border-white/10 text-white/40 group-hover:border-accent-mint/20 group-hover:text-accent-mint group-hover:bg-accent-mint/5 transition-all"
-                                        >
-                                            {tech}
-                                        </span>
-                                    ))}
+                    {loading && projects.length === 0 ? (
+                        Array.from({ length: 3 }).map((_, i) => (
+                            <div key={i} className="h-[450px] rounded-[2.5rem] bg-white/[0.02] border border-white/5 animate-pulse" />
+                        ))
+                    ) : (
+                        projects.map((proj, idx) => (
+                            <motion.div
+                                key={proj.id}
+                                initial={{ opacity: 0, y: 40 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: idx * 0.1, duration: 0.8 }}
+                                onClick={() => router.push(`/projects/${proj.id}`)}
+                                className="group relative flex flex-col bg-white/[0.02] border border-white/5 rounded-[2.5rem] overflow-hidden hover:border-accent-mint/30 transition-all duration-500 cursor-pointer mb-8"
+                            >
+                                {/* Numbering Overlay */}
+                                <div className="absolute top-6 left-6 z-20 text-[10px] font-black uppercase tracking-[0.3em] text-white/20 group-hover:text-accent-mint transition-colors">
+                                    Project / 0{idx + 1}
                                 </div>
 
+                                {/* Image Container */}
+                                <div className="relative w-full aspect-[16/9] overflow-hidden bg-black/40">
+                                    <Image
+                                        src={proj.image}
+                                        alt={proj.title}
+                                        fill
+                                        className="object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000"
+                                    />
+
+                                    {/* Inner Gradient Overlay */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-theme-dark via-transparent to-transparent opacity-60" />
+
+                                    {/* Quick Links Hover Overlay */}
+                                    <div className="absolute inset-0 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        {proj.github && (
+                                            <a
+                                                href={proj.github}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 hover:bg-accent-mint hover:text-theme-dark transition-all hover:scale-110 shadow-2xl"
+                                            >
+                                                <Github className="w-5 h-5 text-white" />
+                                            </a>
+                                        )}
+                                        {proj.liveDemo && (
+                                            <a
+                                                href={proj.liveDemo}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 hover:bg-accent-mint hover:text-theme-dark transition-all hover:scale-110 shadow-2xl"
+                                            >
+                                                <ExternalLink className="w-5 h-5 text-white" />
+                                            </a>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Content Section */}
+                                <div className="p-8 flex flex-col flex-1 relative">
+                                    <h3 className="text-2xl font-black uppercase tracking-tighter mb-4 group-hover:text-accent-mint transition-colors text-center">
+                                        {proj.title}
+                                    </h3>
+
+                                    <p className="text-text-secondary/60 text-sm leading-relaxed mb-6 block text-center">
+                                        {proj.description}
+                                    </p>
+
+                                    {/* Tech Stack - Premium Tags */}
+                                    <div className="flex flex-wrap justify-center gap-2 mb-4">
+                                        {proj.techStack.map((tech) => (
+                                            <span
+                                                key={tech}
+                                                className="px-2.5 py-1 text-[9px] font-black uppercase tracking-widest rounded-md bg-white/[0.03] border border-white/10 text-white/40 group-hover:border-accent-mint/20 group-hover:text-accent-mint group-hover:bg-accent-mint/5 transition-all"
+                                            >
+                                                {tech}
+                                            </span>
+                                        ))}
+                                    </div>
 
 
-                                {/* Hover Border Flare */}
-                                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-accent-mint/40 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-700" />
-                            </div>
-                        </motion.div>
-                    ))}
+
+                                    {/* Hover Border Flare */}
+                                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-accent-mint/40 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-700" />
+                                </div>
+                            </motion.div>
+                        ))
+                    )}
                 </div>
             </div>
         </section>

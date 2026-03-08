@@ -84,7 +84,7 @@ export default function ProjectsListPage() {
                         <div className="w-12 h-12 rounded-full border-2 border-accent-mint/20 border-t-accent-mint animate-spin" />
                     </div>
                 ) : filteredProjects.length > 0 ? (
-                    <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
                         {filteredProjects.map((proj, idx) => (
                             <motion.div
                                 key={proj.id}
@@ -92,7 +92,7 @@ export default function ProjectsListPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: idx * 0.05, duration: 0.8 }}
                                 onClick={() => router.push(`/projects/${proj.id}`)}
-                                className="group relative flex flex-col bg-white/[0.02] border border-white/5 rounded-[2.5rem] overflow-hidden hover:border-accent-mint/30 transition-all duration-500 cursor-pointer break-inside-avoid mb-8"
+                                className="group relative flex flex-col bg-white/[0.02] border border-white/5 rounded-[2.5rem] overflow-hidden hover:border-accent-mint/30 transition-all duration-500 cursor-pointer mb-8"
                             >
                                 {/* Numbering Overlay */}
                                 <div className="absolute top-6 left-6 z-20 text-[10px] font-black uppercase tracking-[0.3em] text-white/20 group-hover:text-accent-mint transition-colors">
@@ -140,16 +140,16 @@ export default function ProjectsListPage() {
 
                                 {/* Content Section */}
                                 <div className="p-8 flex flex-col flex-1 relative">
-                                    <h3 className="text-2xl font-black uppercase tracking-tighter mb-4 group-hover:text-accent-mint transition-colors text-left">
+                                    <h3 className="text-2xl font-black uppercase tracking-tighter mb-4 group-hover:text-accent-mint transition-colors text-center">
                                         {proj.title}
                                     </h3>
 
-                                    <p className="text-text-secondary/60 text-sm leading-relaxed mb-6 block text-left">
+                                    <p className="text-text-secondary/60 text-sm leading-relaxed mb-6 block text-center">
                                         {proj.description}
                                     </p>
 
                                     {/* Tech Stack - Premium Tags */}
-                                    <div className="flex flex-wrap gap-2 mb-4">
+                                    <div className="flex flex-wrap justify-center gap-2 mb-4">
                                         {proj.techStack.map((tech) => (
                                             <span
                                                 key={tech}
