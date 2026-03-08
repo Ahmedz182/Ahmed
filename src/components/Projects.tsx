@@ -41,7 +41,7 @@ export const Projects = () => {
     // and to prevent layout shifts during initial load.
 
     return (
-        <section id="projects" className="w-full py-24 px-6 md:px-12 max-w-7xl mx-auto">
+        <section id="projects" className="w-full py-10 px-6 md:px-12 max-w-7xl mx-auto">
             <div className="space-y-16">
                 <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
                     <motion.div

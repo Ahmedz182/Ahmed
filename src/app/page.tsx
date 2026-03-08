@@ -8,7 +8,9 @@ import { Skills } from "@/components/Skills";
 import { Projects } from "@/components/Projects";
 import { Experience } from "@/components/Experience";
 import { Stats } from "@/components/Stats";
+import { BentoGrid } from "@/components/BentoGrid";
 import { Blog } from "@/components/Blog";
+import { BentoServices } from "@/components/BentoServices";
 import { Contact } from "@/components/Contact";
 
 export default function Home() {
@@ -45,12 +47,13 @@ export default function Home() {
 
       <main className="relative z-10 flex flex-col items-center justify-center w-full">
         <Hero />
-        <About />
+        <BentoGrid />
         <Skills />
         <Stats />
+        <About />
         <Experience />
-
         <Projects />
+        <BentoServices />
         <Blog />
         <Contact />
       </main>

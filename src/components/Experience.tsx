@@ -34,7 +34,7 @@ export const Experience = () => {
     if (loading && experiences.length === 0) return null;
 
     return (
-        <section id="experience" className="w-full py-24 px-6 md:px-12 max-w-7xl mx-auto relative overflow-hidden">
+        <section id="experience" className="w-full py-10 px-6 md:px-12 max-w-7xl mx-auto relative overflow-hidden">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}

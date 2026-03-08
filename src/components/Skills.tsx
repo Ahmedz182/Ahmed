@@ -109,7 +109,7 @@ export const Skills = () => {
     if (loading) return null;
 
     return (
-        <section id="skills" className="w-full py-24 px-6 md:px-12 max-w-7xl mx-auto">
+        <section id="skills" className="w-full pb-10 px-6 md:px-12 max-w-7xl mx-auto">
             <div className="space-y-16">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
