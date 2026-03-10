@@ -52,7 +52,7 @@ const BentoCard = ({
 
 export const BentoServices = () => {
     return (
-        <section id="services" className="w-full py-10 px-6 md:px-12 max-w-7xl mx-auto overflow-hidden">
+        <section id="services" className="w-full py-10 px-6 md:px-12 max-w-7xl mx-auto overflow-hidden scroll-mt-20">
             <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
                     <motion.div

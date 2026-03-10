@@ -55,7 +55,7 @@ const BentoItem = ({
 
 export const BentoGrid = () => {
     return (
-        <section id="ecosystem" className="w-full py-24 px-6 md:px-12 max-w-7xl mx-auto overflow-hidden relative">
+        <section id="ecosystem" className="w-full py-10 px-6 md:px-12 max-w-7xl mx-auto overflow-hidden relative scroll-mt-20">
             {/* Decorative accent behind grid */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent-mint/5 blur-[120px] rounded-full pointer-events-none -z-10" />
 

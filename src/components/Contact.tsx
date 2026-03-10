@@ -43,7 +43,7 @@ export const Contact = () => {
     };
 
     return (
-        <section id="contact" className="w-full py-24 px-6 md:px-12 max-w-7xl mx-auto">
+        <section id="contact" className="w-full py-10 px-6 md:px-12 max-w-7xl mx-auto scroll-mt-20">
             <div className="grid md:grid-cols-2 gap-16 md:gap-12 lg:gap-24 items-start">
                 <motion.div
                     initial={{ opacity: 0, x: -30 }}

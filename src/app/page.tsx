@@ -47,10 +47,10 @@ export default function Home() {
 
       <main className="relative z-10 flex flex-col items-center justify-center w-full">
         <Hero />
+        <About />
         <BentoGrid />
         <Skills />
         <Stats />
-        <About />
         <Experience />
         <Projects />
         <BentoServices />

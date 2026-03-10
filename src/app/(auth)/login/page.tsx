@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Lock, User, ArrowRight, ShieldCheck } from "lucide-react";
+import { Lock, User, ArrowRight, ShieldCheck, Eye, EyeOff } from "lucide-react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "@/hooks/useAuth";
@@ -12,6 +12,7 @@ import { sileo } from 'sileo';
 export default function AdminLogin() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const { user, loading } = useAuth();
     const router = useRouter();
@@ -146,13 +147,20 @@ export default function AdminLogin() {
                                 <div className="relative group">
                                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted transition-colors group-focus-within:text-accent-mint" />
                                     <input
-                                        type="password"
+                                        type={showPassword ? "text" : "password"}
                                         required
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         placeholder="••••••••"
-                                        className="w-full pl-12 pr-4 py-4 rounded-xl bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/30 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all font-medium"
+                                        className="w-full pl-12 pr-12 py-4 rounded-xl bg-theme-dark/50 border border-white/10 text-white placeholder-text-muted/30 focus:outline-none focus:ring-2 focus:ring-accent-mint/50 transition-all font-medium"
                                     />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-accent-mint transition-colors focus:outline-none"
+                                    >
+                                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                    </button>
                                 </div>
                             </div>
 
