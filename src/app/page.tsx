@@ -12,6 +12,7 @@ import { BentoGrid } from "@/components/BentoGrid";
 import { Blog } from "@/components/Blog";
 import { BentoServices } from "@/components/BentoServices";
 import { Contact } from "@/components/Contact";
+import { ScrollReveal } from "@/components/ScrollReveal";
 
 export default function Home() {
   useEffect(() => {
@@ -46,16 +47,44 @@ export default function Home() {
       }} />
 
       <main className="relative z-10 flex flex-col items-center justify-center w-full">
+        {/* Hero – no reveal wrapper, animates itself on mount */}
         <Hero />
-        <About />
-        <BentoGrid />
-        <Skills />
-        <Stats />
-        <Experience />
-        <Projects />
-        <BentoServices />
-        <Blog />
-        <Contact />
+
+        <ScrollReveal direction="up" delay={0} className="w-full">
+          <About />
+        </ScrollReveal>
+
+        <ScrollReveal direction="up" delay={0} className="w-full">
+          <BentoGrid />
+        </ScrollReveal>
+
+        <ScrollReveal direction="up" delay={0} className="w-full">
+          <Skills />
+        </ScrollReveal>
+
+        <ScrollReveal direction="up" delay={0} className="w-full">
+          <Stats />
+        </ScrollReveal>
+
+        <ScrollReveal direction="up" delay={0} className="w-full">
+          <Experience />
+        </ScrollReveal>
+
+        <ScrollReveal direction="up" delay={0} className="w-full">
+          <Projects />
+        </ScrollReveal>
+
+        <ScrollReveal direction="up" delay={0} className="w-full">
+          <BentoServices />
+        </ScrollReveal>
+
+        <ScrollReveal direction="up" delay={0} className="w-full">
+          <Blog />
+        </ScrollReveal>
+
+        <ScrollReveal direction="up" delay={0} className="w-full">
+          <Contact />
+        </ScrollReveal>
       </main>
     </div>
   );

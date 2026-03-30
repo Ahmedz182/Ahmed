@@ -1,17 +1,20 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { FileText, ArrowRight, Briefcase } from "lucide-react";
-import { FaReact, FaNodeJs, FaHtml5, FaCss3Alt, FaGithub, FaFigma } from "react-icons/fa";
+import { ArrowRight, Briefcase } from "lucide-react";
+import { FaReact, FaNodeJs, FaHtml5, FaCss3Alt, FaGithub } from "react-icons/fa";
 import { SiNextdotjs, SiTailwindcss, SiJavascript, SiMongodb } from "react-icons/si";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import dynamic from "next/dynamic";
 import { ResumeDownloadButton } from "./ResumeDownloadButton";
 
+const HeroScene = dynamic(
+    () => import("@/components/3d/HeroScene").then((m) => m.HeroScene),
+    { ssr: false }
+);
+
 export const Hero = () => {
-    // Generate icons configuration
     const ring1Radius = 160;
     const ring2Radius = 90;
 
@@ -46,9 +49,14 @@ export const Hero = () => {
 
     return (
         <section className="relative w-full min-h-screen flex items-center pt-24 pb-12 px-6 md:px-12 max-w-7xl mx-auto overflow-hidden">
-            {/* Abstract background shapes */}
-            <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-accent-mint/20 rounded-full blur-[128px] pointer-events-none" />
-            <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-deep-green/40 rounded-full blur-[96px] pointer-events-none" />
+            {/* ── 3D WebGL background ── */}
+            <div className="absolute inset-0 z-0">
+                <HeroScene />
+            </div>
+
+            {/* Soft ambient glow blobs (layered over 3D, under content) */}
+            <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-accent-mint/10 rounded-full blur-[128px] pointer-events-none z-[1]" />
+            <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-deep-green/30 rounded-full blur-[96px] pointer-events-none z-[1]" />
 
             <div className="relative z-10 w-full flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
                 {/* Left Text Content */}
@@ -56,7 +64,7 @@ export const Hero = () => {
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
+                        transition={{ duration: 0.6 }}
                         className="inline-flex items-center px-3 py-1.5 rounded-full bg-white/5 border border-accent-mint/20 text-accent-mint text-sm font-medium tracking-wide"
                     >
                         <span className="w-2 h-2 rounded-full bg-accent-mint mr-2 animate-pulse" />
@@ -64,12 +72,12 @@ export const Hero = () => {
                     </motion.div>
 
                     <motion.h1
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 24 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.1 }}
+                        transition={{ duration: 0.65, delay: 0.1 }}
                         className="text-4xl md:text-5xl font-black tracking-tight text-white leading-[1.1]"
                     >
-                        I'm <span className="text-accent-mint group-hover:text-soft-mint transition-colors cursor-default">Ahmed Fayyaz</span>.
+                        I'm <span className="text-accent-mint">Ahmed Fayyaz</span>.
                         <br />
                         Building scalable modern web applications with{" "}
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-mint to-soft-mint">
@@ -79,9 +87,9 @@ export const Hero = () => {
                     </motion.h1>
 
                     <motion.p
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 24 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.2 }}
+                        transition={{ duration: 0.65, delay: 0.2 }}
                         className="text-lg md:text-xl text-text-secondary max-w-2xl leading-relaxed"
                     >
                         Frontend focused developer experienced with React, Next.js, and modern
@@ -90,14 +98,14 @@ export const Hero = () => {
                     </motion.p>
 
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 24 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.3 }}
+                        transition={{ duration: 0.65, delay: 0.3 }}
                         className="flex flex-wrap items-center gap-4 pt-4"
                     >
                         <Link
                             href="/hire"
-                            className="group flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-accent-mint text-theme-dark font-bold transition-all hover:bg-soft-mint shadow-[0_0_20px_rgba(51,214,159,0.4)] hover:shadow-[0_0_30px_rgba(51,214,159,0.6)] cursor-pointer"
+                            className="group flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-accent-mint text-theme-dark font-bold transition-all hover:bg-soft-mint shadow-[0_0_20px_rgba(51,214,159,0.4)] hover:shadow-[0_0_30px_rgba(51,214,159,0.6)]"
                         >
                             <Briefcase className="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" />
                             Hire Me
@@ -115,24 +123,23 @@ export const Hero = () => {
                     </motion.div>
                 </div>
 
-                {/* Right Globe/Icons Content - Hidden on strictly mobile, but shows on med-large */}
+                {/* Right: existing icon rings + 3D canvas shows through behind them */}
                 <div className="hidden md:flex w-full lg:w-2/5 justify-center items-center h-[400px] relative pointer-events-none">
                     {mounted && (
                         <div className="relative w-full h-full flex items-center justify-center scale-75 lg:scale-100">
-                            {/* Inner rotating dash ring */}
+                            {/* Rotating dashed rings */}
                             <motion.div
                                 animate={{ rotate: 360 }}
                                 transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
                                 className="absolute w-[320px] h-[320px] rounded-full border border-white/10 border-dashed"
                             />
-
                             <motion.div
                                 animate={{ rotate: -360 }}
                                 transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
                                 className="absolute w-[180px] h-[180px] rounded-full border border-white/5 border-dashed"
                             />
 
-                            {/* Center Logo */}
+                            {/* Center React logo */}
                             <motion.div
                                 initial={{ scale: 0, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
