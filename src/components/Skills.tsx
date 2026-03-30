@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Layers, Database, Wrench, Code2, Globe, Cpu, Terminal, Shield, Workflow, GitBranch } from "lucide-react";
+import { Layers, Database, Wrench, Terminal, Cpu } from "lucide-react";
 import {
     FaReact, FaNodeJs, FaHtml5, FaCss3Alt, FaGithub, FaFigma, FaWordpress,
     FaPython, FaDocker, FaVuejs, FaAngular, FaSass, FaBootstrap, FaLaravel,
@@ -22,11 +22,10 @@ interface Skill {
     category: "Frontend" | "Backend" | "Tools";
 }
 
-// Icon Mapping Strategy
+const EASE = [0.22, 1, 0.36, 1] as const;
+
 const getSkillIcon = (name: string) => {
     const n = name.toLowerCase();
-
-    // Exact Matches
     if (n.includes("react native")) return <FaMobileAlt className="w-4 h-4" />;
     if (n.includes("react")) return <FaReact className="w-4 h-4" />;
     if (n.includes("next.js") || n.includes("nextjs")) return <SiNextdotjs className="w-4 h-4" />;
@@ -59,9 +58,17 @@ const getSkillIcon = (name: string) => {
     if (n.includes("cloud") || n.includes("vercel") || n.includes("netlify")) return <SiVercel className="w-4 h-4" />;
     if (n.includes("ai") || n.includes("openai")) return <SiOpenai className="w-4 h-4" />;
     if (n.includes("flutter")) return <SiFlutter className="w-4 h-4" />;
-
-    // Default icons based on context or generic
     return <Terminal className="w-4 h-4" />;
+};
+
+const badgeVariants = {
+    hidden: { opacity: 0, scale: 0.85, y: 10 },
+    show: (i: number) => ({
+        opacity: 1,
+        scale: 1,
+        y: 0,
+        transition: { duration: 0.35, delay: i * 0.05, ease: EASE },
+    }),
 };
 
 export const Skills = () => {
@@ -75,9 +82,7 @@ export const Skills = () => {
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
                     const data = docSnap.data();
-                    if (data.techStack) {
-                        setTechStack(data.techStack);
-                    }
+                    if (data.techStack) setTechStack(data.techStack);
                 }
             } catch (error) {
                 console.error("Error loading skills:", error);
@@ -89,21 +94,9 @@ export const Skills = () => {
     }, []);
 
     const categories = [
-        {
-            title: "Frontend",
-            icon: <Layers className="w-6 h-6 text-accent-mint" />,
-            key: "Frontend"
-        },
-        {
-            title: "Backend",
-            icon: <Database className="w-6 h-6 text-accent-mint" />,
-            key: "Backend"
-        },
-        {
-            title: "Tools & Workflow",
-            icon: <Wrench className="w-6 h-6 text-accent-mint" />,
-            key: "Tools"
-        },
+        { title: "Frontend", icon: <Layers className="w-6 h-6 text-accent-mint" />, key: "Frontend" },
+        { title: "Backend", icon: <Database className="w-6 h-6 text-accent-mint" />, key: "Backend" },
+        { title: "Tools & Workflow", icon: <Wrench className="w-6 h-6 text-accent-mint" />, key: "Tools" },
     ];
 
     if (loading) return null;
@@ -111,10 +104,12 @@ export const Skills = () => {
     return (
         <section id="skills" className="w-full py-10 px-6 md:px-12 max-w-7xl mx-auto scroll-mt-20">
             <div className="space-y-16">
+                {/* Section heading */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: true, margin: "-80px" }}
+                    transition={{ duration: 0.65, ease: EASE }}
                     className="text-center md:text-left"
                 >
                     <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
@@ -126,6 +121,7 @@ export const Skills = () => {
                     </p>
                 </motion.div>
 
+                {/* Category cards */}
                 <div className="grid md:grid-cols-3 gap-8">
                     {categories.map((cat, catIdx) => {
                         const skills = techStack.filter(s => s.category === cat.key);
@@ -134,11 +130,11 @@ export const Skills = () => {
                         return (
                             <motion.div
                                 key={cat.title}
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: catIdx * 0.15, duration: 0.5 }}
-                                className="group relative bg-white/[0.03] border border-white/10 rounded-2xl p-8 hover:-translate-y-2 transition-transform duration-300 hover:shadow-[0_10px_40px_-15px_rgba(51,214,159,0.1)] hover:border-accent-mint/30"
+                                initial={{ opacity: 0, y: 40, scale: 0.96 }}
+                                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                                viewport={{ once: true, margin: "-60px" }}
+                                transition={{ duration: 0.6, delay: catIdx * 0.12, ease: EASE }}
+                                className="group relative bg-white/[0.03] border border-white/10 rounded-2xl p-8 hover:-translate-y-2 transition-transform duration-300 hover:shadow-[0_10px_40px_-15px_rgba(51,214,159,0.12)] hover:border-accent-mint/30"
                             >
                                 <div className="h-12 w-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                                     {cat.icon}
@@ -148,17 +144,23 @@ export const Skills = () => {
                                     {cat.title}
                                 </h3>
 
+                                {/* Staggered badge reveal */}
                                 <div className="flex flex-wrap gap-3">
-                                    {skills.map((skill) => (
-                                        <span
+                                    {skills.map((skill, i) => (
+                                        <motion.span
                                             key={skill.name}
+                                            custom={i}
+                                            variants={badgeVariants}
+                                            initial="hidden"
+                                            whileInView="show"
+                                            viewport={{ once: true, margin: "-20px" }}
                                             className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-white/5 border border-white/5 text-text-secondary group-hover:text-white transition-colors cursor-default"
                                         >
                                             <span className="text-accent-mint opacity-80 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                                 {getSkillIcon(skill.name)}
                                             </span>
                                             {skill.name}
-                                        </span>
+                                        </motion.span>
                                     ))}
                                 </div>
                             </motion.div>
