@@ -14,6 +14,8 @@ interface ExperienceData {
     order: number;
 }
 
+const EASE = [0.22, 1, 0.36, 1] as const;
+
 export const Experience = () => {
     const [experiences, setExperiences] = useState<ExperienceData[]>([]);
     const [loading, setLoading] = useState(true);
@@ -35,10 +37,12 @@ export const Experience = () => {
 
     return (
         <section id="experience" className="w-full py-10 px-6 md:px-12 max-w-7xl mx-auto relative overflow-hidden scroll-mt-20">
+            {/* Section heading */}
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.65, ease: EASE }}
                 className="text-center mb-24"
             >
                 <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
@@ -50,24 +54,24 @@ export const Experience = () => {
             </motion.div>
 
             <div className="relative max-w-5xl mx-auto">
-                {/* Central Timeline line */}
+                {/* Timeline lines */}
                 <div className="absolute left-1/2 transform -translate-x-1/2 top-4 bottom-4 w-px bg-white/10 hidden md:block" />
-                {/* Mobile Timeline line */}
                 <div className="absolute left-6 top-0 bottom-0 w-px bg-white/10 md:hidden" />
 
                 <div className="space-y-16 md:space-y-24">
                     {experiences.map((exp, idx) => {
                         const isEven = idx % 2 === 0;
+                        // Alternate slide direction per side
+                        const xInitial = isEven ? -60 : 60;
 
                         return (
                             <motion.div
                                 key={idx}
-                                initial={{ opacity: 0, y: 40 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true, margin: "-100px" }}
-                                transition={{ duration: 0.6 }}
-                                className={`relative flex flex-col md:flex-row items-center w-full ${isEven ? 'md:justify-start' : 'md:justify-end'
-                                    }`}
+                                initial={{ opacity: 0, x: xInitial, y: 20 }}
+                                whileInView={{ opacity: 1, x: 0, y: 0 }}
+                                viewport={{ once: true, margin: "-80px" }}
+                                transition={{ duration: 0.7, delay: 0.05, ease: EASE }}
+                                className={`relative flex flex-col md:flex-row items-center w-full ${isEven ? 'md:justify-start' : 'md:justify-end'}`}
                             >
                                 {/* Timeline dot */}
                                 <div className="absolute left-6 md:left-1/2 w-4 h-4 bg-accent-mint rounded-full shadow-[0_0_20px_rgba(51,214,159,0.8)] transform -translate-x-1/2 ring-4 ring-theme-dark z-10 hidden md:block" />
@@ -76,12 +80,15 @@ export const Experience = () => {
                                     {/* Mobile dot */}
                                     <div className="absolute left-6 top-8 w-4 h-4 bg-accent-mint rounded-full shadow-[0_0_20px_rgba(51,214,159,0.8)] transform -translate-x-1/2 ring-4 ring-theme-dark z-10 md:hidden" />
 
-                                    <div className={`bg-white/[0.03] border border-white/5 p-8 rounded-2xl hover:bg-white/[0.05] hover:border-accent-mint/20 transition-all duration-300 shadow-xl relative group ${isEven ? 'hover:-translate-x-2' : 'hover:translate-x-2'}`}>
-
+                                    <motion.div
+                                        whileHover={isEven ? { x: -4 } : { x: 4 }}
+                                        transition={{ duration: 0.25, ease: "easeOut" }}
+                                        className={`bg-white/[0.03] border border-white/5 p-8 rounded-2xl hover:bg-white/[0.05] hover:border-accent-mint/20 transition-colors duration-300 shadow-xl relative group`}
+                                    >
                                         {/* Connector line - desktop only */}
                                         <div className={`absolute top-1/2 -translate-y-1/2 w-12 h-px bg-white/20 hidden md:block transform scale-x-0 group-hover:scale-x-100 transition-transform origin-${isEven ? 'right' : 'left'} ${isEven ? 'right-[-3rem]' : 'left-[-3rem]'}`} />
 
-                                        <div className={`inline-block py-1 px-4 text-xs font-bold tracking-wider text-accent-mint bg-accent-mint/10 border border-accent-mint/20 rounded-full mb-6 max-w-fit flex items-center justify-center`}>
+                                        <div className="inline-block py-1 px-4 text-xs font-bold tracking-wider text-accent-mint bg-accent-mint/10 border border-accent-mint/20 rounded-full mb-6 max-w-fit flex items-center justify-center">
                                             {exp.date}
                                         </div>
 
@@ -95,7 +102,7 @@ export const Experience = () => {
                                         <p className="text-text-secondary leading-relaxed text-sm md:text-base">
                                             {exp.description}
                                         </p>
-                                    </div>
+                                    </motion.div>
                                 </div>
                             </motion.div>
                         );
