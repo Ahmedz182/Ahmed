@@ -3,6 +3,8 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 
+const EASE = [0.22, 1, 0.36, 1] as const;
+
 const AnimatedCounter = ({ value }: { value: number }) => {
     const ref = useRef<HTMLSpanElement>(null);
     const isInView = useInView(ref, { once: true, margin: "-50px" });
@@ -11,7 +13,7 @@ const AnimatedCounter = ({ value }: { value: number }) => {
     useEffect(() => {
         if (isInView) {
             let start = 0;
-            const duration = 2000;
+            const duration = 1800;
             const stepTime = Math.abs(Math.floor(duration / value));
 
             const timer = setInterval(() => {
@@ -44,13 +46,14 @@ export const Stats = () => {
                 {stats.map((stat, idx) => (
                     <motion.div
                         key={stat.label}
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: idx * 0.1, duration: 0.5 }}
-                        className="flex flex-col items-center justify-center p-8 bg-theme-dark rounded-2xl border border-white/5 relative overflow-hidden group shadow-[inset_0_0_20px_rgba(255,255,255,0.01)] hover:border-accent-mint/20"
+                        initial={{ opacity: 0, y: 40, scale: 0.88 }}
+                        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                        viewport={{ once: true, margin: "-60px" }}
+                        transition={{ duration: 0.55, delay: idx * 0.09, ease: EASE }}
+                        whileHover={{ y: -4, transition: { duration: 0.25, ease: "easeOut" } }}
+                        className="flex flex-col items-center justify-center p-8 bg-theme-dark rounded-2xl border border-white/5 relative overflow-hidden group shadow-[inset_0_0_20px_rgba(255,255,255,0.01)] hover:border-accent-mint/25 hover:shadow-[0_0_30px_rgba(51,214,159,0.06)] transition-colors duration-300"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-accent-mint/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                         <h4 className="text-4xl md:text-5xl font-bold text-white mb-2 relative z-10 flex items-center">
                             <AnimatedCounter value={stat.value} />

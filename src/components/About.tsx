@@ -3,6 +3,17 @@
 import { motion } from "framer-motion";
 import { FaReact, FaNodeJs, FaDatabase, FaMobileAlt, FaDesktop, FaServer, FaCreditCard } from "react-icons/fa";
 
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: (i: number) => ({
+        opacity: 1,
+        y: 0,
+        transition: { duration: 0.45, delay: i * 0.07, ease: EASE },
+    }),
+};
+
 export const About = () => {
     const highlights = [
         { title: "Frontend Development", icon: <FaDesktop className="w-5 h-5 text-accent-mint" /> },
@@ -16,14 +27,15 @@ export const About = () => {
 
     return (
         <section id="about" className="w-full py-10 px-6 md:px-12 max-w-7xl mx-auto scroll-mt-20">
-            <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.6 }}
-                className="grid md:grid-cols-2 gap-16 md:gap-12 lg:gap-24 items-stretch"
-            >
-                <div className="space-y-6 flex flex-col justify-center text-left">
+            <div className="grid md:grid-cols-2 gap-16 md:gap-12 lg:gap-24 items-stretch">
+                {/* Left — slides from left */}
+                <motion.div
+                    initial={{ opacity: 0, x: -50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: "-80px" }}
+                    transition={{ duration: 0.75, ease: EASE }}
+                    className="space-y-6 flex flex-col justify-center text-left"
+                >
                     <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
                         About <span className="text-accent-mint">Me</span>
                     </h2>
@@ -49,9 +61,16 @@ export const About = () => {
                             system design and scalable development.
                         </p>
                     </div>
-                </div>
+                </motion.div>
 
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-8 shadow-2xl backdrop-blur-sm hover:border-accent-mint/30 transition-colors flex flex-col justify-between h-full">
+                {/* Right — slides from right */}
+                <motion.div
+                    initial={{ opacity: 0, x: 50 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: "-80px" }}
+                    transition={{ duration: 0.75, delay: 0.1, ease: EASE }}
+                    className="bg-white/5 border border-white/10 rounded-2xl p-8 shadow-2xl backdrop-blur-sm hover:border-accent-mint/30 transition-colors flex flex-col justify-between h-full"
+                >
                     <div>
                         <h3 className="text-2xl font-bold mb-8 text-white">
                             What I Do Best
@@ -61,10 +80,11 @@ export const About = () => {
                             {highlights.map((item, idx) => (
                                 <motion.li
                                     key={item.title}
-                                    initial={{ opacity: 0, x: -10 }}
-                                    whileInView={{ opacity: 1, x: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 0.3, delay: idx * 0.1 }}
+                                    custom={idx}
+                                    variants={itemVariants}
+                                    initial="hidden"
+                                    whileInView="show"
+                                    viewport={{ once: true, margin: "-40px" }}
                                     className="flex items-center justify-start text-text-secondary group"
                                 >
                                     <div className="p-3 bg-white/5 border border-white/10 rounded-lg group-hover:scale-110 group-hover:border-accent-mint/40 transition-all shadow-[0_4px_12px_rgba(0,0,0,0.1)] shrink-0 flex items-center justify-center mr-4">
@@ -84,8 +104,8 @@ export const About = () => {
                             problems while crafting an unforgettable experience."
                         </p>
                     </div>
-                </div>
-            </motion.div>
+                </motion.div>
+            </div>
         </section>
     );
 };

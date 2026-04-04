@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, query, orderBy, onSnapshot, limit, where } from "firebase/firestore";
+import { collection, query, onSnapshot, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
@@ -18,16 +18,14 @@ interface BlogPost {
     image: string;
 }
 
+const EASE = [0.22, 1, 0.36, 1] as const;
+
 export const Blog = () => {
     const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const q = query(
-            collection(db, "blogs"),
-            limit(3)
-        );
-
+        const q = query(collection(db, "blogs"), limit(3));
         const unsub = onSnapshot(q,
             (snapshot) => {
                 setBlogPosts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost)));
@@ -38,20 +36,20 @@ export const Blog = () => {
                 setLoading(false);
             }
         );
-
         return () => unsub();
     }, []);
 
     return (
         <section id="blog" className="w-full py-10 px-6 md:px-12 max-w-7xl mx-auto relative overflow-hidden scroll-mt-20">
-            {/* Ambient Background Elements */}
             <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent-mint/10 rounded-full blur-[128px] pointer-events-none" />
 
+            {/* Header */}
             <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
+                    initial={{ opacity: 0, x: -30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: "-80px" }}
+                    transition={{ duration: 0.65, ease: EASE }}
                     className="max-w-2xl"
                 >
                     <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-4">
@@ -63,9 +61,10 @@ export const Blog = () => {
                 </motion.div>
 
                 <motion.div
-                    initial={{ opacity: 0, x: 20 }}
+                    initial={{ opacity: 0, x: 30 }}
                     whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: true, margin: "-80px" }}
+                    transition={{ duration: 0.55, delay: 0.1, ease: EASE }}
                 >
                     <Link
                         href="/blog"
@@ -77,21 +76,23 @@ export const Blog = () => {
                 </motion.div>
             </div>
 
+            {/* Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
                 {blogPosts.map((post, idx) => (
                     <motion.div
                         key={post.id}
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-100px" }}
-                        transition={{ duration: 0.5, delay: idx * 0.15 }}
+                        initial={{ opacity: 0, y: 50, scale: 0.96 }}
+                        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                        viewport={{ once: true, margin: "-60px" }}
+                        transition={{ duration: 0.6, delay: idx * 0.1, ease: EASE }}
+                        whileHover={{ y: -6, transition: { duration: 0.22, ease: "easeOut" } }}
                         className="mb-8"
                     >
                         <Link
                             href={`/blog/${post.id}`}
-                            className="group flex flex-col bg-white/[0.03] border border-white/5 rounded-3xl overflow-hidden hover:bg-white/[0.05] hover:border-accent-mint/30 transition-all duration-300 shadow-xl h-full"
+                            className="group flex flex-col bg-white/[0.03] border border-white/5 rounded-3xl overflow-hidden hover:bg-white/[0.05] hover:border-accent-mint/30 transition-colors duration-300 shadow-xl h-full"
                         >
-                            {/* Image Container */}
+                            {/* Image */}
                             <div className="relative aspect-video w-full overflow-hidden">
                                 <div className="absolute inset-0 bg-theme-dark/40 group-hover:bg-transparent transition-colors z-10" />
                                 <img
@@ -126,15 +127,16 @@ export const Blog = () => {
                                     {post.excerpt}
                                 </p>
 
-                                <div className="inline-flex items-center text-sm font-bold text-accent-mint mt-auto group/link">
+                                <div className="inline-flex items-center text-sm font-bold text-accent-mint mt-auto">
                                     Read Article
-                                    <ArrowUpRight className="w-4 h-4 ml-1 opacity-100 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                                    <ArrowUpRight className="w-4 h-4 ml-1 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                                 </div>
                             </div>
                         </Link>
                     </motion.div>
                 ))}
             </div>
+
             {loading && blogPosts.length === 0 && (
                 <div className="flex justify-center items-center py-20">
                     <div className="w-8 h-8 rounded-full border-2 border-accent-mint/20 border-t-accent-mint animate-spin" />
