@@ -183,7 +183,16 @@ export const Footer = () => {
                         © {currentYear} Ahmed Fayyaz. All rights reserved.
                     </p>
 
-                    <div className="flex items-center gap-6">
+                    <div className="flex flex-wrap items-center justify-center md:justify-end gap-x-6 gap-y-3">
+                        <Link href="/privacy" className="text-[10px] uppercase tracking-widest font-black italic text-text-muted hover:text-accent-mint transition-colors">
+                            Privacy Policy
+                        </Link>
+                        <Link href="/terms" className="text-[10px] uppercase tracking-widest font-black italic text-text-muted hover:text-accent-mint transition-colors">
+                            Terms & Conditions
+                        </Link>
+                        <Link href="/delete-account" className="text-[10px] uppercase tracking-widest font-black italic text-text-muted hover:text-red-400 transition-colors">
+                            Delete Account
+                        </Link>
                         <button
                             onClick={scrollToTop}
                             className="flex items-center gap-2 text-text-muted hover:text-accent-mint transition-colors text-xs font-bold uppercase tracking-widest group"
