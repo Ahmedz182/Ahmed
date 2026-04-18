@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import {
     Briefcase, Code2, Download, Eye, FileText, GraduationCap,
-    LayoutGrid, Loader2, Mail, Save, Trash2, Trophy, Upload, Wrench, Zap,
+    Loader2, Mail, Save, Trash2, Trophy, Upload, Wrench, Zap,
     type LucideIcon
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -107,14 +107,45 @@ export default function ResumePage() {
 
         const fetchMeta = async () => {
             try {
-                const metaDoc = await getDoc(doc(db, "metadata", "resume"));
-                if (metaDoc.exists()) {
-                    const data = metaDoc.data() as any;
-                    if (typeof data.education === "string") {
-                        data.education = [{ degree: data.education, institution: "", duration: "" }];
+                const [metaDoc, projSnap, expSnap] = await Promise.all([
+                    getDoc(doc(db, "metadata", "resume")),
+                    getDocs(query(collection(db, "projects"), orderBy("createdAt", "desc"))),
+                    getDocs(query(collection(db, "experience"), orderBy("order", "asc"))),
+                ]);
+
+                const portfolioProjects: Project[] = projSnap.docs
+                    .map(d => ({ id: d.id, ...d.data() } as any))
+                    .filter(d => d.isActive !== false)
+                    .map(d => ({
+                        name: d.title || "",
+                        tech: Array.isArray(d.techStack) ? d.techStack.join(", ") : (d.tech || ""),
+                        category: d.category || "Development",
+                        details: d.description ? [d.description] : [],
+                    }));
+
+                const portfolioExp: Experience[] = expSnap.docs
+                    .map(d => ({ id: d.id, ...d.data() } as any))
+                    .filter(d => d.isActive !== false)
+                    .map(d => ({
+                        role: d.title || "",
+                        company: d.company || "",
+                        duration: d.date || "",
+                        highlights: d.description ? d.description.split("\n").filter((l: string) => l.trim()) : [],
+                    }));
+
+                setResumeData(prev => {
+                    let next = { ...prev };
+                    if (metaDoc.exists()) {
+                        const data = metaDoc.data() as any;
+                        if (typeof data.education === "string") {
+                            data.education = [{ degree: data.education, institution: "", duration: "" }];
+                        }
+                        next = { ...next, ...data };
                     }
-                    setResumeData(prev => ({ ...prev, ...data }));
-                }
+                    if (portfolioProjects.length > 0) next.projects = portfolioProjects;
+                    if (portfolioExp.length > 0) next.experience = portfolioExp;
+                    return next;
+                });
             } catch (err) {
                 console.error("Error fetching resume meta:", err);
             } finally {
@@ -240,48 +271,6 @@ export default function ResumePage() {
         }
     };
 
-    const handleSyncWithPortfolio = async () => {
-        if (!confirm("This will overwrite Resume data with portfolio Projects & Experience. Continue?")) return;
-        setSaving(true);
-        try {
-            const [projSnap, expSnap] = await Promise.all([
-                getDocs(query(collection(db, "projects"), orderBy("createdAt", "desc"))),
-                getDocs(query(collection(db, "experience"), orderBy("order", "asc"))),
-            ]);
-
-            const portfolioProjects: Project[] = projSnap.docs
-                .map(d => ({ id: d.id, ...d.data() } as any))
-                .filter(d => d.isActive !== false)
-                .map(d => ({
-                    name: d.title || "",
-                    tech: Array.isArray(d.techStack) ? d.techStack.join(", ") : (d.tech || ""),
-                    category: d.category || "Development",
-                    details: d.description ? [d.description] : [],
-                }));
-
-            const portfolioExp: Experience[] = expSnap.docs
-                .map(d => ({ id: d.id, ...d.data() } as any))
-                .filter(d => d.isActive !== false)
-                .map(d => ({
-                    role: d.title || "",
-                    company: d.company || "",
-                    duration: d.date || "",
-                    highlights: d.description ? d.description.split("\n").filter((l: string) => l.trim()) : [],
-                }));
-
-            setResumeData(prev => ({
-                ...prev,
-                projects: portfolioProjects.length > 0 ? portfolioProjects : prev.projects,
-                experience: portfolioExp.length > 0 ? portfolioExp : prev.experience,
-            }));
-            sileo.success({ description: "Portfolio data synced into Resume Architect." });
-        } catch (err: any) {
-            sileo.error({ description: "Sync failed: " + (err.message || "Check your connection.") });
-        } finally {
-            setSaving(false);
-        }
-    };
-
     // ─── Array Field Updaters ─────────────────────────────────────────────────
 
     const updateExp = (i: number, f: keyof Experience, v: any) =>
@@ -336,15 +325,6 @@ export default function ResumePage() {
                         >
                             <Zap className={clsx("w-3.5 h-3.5", adaptedData && "animate-pulse")} />
                             <span className="hidden lg:inline">{adaptedData ? "Adaptive Active" : "JD Adapt"}</span>
-                        </button>
-
-                        <button
-                            onClick={handleSyncWithPortfolio}
-                            disabled={saving}
-                            className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-white/10 transition-all text-accent-mint"
-                        >
-                            <LayoutGrid className="w-3.5 h-3.5" />
-                            <span className="hidden lg:inline">Sync Journey</span>
                         </button>
 
                         {/* Asset toggle */}
