@@ -9,7 +9,7 @@ const groq = new Groq({
 
 export async function POST(req: Request) {
     try {
-        const { resumeData, jobDescription } = await req.json();
+        const { resumeData, jobDescription, companyName, recipientName } = await req.json();
 
         if (!process.env.GROQ_API_KEY) {
             return NextResponse.json({ 
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
                 "projects": [
                     { "name": "...", "tech": "...", "category": "...", "details": ["new adapted detail 1", "..."] }
                 ],
-                "coverLetter": "A professional, tailored cover letter (approx 300 words) addressing the JD using the candidate's background."
+                "coverLetter": "A professional cover letter (~300 words). Open with 'Dear ${recipientName || (companyName ? `Hiring Team at ${companyName}` : "Hiring Manager")}', reference the specific role and requirements from the JD, and highlight the candidate's most relevant experience."
             }
         `;
 

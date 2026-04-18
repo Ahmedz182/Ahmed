@@ -73,7 +73,7 @@ export function PdfUploadModal({ onClose, onUpload, uploading, extracting, activ
     );
 }
 
-export function JDAdapterModal({ onClose, jobDescription, onChange, onAdapt, isAdapting, adaptedData, onReset }: any) {
+export function JDAdapterModal({ onClose, jobDescription, companyName, recipientName, onChange, onCompanyChange, onRecipientChange, onAdapt, isAdapting, adaptedData, onReset }: any) {
     return (
         <motion.div
             initial={{ opacity: 0 }}
@@ -101,6 +101,29 @@ export function JDAdapterModal({ onClose, jobDescription, onChange, onAdapt, isA
                         <div>
                             <h3 className="text-xl font-black uppercase tracking-widest text-white">Smart JD Adaptation</h3>
                             <p className="text-[10px] text-text-muted font-bold uppercase tracking-[0.2em] mt-1">Optimize Assets for Specific Opportunities</p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-3">
+                            <label className="text-[9px] font-black uppercase text-white/30 ml-2">Company / Client</label>
+                            <input
+                                type="text"
+                                value={companyName}
+                                onChange={(e) => onCompanyChange(e.target.value)}
+                                placeholder="e.g. Google, Startup Inc."
+                                className="w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-3.5 text-sm outline-none focus:border-accent-mint/30 transition-all text-white/80 placeholder:text-white/10"
+                            />
+                        </div>
+                        <div className="space-y-3">
+                            <label className="text-[9px] font-black uppercase text-white/30 ml-2">Recipient Name</label>
+                            <input
+                                type="text"
+                                value={recipientName}
+                                onChange={(e) => onRecipientChange(e.target.value)}
+                                placeholder="e.g. John Smith, Sarah K."
+                                className="w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-3.5 text-sm outline-none focus:border-accent-mint/30 transition-all text-white/80 placeholder:text-white/10"
+                            />
                         </div>
                     </div>
 

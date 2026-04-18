@@ -89,6 +89,8 @@ export default function ResumePage() {
     const [showJDModal, setShowJDModal] = useState(false);
     const [cvTemplate, setCvTemplate] = useState<CvTemplate>("standard");
     const [jobDescription, setJobDescription] = useState("");
+    const [companyName, setCompanyName] = useState("");
+    const [recipientName, setRecipientName] = useState("");
     const [isAdapting, setIsAdapting] = useState(false);
     const [adaptedData, setAdaptedData] = useState<typeof DEFAULT_RESUME | null>(null);
     const [activeAsset, setActiveAsset] = useState<ActiveAsset>("resume");
@@ -255,7 +257,7 @@ export default function ResumePage() {
             const res = await fetch("/api/adapt-resume", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ resumeData, jobDescription }),
+                body: JSON.stringify({ resumeData, jobDescription, companyName, recipientName }),
             });
             const { adaptedData: serverAdaptedData } = await res.json();
             setAdaptedData(serverAdaptedData);
@@ -386,6 +388,7 @@ export default function ResumePage() {
                             <CoverLetterWorkshop
                                 key="cover-letter-workshop"
                                 coverLetter={resumeData.coverLetter}
+                                companyName={companyName}
                                 onChange={v => setResumeData(p => ({ ...p, coverLetter: v }))}
                             />
                         )}
@@ -404,8 +407,12 @@ export default function ResumePage() {
             {showJDModal && (
                 <JDAdapterModal
                     jobDescription={jobDescription}
+                    companyName={companyName}
+                    recipientName={recipientName}
                     isAdapting={isAdapting}
                     onChange={setJobDescription}
+                    onCompanyChange={setCompanyName}
+                    onRecipientChange={setRecipientName}
                     onAdapt={handleAdaptToJD}
                     onClose={() => setShowJDModal(false)}
                 />
@@ -615,42 +622,59 @@ function ResumeWorkshop({
     );
 }
 
-function CoverLetterWorkshop({ coverLetter, onChange }: { coverLetter: string; onChange: (v: string) => void }) {
+function CoverLetterWorkshop({ coverLetter, companyName, onChange }: {
+    coverLetter: string;
+    companyName: string;
+    onChange: (v: string) => void;
+}) {
     return (
         <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="h-full max-w-4xl mx-auto w-full pt-12"
+            className="h-full overflow-y-auto custom-scrollbar"
         >
-            <div className="bg-white/[0.02] border border-white/10 rounded-[3rem] p-12 h-fit relative group">
-                <div className="absolute top-8 right-8">
-                    <button
-                        onClick={() => {
-                            navigator.clipboard.writeText(coverLetter || "");
-                            sileo.success({ description: "Cover letter copied!" });
-                        }}
-                        className="p-3 bg-accent-mint text-theme-dark rounded-2xl hover:scale-105 transition-all shadow-xl shadow-accent-mint/10"
-                    >
-                        <Zap className="w-5 h-5" />
-                    </button>
-                </div>
-                <div className="space-y-8">
-                    <div className="space-y-4">
-                        <h3 className="text-3xl font-black uppercase tracking-tighter text-white">Cover Letter Studio</h3>
-                        <div className="h-1 w-20 bg-accent-mint rounded-full" />
+            <div className="max-w-4xl mx-auto py-8 pb-24">
+                <div className="bg-white/[0.02] border border-white/10 rounded-[3rem] p-12 relative">
+                    <div className="absolute top-8 right-8">
+                        <button
+                            onClick={() => {
+                                navigator.clipboard.writeText(coverLetter || "");
+                                sileo.success({ description: "Cover letter copied!" });
+                            }}
+                            className="p-3 bg-accent-mint text-theme-dark rounded-2xl hover:scale-105 transition-all shadow-xl shadow-accent-mint/10"
+                        >
+                            <Zap className="w-5 h-5" />
+                        </button>
                     </div>
-                    <textarea
-                        value={coverLetter}
-                        onChange={e => onChange(e.target.value)}
-                        className="w-full bg-transparent border-none text-text-secondary leading-relaxed font-medium text-lg min-h-[600px] focus:outline-none resize-none custom-scrollbar"
-                        placeholder="Adapted cover letter will appear here..."
-                    />
+
+                    <div className="space-y-8">
+                        <div className="space-y-3">
+                            <h3 className="text-3xl font-black uppercase tracking-tighter text-white">Cover Letter Studio</h3>
+                            {companyName && (
+                                <p className="text-[10px] font-black uppercase tracking-widest text-accent-mint/60">
+                                    Tailored for — {companyName}
+                                </p>
+                            )}
+                            <div className="h-1 w-20 bg-accent-mint rounded-full" />
+                        </div>
+
+                        <textarea
+                            value={coverLetter}
+                            onChange={e => onChange(e.target.value)}
+                            className="w-full bg-transparent border-none text-text-secondary leading-relaxed font-medium text-lg min-h-[500px] focus:outline-none resize-none"
+                            placeholder={companyName
+                                ? `Your AI-adapted cover letter for ${companyName} will appear here after running JD Adapt...`
+                                : "Run JD Adapt to generate a tailored cover letter, or write one manually here..."
+                            }
+                        />
+                    </div>
                 </div>
+
+                <p className="text-center mt-8 text-[10px] font-black uppercase tracking-[0.4em] text-white/5">
+                    Strategic Professional Narrative • Tailored for Global Excellence
+                </p>
             </div>
-            <p className="text-center mt-8 text-[10px] font-black uppercase tracking-[0.4em] text-white/5">
-                Strategic Professional Narrative • Tailored for Global Excellence
-            </p>
         </motion.div>
     );
 }
