@@ -47,6 +47,16 @@ export async function POST(req: Request) {
             JOB DESCRIPTION:
             ${jobDescription}
             
+            COVER LETTER INSTRUCTIONS:
+            - Address it to: ${recipientName || (companyName ? `Hiring Team at ${companyName}` : "Hiring Manager")}
+            - Opening: "Dear ${recipientName || (companyName ? `Hiring Team at ${companyName}` : "Hiring Manager")},"
+            - Paragraph 1 (Hook): Express enthusiasm for the specific role and company. Reference something specific from the JD.
+            - Paragraph 2 (Experience): Highlight 2-3 most relevant experience achievements with concrete metrics/outcomes from the candidate's work history.
+            - Paragraph 3 (Projects): Mention 1-2 specific projects that directly relate to the JD requirements, naming the tech used and the impact delivered.
+            - Paragraph 4 (Closing): Confident call-to-action expressing readiness to contribute and interest in an interview.
+            - Tone: Professional, confident, specific — avoid generic filler phrases.
+            - Length: 350-400 words.
+
             RETURN ONLY A VALID JSON OBJECT with the following structure:
             {
                 "summary": "new adapted summary",
@@ -56,7 +66,7 @@ export async function POST(req: Request) {
                 "projects": [
                     { "name": "...", "tech": "...", "category": "...", "details": ["new adapted detail 1", "..."] }
                 ],
-                "coverLetter": "A professional cover letter (~300 words). Open with 'Dear ${recipientName || (companyName ? `Hiring Team at ${companyName}` : "Hiring Manager")}', reference the specific role and requirements from the JD, and highlight the candidate's most relevant experience."
+                "coverLetter": "full cover letter text here"
             }
         `;
 

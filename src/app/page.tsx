@@ -73,7 +73,7 @@ export default function Home() {
         <About />
         <BentoGrid />
         <Skills />
-        <SplineShowcase />
+        {/* <SplineShowcase /> */}
         <Stats />
         <Experience />
         <Projects />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, query, onSnapshot, limit, where, orderBy } from "firebase/firestore";
+import { collection, query, onSnapshot, limit, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
@@ -27,13 +27,16 @@ export const Blog = () => {
     useEffect(() => {
         const q = query(
             collection(db, "blogs"),
-            where("published", "==", true),
             orderBy("date", "desc"),
-            limit(3)
+            limit(10)
         );
         const unsub = onSnapshot(q,
             (snapshot) => {
-                setBlogPosts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost)));
+                const posts = snapshot.docs
+                    .map(doc => ({ id: doc.id, ...doc.data() } as BlogPost))
+                    .filter(p => p.published === true)
+                    .slice(0, 3);
+                setBlogPosts(posts);
                 setLoading(false);
             },
             (error) => {
