@@ -122,7 +122,13 @@ export default function SettingsPage() {
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
-                    setSettings(docSnap.data() as SiteSettings);
+                    const data = docSnap.data() as SiteSettings;
+                    setSettings(prev => ({
+                        ...prev,
+                        ...data,
+                        // Ensure deep merge for email if it doesn't exist in DB
+                        email: data.email ? { ...prev.email, ...data.email } : prev.email
+                    }));
                 }
             } catch (error) {
                 console.error("Error fetching settings:", error);
@@ -427,26 +433,26 @@ export default function SettingsPage() {
                                             </div>
                                         </div>
                                         <button
-                                            onClick={() => setSettings({ ...settings, email: { ...settings.email, enabled: !settings.email.enabled } })}
+                                            onClick={() => setSettings({ ...settings, email: { ...settings.email, enabled: !settings.email?.enabled } })}
                                             className={clsx(
                                                 "px-4 py-2 rounded-xl text-[9px] font-black uppercase transition-all",
-                                                settings.email.enabled ? "bg-accent-mint text-theme-dark" : "bg-white/5 text-white/20 border border-white/5"
+                                                settings.email?.enabled ? "bg-accent-mint text-theme-dark" : "bg-white/5 text-white/20 border border-white/5"
                                             )}
                                         >
-                                            {settings.email.enabled ? "System Active" : "System Offline"}
+                                            {settings.email?.enabled ? "System Active" : "System Offline"}
                                         </button>
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
                                         <div className="space-y-4">
-                                            <SettingField label="SMTP Host" icon={Server} value={settings.email.smtpHost} onChange={(v) => setSettings({ ...settings, email: { ...settings.email, smtpHost: v } })} />
-                                            <SettingField label="SMTP Port" icon={Globe} value={settings.email.smtpPort} onChange={(v) => setSettings({ ...settings, email: { ...settings.email, smtpPort: v } })} />
-                                            <SettingField label="SMTP User" icon={Mail} value={settings.email.smtpUser} onChange={(v) => setSettings({ ...settings, email: { ...settings.email, smtpUser: v } })} />
-                                            <SettingField label="SMTP Pass / App Password" icon={Key} value={settings.email.smtpPass} onChange={(v) => setSettings({ ...settings, email: { ...settings.email, smtpPass: v } })} />
+                                            <SettingField label="SMTP Host" icon={Server} value={settings.email?.smtpHost || ""} onChange={(v) => setSettings({ ...settings, email: { ...settings.email, smtpHost: v } })} />
+                                            <SettingField label="SMTP Port" icon={Globe} value={settings.email?.smtpPort || ""} onChange={(v) => setSettings({ ...settings, email: { ...settings.email, smtpPort: v } })} />
+                                            <SettingField label="SMTP User" icon={Mail} value={settings.email?.smtpUser || ""} onChange={(v) => setSettings({ ...settings, email: { ...settings.email, smtpUser: v } })} />
+                                            <SettingField label="SMTP Pass / App Password" icon={Key} value={settings.email?.smtpPass || ""} onChange={(v) => setSettings({ ...settings, email: { ...settings.email, smtpPass: v } })} />
                                         </div>
                                         <div className="space-y-4">
-                                            <SettingField label="Sender Email" icon={Send} value={settings.email.fromEmail} onChange={(v) => setSettings({ ...settings, email: { ...settings.email, fromEmail: v } })} />
-                                            <SettingField label="Recipient Email" icon={Mail} value={settings.email.toEmail} onChange={(v) => setSettings({ ...settings, email: { ...settings.email, toEmail: v } })} />
+                                            <SettingField label="Sender Email" icon={Send} value={settings.email?.fromEmail || ""} onChange={(v) => setSettings({ ...settings, email: { ...settings.email, fromEmail: v } })} />
+                                            <SettingField label="Recipient Email" icon={Mail} value={settings.email?.toEmail || ""} onChange={(v) => setSettings({ ...settings, email: { ...settings.email, toEmail: v } })} />
                                             
                                             <div className="p-6 bg-accent-mint/5 border border-accent-mint/10 rounded-3xl mt-6">
                                                 <p className="text-[9px] font-black uppercase tracking-widest text-accent-mint mb-2">Security Note</p>

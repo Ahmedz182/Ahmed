@@ -55,7 +55,8 @@ export async function POST(req: Request) {
                 ],
                 "projects": [
                     { "name": "...", "tech": "...", "category": "...", "details": ["new adapted detail 1", "..."] }
-                ]
+                ],
+                "coverLetter": "A professional, tailored cover letter (approx 300 words) addressing the JD using the candidate's background."
             }
         `;
 
