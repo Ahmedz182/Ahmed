@@ -13,6 +13,7 @@ export interface ProjectData {
     image: string;
     liveDemo?: string;
     github?: string;
+    isActive?: boolean;
 }
 
 export function ProjectCard({ proj, idx, onClick }: { proj: ProjectData; idx: number; onClick: () => void }) {
