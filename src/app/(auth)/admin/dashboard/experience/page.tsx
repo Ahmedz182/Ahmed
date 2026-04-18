@@ -75,7 +75,8 @@ export default function ExperienceAdmin() {
             company: "",
             date: "",
             description: "",
-            order: experiences.length + 1
+            order: experiences.length + 1,
+            isActive: true
         });
         setIsAdding(false);
         setEditingExp(null);
