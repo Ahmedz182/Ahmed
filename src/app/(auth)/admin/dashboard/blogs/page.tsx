@@ -19,6 +19,7 @@ import { db } from "@/lib/firebase";
 import { sileo } from "sileo";
 import { format } from "date-fns";
 import Link from "next/link";
+import clsx from "clsx";
 
 interface BlogPost {
     id: string;
