@@ -141,7 +141,7 @@ export default function AdminDashboard() {
                             transition={{ duration: 0.4, delay: 0.3 }}
                             className="p-8 rounded-[2.5rem] bg-white/[0.02] border border-white/5 min-h-[340px] flex items-center justify-center backdrop-blur-md shadow-2xl relative overflow-hidden"
                         >
-                            <div className="absolute inset-0 bg-grid-pattern opacity-[0.02] pointer-events-none" />
+
                             <div className="text-center relative z-10">
                                 <div className="w-20 h-20 rounded-full bg-accent-mint/5 border border-accent-mint/10 flex items-center justify-center mx-auto mb-6">
                                     <LayoutDashboard className="w-10 h-10 text-accent-mint opacity-40" />

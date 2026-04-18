@@ -232,7 +232,7 @@ export default function ContactsPage() {
                             </motion.div>
                         ) : (
                             <div className="h-full flex flex-col items-center justify-center text-center p-12 overflow-hidden">
-                                <div className="absolute inset-0 bg-grid-pattern opacity-[0.01] pointer-events-none" />
+
                                 <div className="relative z-10 space-y-4">
                                     <div className="w-24 h-24 rounded-[2rem] bg-white/[0.02] border border-white/5 flex items-center justify-center mx-auto mb-6 group hover:scale-110 transition-transform duration-500">
                                         <MessageSquare className="w-8 h-8 text-accent-mint opacity-20 group-hover:opacity-100 transition-opacity" />

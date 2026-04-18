@@ -1,0 +1,66 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Public Collections: Anyone can read, only Admin can write
+    match /projects/{document} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
+    match /blogs/{document} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
+    match /experience/{document} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
+    match /resume/{document} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /resumes/{document} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /metadata/{document} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /settings/{document} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /profile/{document} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Submission Collections: Anyone can create, only Admin can read/update/delete
+    match /contacts/{document} {
+      allow create: if true;
+      allow read, update, delete: if isAuthenticated();
+    }
+    
+    match /hires/{document} {
+      allow create: if true;
+      allow read, update, delete: if isAuthenticated();
+    }
+    
+    match /deletion_requests/{document} {
+      allow create: if true;
+      allow read, update, delete: if isAuthenticated();
+    }
+  }
+}

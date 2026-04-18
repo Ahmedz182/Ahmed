@@ -37,6 +37,7 @@ interface Experience {
     description: string;
     order: number;
     createdAt: any;
+    isActive?: boolean;
 }
 
 export default function ExperienceAdmin() {
@@ -51,7 +52,8 @@ export default function ExperienceAdmin() {
         company: "",
         date: "",
         description: "",
-        order: 0
+        order: 0,
+        isActive: true
     });
 
     useEffect(() => {
@@ -86,7 +88,8 @@ export default function ExperienceAdmin() {
             company: exp.company,
             date: exp.date,
             description: exp.description,
-            order: exp.order
+            order: exp.order,
+            isActive: exp.isActive !== undefined ? exp.isActive : true
         });
         setIsAdding(true);
     };
@@ -117,6 +120,16 @@ export default function ExperienceAdmin() {
             resetForm();
         } catch (error) {
             sileo.error({ description: "Failed to save milestone." });
+        }
+    };
+
+    const toggleExperienceStatus = async (exp: Experience) => {
+        try {
+            const newStatus = exp.isActive !== undefined ? !exp.isActive : false;
+            await updateDoc(doc(db, "experience", exp.id), { isActive: newStatus });
+            sileo.success({ description: `Milestone set to ${newStatus ? 'Visible' : 'Hidden'}` });
+        } catch (error) {
+            sileo.error({ description: "Failed to update milestone status." });
         }
     };
 
@@ -173,6 +186,18 @@ export default function ExperienceAdmin() {
                                             <div className="flex items-center gap-3 text-[10px] text-white/40 font-black uppercase tracking-widest">
                                                 <span className="flex items-center gap-1.5"><Building2 className="w-3 h-3 text-accent-mint/50" /> {exp.company}</span>
                                                 <span className="flex items-center gap-1.5"><Clock className="w-3 h-3 text-accent-mint/50" /> {exp.date}</span>
+                                                <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        toggleExperienceStatus(exp);
+                                                    }}
+                                                    className={clsx(
+                                                        "ml-2 text-[8px] font-black uppercase px-2 py-0.5 rounded-full border transition-all hover:scale-105",
+                                                        exp.isActive !== false ? "text-accent-mint border-accent-mint/20 bg-accent-mint/5" : "text-red-500 border-red-500/20 bg-red-500/5"
+                                                    )}
+                                                >
+                                                    {exp.isActive !== false ? "Live" : "Inactive"}
+                                                </button>
                                             </div>
                                         </div>
                                         <p className="text-xs text-text-muted line-clamp-1 mt-1 opacity-60">
@@ -292,6 +317,23 @@ export default function ExperienceAdmin() {
                                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                             placeholder="Describe your role and key achievements..."
                                         />
+                                    </div>
+
+                                    <div className="flex items-center justify-between p-6 bg-white/[0.03] border border-white/5 rounded-[2rem]">
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-white">Journey Visibility</p>
+                                            <p className="text-[8px] text-white/30 uppercase font-bold tracking-tight">Toggle whether this milestone appears on your public profile</p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData(prev => ({ ...prev, isActive: !prev.isActive }))}
+                                            className={clsx(
+                                                "px-6 py-2 rounded-xl text-[9px] font-black uppercase transition-all",
+                                                formData.isActive ? "bg-accent-mint text-theme-dark" : "bg-red-500/20 text-red-500"
+                                            )}
+                                        >
+                                            {formData.isActive ? "Visible" : "Hidden"}
+                                        </button>
                                     </div>
                                 </div>
 

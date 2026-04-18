@@ -68,7 +68,6 @@ export default function ProjectDetailPage() {
     return (
         <div className="min-h-screen bg-theme-dark text-white selection:bg-accent-mint/30 overflow-x-hidden">
             {/* Background pattern */}
-            <div className="fixed inset-0 z-0 bg-grid-pattern opacity-10 pointer-events-none" />
             <div className="fixed inset-0 z-0 opacity-20 pointer-events-none" style={{
                 background: 'radial-gradient(circle at 50% 0%, #0E5A45 0%, transparent 70%)'
             }} />

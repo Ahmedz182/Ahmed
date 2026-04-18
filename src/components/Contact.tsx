@@ -44,6 +44,17 @@ export const Contact = () => {
                 createdAt: serverTimestamp(),
                 read: false
             });
+
+            // Trigger Email Notification
+            fetch('/api/send-notification', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    type: 'contact', 
+                    data: { ...formData, subject: 'New Portfolio Lead' } 
+                })
+            }).catch(e => console.error("Email notification failed:", e));
+
             sileo.success({ description: "Message sent successfully!" });
             setFormData({ name: "", email: "", message: "" });
         } catch (error: any) {

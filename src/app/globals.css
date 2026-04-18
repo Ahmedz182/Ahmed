@@ -17,9 +17,27 @@
 }
 
 @layer utilities {
-  .bg-grid-pattern {
-    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-    background-size: 24px 24px;
+  .card-scan-line::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(51, 214, 159, 0.03) 50%,
+      transparent 100%
+    );
+    background-size: 100% 200%;
+    background-position: 0 -100%;
+    transition: background-position 0s;
+    pointer-events: none;
+    z-index: 1;
+    border-radius: inherit;
+  }
+
+  .card-scan-line:hover::after {
+    background-position: 0 200%;
+    transition: background-position 1.2s ease-in-out;
   }
   
   .no-scrollbar::-webkit-scrollbar {

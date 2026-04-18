@@ -34,8 +34,6 @@ export const SplashScreen = () => {
                     transition={{ duration: 0.6, ease: "easeInOut" }}
                     className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-theme-dark"
                 >
-                    <div className="fixed inset-0 z-0 bg-theme-dark bg-grid-pattern opacity-10 pointer-events-none" />
-
                     <motion.div
                         initial={{ scale: 0.5, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}

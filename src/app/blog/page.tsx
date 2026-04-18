@@ -29,7 +29,9 @@ export default function BlogListPage() {
         console.log("Initializing blog fetch...");
 
         const q = query(
-            collection(db, "blogs")
+            collection(db, "blogs"),
+            where("published", "==", true),
+            orderBy("date", "desc")
         );
 
         const unsub = onSnapshot(q,

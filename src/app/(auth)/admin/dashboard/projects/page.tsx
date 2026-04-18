@@ -111,6 +111,8 @@ interface Project {
     role?: string;
     timeline?: string;
     createdAt: any;
+    isActive?: boolean;
+    category?: string;
 }
 
 export default function ProjectsAdmin() {
@@ -134,7 +136,9 @@ export default function ProjectsAdmin() {
         caseStudy: "",
         challenges: "",
         role: "",
-        timeline: ""
+        timeline: "",
+        category: "",
+        isActive: true
     });
     const [techInput, setTechInput] = useState("");
     const [uploading, setUploading] = useState(false);
@@ -168,7 +172,9 @@ export default function ProjectsAdmin() {
             challenges: "",
             role: "",
             timeline: "",
-            images: []
+            category: "",
+            images: [],
+            isActive: true
         });
         setTechInput("");
         setIsAdding(false);
@@ -190,9 +196,21 @@ export default function ProjectsAdmin() {
             caseStudy: project.caseStudy || "",
             challenges: project.challenges || "",
             role: project.role || "",
-            timeline: project.timeline || ""
+            timeline: project.timeline || "",
+            category: project.category || "",
+            isActive: project.isActive !== undefined ? project.isActive : true
         });
         setIsAdding(true);
+    };
+
+    const toggleProjectStatus = async (project: Project) => {
+        try {
+            const newStatus = project.isActive !== undefined ? !project.isActive : false;
+            await updateDoc(doc(db, "projects", project.id), { isActive: newStatus });
+            sileo.success({ description: `Project set to ${newStatus ? 'Live' : 'Inactive'}` });
+        } catch (error) {
+            sileo.error({ description: "Failed to update project status." });
+        }
     };
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -365,6 +383,32 @@ export default function ProjectsAdmin() {
                                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                                     placeholder="A brief overview for the listing page..."
                                                 />
+                                            <div>
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Strategic Category</label>
+                                                <input
+                                                    type="text"
+                                                    className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-accent-mint/30 transition-colors"
+                                                    value={formData.category}
+                                                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                                    placeholder="e.g. Fintech, SaaS, E-commerce"
+                                                />
+                                            </div>
+                                            </div>
+                                            <div className="flex items-center justify-between p-4 bg-white/[0.03] border border-white/5 rounded-2xl">
+                                                <div className="space-y-1">
+                                                    <p className="text-[10px] font-black uppercase tracking-widest text-white">Project Visibility</p>
+                                                    <p className="text-[8px] text-white/30 uppercase font-bold tracking-tight">Toggle whether this project is visible on the landing page</p>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setFormData(prev => ({ ...prev, isActive: !prev.isActive }))}
+                                                    className={clsx(
+                                                        "px-4 py-2 rounded-xl text-[9px] font-black uppercase transition-all",
+                                                        formData.isActive ? "bg-accent-mint text-theme-dark" : "bg-red-500/20 text-red-500"
+                                                    )}
+                                                >
+                                                    {formData.isActive ? "Active" : "Inactive"}
+                                                </button>
                                             </div>
                                         </div>
 
@@ -719,6 +763,18 @@ export default function ProjectsAdmin() {
                                             {project.techStack.length > 4 && (
                                                 <span className="text-[9px] font-black text-white/20">+{project.techStack.length - 4}</span>
                                             )}
+                                            <button 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    toggleProjectStatus(project);
+                                                }}
+                                                className={clsx(
+                                                    "ml-2 text-[8px] font-black uppercase px-2 py-0.5 rounded-full border transition-all hover:scale-105",
+                                                    project.isActive !== false ? "text-accent-mint border-accent-mint/20 bg-accent-mint/5" : "text-red-500 border-red-500/20 bg-red-500/5"
+                                                )}
+                                            >
+                                                {project.isActive !== false ? "Live" : "Inactive"}
+                                            </button>
                                         </div>
                                         <div className="flex items-center gap-3 text-white/20">
                                             {project.github && <Github className="w-3.5 h-3.5" />}

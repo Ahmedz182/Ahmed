@@ -163,7 +163,7 @@ export const generateResumePDF = async (resumeData: ResumeData) => {
         doc.text("WORK EXPERIENCE", margin, cursorY);
         cursorY += 7;
 
-        resumeData.experience.forEach((exp) => {
+        [...resumeData.experience].reverse().forEach((exp) => {
             if (cursorY > 280) { doc.addPage(); cursorY = 15; }
             doc.setFont("helvetica", "bold");
             doc.setFontSize(subTitleSize);
@@ -171,8 +171,9 @@ export const generateResumePDF = async (resumeData: ResumeData) => {
             doc.text(exp.role, margin, cursorY);
             const roleW = doc.getTextWidth(exp.role);
             doc.setFont("helvetica", "normal");
-            doc.setTextColor(50, 50, 50);
+            doc.setTextColor(120, 120, 120);
             doc.text(` | ${exp.company}`, margin + roleW, cursorY);
+            doc.setTextColor(120, 120, 120);
             doc.setFontSize(dateSize);
             const dW = doc.getTextWidth(exp.duration);
             doc.text(exp.duration, 210 - margin - dW, cursorY);
@@ -206,7 +207,7 @@ export const generateResumePDF = async (resumeData: ResumeData) => {
             doc.setTextColor(0, 0, 0);
             doc.text(proj.name, margin, cursorY);
             doc.setFont("helvetica", "normal");
-            doc.setTextColor(50, 50, 50);
+            doc.setTextColor(120, 120, 120);
             doc.setFontSize(dateSize);
             const tW = doc.getTextWidth(proj.tech);
             doc.text(proj.tech, 210 - margin - tW, cursorY);
@@ -275,6 +276,212 @@ export const generateResumePDF = async (resumeData: ResumeData) => {
             const achLines = doc.splitTextToSize(ach.desc, 210 - (margin * 2));
             doc.text(achLines, margin, cursorY, { lineHeightFactor: 1.2 });
             cursorY += (achLines.length * 5) + 4;
+        });
+    }
+
+    return doc;
+};
+
+export const generateInternationalModernPDF = async (resumeData: ResumeData) => {
+    if (!resumeData) return null;
+    const doc = new jsPDF();
+    const margin = 12;
+    const sidebarWidth = 65;
+    const contentWidth = 210;
+    const contentHeight = 297;
+    
+    // 1. Sidebar Background
+    doc.setFillColor(248, 249, 250);
+    doc.rect(0, 0, sidebarWidth, contentHeight, "F");
+    
+    // 2. Sidebar Content
+    let sideY = 20;
+    const sideMargin = 10;
+
+    // Name & Title in Sidebar
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.setTextColor(33, 33, 33);
+    const nameLines = doc.splitTextToSize(resumeData.fullName.toUpperCase(), sidebarWidth - (sideMargin * 2));
+    doc.text(nameLines, sideMargin, sideY);
+    sideY += (nameLines.length * 7) + 2;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    const titleLines = doc.splitTextToSize(resumeData.title, sidebarWidth - (sideMargin * 2));
+    doc.text(titleLines, sideMargin, sideY);
+    sideY += (titleLines.length * 5) + 12;
+
+    // Contact Section
+    const addSideSection = (title: string) => {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.setTextColor(0, 0, 0);
+        doc.text(title.toUpperCase(), sideMargin, sideY);
+        sideY += 2;
+        doc.setDrawColor(200, 200, 200);
+        doc.line(sideMargin, sideY, sidebarWidth - sideMargin, sideY);
+        sideY += 6;
+    };
+
+    addSideSection("Contact");
+    doc.setFontSize(8.5);
+    doc.setTextColor(60, 60, 60);
+    const contactData = [
+        { label: "Email", value: resumeData.email },
+        { label: "Phone", value: resumeData.phone },
+        { label: "Portfolio", value: resumeData.portfolio },
+        { label: "LinkedIn", value: resumeData.linkedin },
+        { label: "GitHub", value: resumeData.github }
+    ].filter(c => c.value);
+
+    contactData.forEach(c => {
+        doc.setFont("helvetica", "bold");
+        doc.text(c.label, sideMargin, sideY);
+        sideY += 4;
+        doc.setFont("helvetica", "normal");
+        const valLines = doc.splitTextToSize(c.value, sidebarWidth - (sideMargin * 2));
+        doc.text(valLines, sideMargin, sideY);
+        sideY += (valLines.length * 4) + 3;
+    });
+
+    sideY += 5;
+
+    // Skills Section in Sidebar
+    addSideSection("Technical Skills");
+    doc.setFontSize(8);
+    const renderSkillSet = (label: string, value: string) => {
+        doc.setFont("helvetica", "bold");
+        doc.text(label, sideMargin, sideY);
+        sideY += 4;
+        doc.setFont("helvetica", "normal");
+        const lines = doc.splitTextToSize(value, sidebarWidth - (sideMargin * 2));
+        doc.text(lines, sideMargin, sideY);
+        sideY += (lines.length * 4) + 4;
+    };
+
+    renderSkillSet("Languages & DB", resumeData.skills.languagesDB);
+    renderSkillSet("Frameworks & Tools", resumeData.skills.frameworksTools);
+
+    sideY += 5;
+
+    // Education in Sidebar
+    if (resumeData.education?.length > 0) {
+        addSideSection("Education");
+        resumeData.education.forEach(edu => {
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(8);
+            const degLines = doc.splitTextToSize(edu.degree, sidebarWidth - (sideMargin * 2));
+            doc.text(degLines, sideMargin, sideY);
+            sideY += (degLines.length * 4);
+            doc.setFont("helvetica", "normal");
+            doc.text(edu.institution, sideMargin, sideY);
+            sideY += 4;
+            doc.setTextColor(120, 120, 120);
+            doc.text(edu.duration, sideMargin, sideY);
+            doc.setTextColor(60, 60, 60);
+            sideY += 6;
+        });
+    }
+
+    // 3. Main Content
+    const mainX = sidebarWidth + margin;
+    const mainWidth = 210 - mainX - margin;
+    let mainY = 22;
+
+    const addMainSection = (title: string) => {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(12);
+        doc.setTextColor(33, 33, 33);
+        doc.text(title.toUpperCase(), mainX, mainY);
+        mainY += 2;
+        doc.setDrawColor(51, 214, 159); // Accent color
+        doc.setLineWidth(1);
+        doc.line(mainX, mainY, mainX + 15, mainY);
+        mainY += 8;
+    };
+
+    // Summary
+    addMainSection("Profile Summary");
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(60, 60, 60);
+    const sumLines = doc.splitTextToSize(resumeData.summary, mainWidth);
+    doc.text(sumLines, mainX, mainY, { lineHeightFactor: 1.4 });
+    mainY += (sumLines.length * 5) + 12;
+
+    // Experience
+    if (resumeData.experience?.length > 0) {
+        addMainSection("Professional Experience");
+        [...resumeData.experience].reverse().forEach(exp => {
+            if (mainY > 260) { doc.addPage(); mainY = 20; }
+            
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(10.5);
+            doc.setTextColor(0, 0, 0);
+            doc.text(exp.role, mainX, mainY);
+            
+            const durW = doc.getTextWidth(exp.duration);
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(120, 120, 120);
+            doc.text(exp.duration, 210 - margin - durW, mainY);
+            mainY += 5;
+            
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(51, 214, 159);
+            doc.text(exp.company, mainX, mainY);
+            mainY += 6;
+            
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9.5);
+            doc.setTextColor(60, 60, 60);
+            exp.highlights.forEach(h => {
+                if (!h.trim()) return;
+                const bulletLines = doc.splitTextToSize(`\u2022 ${h}`, mainWidth - 4);
+                doc.text(bulletLines, mainX + 4, mainY, { lineHeightFactor: 1.3 });
+                mainY += (bulletLines.length * 4.5) + 1;
+            });
+            mainY += 5;
+        });
+        mainY += 5;
+    }
+
+    // Projects
+    if (resumeData.projects?.length > 0) {
+        if (mainY > 250) { doc.addPage(); mainY = 20; }
+        addMainSection("Strategic Projects");
+        resumeData.projects.forEach(proj => {
+            if (mainY > 260) { doc.addPage(); mainY = 20; }
+            
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(10.5);
+            doc.setTextColor(0, 0, 0);
+            doc.text(proj.name, mainX, mainY);
+            
+            const techW = doc.getTextWidth(proj.tech);
+            doc.setFontSize(8.5);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(120, 120, 120);
+            doc.text(proj.tech, 210 - margin - techW, mainY);
+            mainY += 5;
+            
+            doc.setFont("helvetica", "italic");
+            doc.setTextColor(100, 100, 100);
+            doc.text(proj.category, mainX, mainY);
+            mainY += 5;
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.setTextColor(60, 60, 60);
+            proj.details.forEach(d => {
+                if (!d.trim()) return;
+                const lines = doc.splitTextToSize(`\u2022 ${d}`, mainWidth - 4);
+                doc.text(lines, mainX + 4, mainY, { lineHeightFactor: 1.3 });
+                mainY += (lines.length * 4) + 1;
+            });
+            mainY += 5;
         });
     }
 

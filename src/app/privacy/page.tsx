@@ -25,7 +25,7 @@ export default function PrivacyPolicy() {
                         Privacy <span className="text-accent-mint text-italic font-black">Policy</span>
                     </h1>
                     <p className="text-lg text-text-secondary max-w-2xl leading-relaxed">
-                        Last updated: April 4, 2026. This policy explains how Data Gather collects, uses, and protects your information across our web and mobile applications.
+                        Last updated: April 18, 2026. This policy explains how our Portfolio Platform collects, uses, and protects your information across our web and mobile applications.
                     </p>
                 </motion.div>
 
@@ -42,11 +42,11 @@ export default function PrivacyPolicy() {
                             1. Information Collection
                         </h2>
                         <p className="mb-4">
-                            At <strong>Data Gather</strong>, we collect information to provide a better experience for our users. This includes:
+                            At <strong>Portfolio Platform</strong>, we collect information to provide a better experience for our users. This includes:
                         </p>
                         <ul className="list-disc pl-6 space-y-2 marker:text-accent-mint">
                             <li><strong>Account Information:</strong> Name, email address, and profile details when you create an account.</li>
-                            <li><strong>App Data:</strong> Information related to the web and mobile applications you build using our platform.</li>
+                            <li><strong>App Data:</strong> Information related to the projects and content you manage using our platform.</li>
                             <li><strong>Usage Data:</strong> Metadata about how you interact with our services, including IP addresses and device information.</li>
                             <li><strong>Consent Data:</strong> Records of consents provided for data processing and marketing communications.</li>
                         </ul>
@@ -60,10 +60,10 @@ export default function PrivacyPolicy() {
                     >
                         <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
                             <ShieldCheck className="w-6 h-6 text-accent-mint" />
-                            2. App Building & Data Consent
+                            2. Project Management & Data Consent
                         </h2>
                         <p className="mb-4">
-                            When you use <strong>Data Gather</strong> to build web or mobile applications, you act as the data controller for the information collected through those apps.
+                            When you use <strong>Portfolio Platform</strong> to manage projects or blogs, you act as the data controller for the information collected through those interfaces.
                         </p>
                         <div className="grid md:grid-cols-2 gap-6 mt-6">
                             <div className="p-5 rounded-xl bg-white/5 border border-white/10">
@@ -91,7 +91,7 @@ export default function PrivacyPolicy() {
                             We use the collected data for the following purposes:
                         </p>
                         <ul className="list-disc pl-6 space-y-2 marker:text-accent-mint">
-                            <li>To operate and maintain the Data Gather platform.</li>
+                            <li>To operate and maintain the Portfolio Platform.</li>
                             <li>To facilitate the creation and management of user-built applications.</li>
                             <li>To provide customer support and respond to your requests.</li>
                             <li>To enhance security and prevent fraudulent activities.</li>

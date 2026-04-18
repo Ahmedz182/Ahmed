@@ -123,7 +123,7 @@ export const Hero = () => {
                     </motion.div>
                 </div>
 
-                {/* Right: existing icon rings + 3D canvas shows through behind them */}
+                {/* Right: icon rings */}
                 <div className="hidden md:flex w-full lg:w-2/5 justify-center items-center h-[400px] relative pointer-events-none">
                     {mounted && (
                         <div className="relative w-full h-full flex items-center justify-center scale-75 lg:scale-100">

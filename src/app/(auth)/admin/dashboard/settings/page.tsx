@@ -21,7 +21,10 @@ import {
     Wrench,
     Trash2,
     User as UserIcon,
-    LogOut
+    LogOut,
+    Server,
+    Key,
+    Send
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { doc, getDoc, setDoc, serverTimestamp, collection, addDoc } from "firebase/firestore";
@@ -46,10 +49,21 @@ interface Skill {
     category: "Frontend" | "Backend" | "Tools";
 }
 
+interface EmailSettings {
+    smtpHost: string;
+    smtpPort: string;
+    smtpUser: string;
+    smtpPass: string;
+    fromEmail: string;
+    toEmail: string;
+    enabled: boolean;
+}
+
 interface SiteSettings {
     contact: ContactInfo;
     techStack: Skill[];
     resumeUrl: string;
+    email: EmailSettings;
 }
 
 export default function SettingsPage() {
@@ -87,7 +101,16 @@ export default function SettingsPage() {
             { name: "WordPress", category: "Tools" },
             { name: "Webflow", category: "Tools" }
         ],
-        resumeUrl: ""
+        resumeUrl: "",
+        email: {
+            smtpHost: "smtp.gmail.com",
+            smtpPort: "465",
+            smtpUser: "",
+            smtpPass: "",
+            fromEmail: "",
+            toEmail: "",
+            enabled: false
+        }
     });
 
     const [newSkill, setNewSkill] = useState({ name: "", category: "Frontend" as Skill["category"] });
@@ -190,6 +213,18 @@ export default function SettingsPage() {
                                 {tab.label}
                             </button>
                         ))}
+                        <button
+                            onClick={() => setActiveTab("email" as any)}
+                            className={clsx(
+                                "flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all",
+                                (activeTab as any) === "email"
+                                    ? "bg-accent-mint text-theme-dark shadow-lg"
+                                    : "text-text-muted hover:text-white hover:bg-white/5"
+                            )}
+                        >
+                            <Mail className="w-4 h-4" />
+                            Email Config
+                        </button>
                     </div>
 
                     {activeTab !== "profile" && (
@@ -372,6 +407,58 @@ export default function SettingsPage() {
                             </motion.div>
                         )}
 
+                        {(activeTab as any) === "email" && (
+                            <motion.div
+                                key="email"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="space-y-8"
+                            >
+                                <div className="p-8 bg-white/[0.02] border border-white/5 rounded-[2.5rem] space-y-6">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-xl bg-accent-mint/10 text-accent-mint flex items-center justify-center">
+                                                <Mail className="w-5 h-5" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-sm font-black uppercase tracking-widest text-white">SMTP Gateway</h3>
+                                                <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest">Notification Engine Settings</p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => setSettings({ ...settings, email: { ...settings.email, enabled: !settings.email.enabled } })}
+                                            className={clsx(
+                                                "px-4 py-2 rounded-xl text-[9px] font-black uppercase transition-all",
+                                                settings.email.enabled ? "bg-accent-mint text-theme-dark" : "bg-white/5 text-white/20 border border-white/5"
+                                            )}
+                                        >
+                                            {settings.email.enabled ? "System Active" : "System Offline"}
+                                        </button>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                                        <div className="space-y-4">
+                                            <SettingField label="SMTP Host" icon={Server} value={settings.email.smtpHost} onChange={(v) => setSettings({ ...settings, email: { ...settings.email, smtpHost: v } })} />
+                                            <SettingField label="SMTP Port" icon={Globe} value={settings.email.smtpPort} onChange={(v) => setSettings({ ...settings, email: { ...settings.email, smtpPort: v } })} />
+                                            <SettingField label="SMTP User" icon={Mail} value={settings.email.smtpUser} onChange={(v) => setSettings({ ...settings, email: { ...settings.email, smtpUser: v } })} />
+                                            <SettingField label="SMTP Pass / App Password" icon={Key} value={settings.email.smtpPass} onChange={(v) => setSettings({ ...settings, email: { ...settings.email, smtpPass: v } })} />
+                                        </div>
+                                        <div className="space-y-4">
+                                            <SettingField label="Sender Email" icon={Send} value={settings.email.fromEmail} onChange={(v) => setSettings({ ...settings, email: { ...settings.email, fromEmail: v } })} />
+                                            <SettingField label="Recipient Email" icon={Mail} value={settings.email.toEmail} onChange={(v) => setSettings({ ...settings, email: { ...settings.email, toEmail: v } })} />
+                                            
+                                            <div className="p-6 bg-accent-mint/5 border border-accent-mint/10 rounded-3xl mt-6">
+                                                <p className="text-[9px] font-black uppercase tracking-widest text-accent-mint mb-2">Security Note</p>
+                                                <p className="text-[10px] text-white/40 leading-relaxed font-medium">
+                                                    Use an **App Password** for Gmail or Outlook. Do not use your primary password. The system will alert you when new leads arrive.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
                     </AnimatePresence>
                 </div>
             </div>

@@ -50,8 +50,6 @@ export default function AdminLogin() {
     return (
         <div className="relative w-full h-screen flex bg-theme-dark overflow-hidden font-sans text-white">
             {/* Background ambient gradient */}
-            <div className="fixed inset-0 z-0 bg-theme-dark bg-grid-pattern opacity-30 pointer-events-none" />
-
             {/* Left Side: Branding & Info (Hidden on Mobile) */}
             <div className="hidden lg:flex w-1/2 relative z-10 flex-col items-start justify-center p-10 xl:p-16 border-r border-white/5 h-full">
                 <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-accent-mint/20 rounded-full blur-[128px] pointer-events-none" />

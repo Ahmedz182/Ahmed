@@ -14,7 +14,7 @@ import {
     Edit3
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { collection, query, orderBy, onSnapshot, doc, deleteDoc } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, doc, deleteDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { sileo } from "sileo";
 import { format } from "date-fns";
@@ -55,6 +55,18 @@ export default function BlogsPage() {
             sileo.success({ description: "Post deleted permanently." });
         } catch (error) {
             sileo.error({ description: "Failed to delete post." });
+        }
+    };
+
+    const togglePublishStatus = async (blog: BlogPost, e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        try {
+            const newStatus = !blog.published;
+            await updateDoc(doc(db, "blogs", blog.id), { published: newStatus });
+            sileo.success({ description: `Post ${newStatus ? 'Published' : 'set to Draft'}` });
+        } catch (error) {
+            sileo.error({ description: "Failed to update publish status." });
         }
     };
 
@@ -126,11 +138,17 @@ export default function BlogsPage() {
                                             <span className="px-3 py-1 bg-theme-dark/80 backdrop-blur-md rounded-full text-[9px] font-black uppercase tracking-widest border border-white/10 text-accent-mint">
                                                 {blog.category}
                                             </span>
-                                            {!blog.published && (
-                                                <span className="px-3 py-1 bg-red-500/20 backdrop-blur-md rounded-full text-[9px] font-black uppercase tracking-widest border border-red-500/10 text-red-500">
-                                                    Draft
-                                                </span>
-                                            )}
+                                            <button 
+                                                onClick={(e) => togglePublishStatus(blog, e)}
+                                                className={clsx(
+                                                    "px-3 py-1 backdrop-blur-md rounded-full text-[9px] font-black uppercase tracking-widest border transition-all hover:scale-105",
+                                                    blog.published 
+                                                        ? "bg-accent-mint/20 border-accent-mint/10 text-accent-mint" 
+                                                        : "bg-red-500/20 border-red-500/10 text-red-500"
+                                                )}
+                                            >
+                                                {blog.published ? "Published" : "Draft"}
+                                            </button>
                                         </div>
                                     </div>
                                     <div className="p-8 flex-1 flex flex-col">

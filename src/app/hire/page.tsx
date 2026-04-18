@@ -107,7 +107,6 @@ export default function HirePage() {
     return (
         <div className="relative w-full min-h-screen text-white font-sans bg-theme-dark overflow-x-hidden flex flex-col items-center py-10 px-6 md:px-12">
             {/* Background ambient gradient */}
-            <div className="fixed inset-0 z-0 bg-theme-dark bg-grid-pattern opacity-30 pointer-events-none" />
             <div className="fixed inset-0 z-0 opacity-40 pointer-events-none" style={{
                 background: 'linear-gradient(135deg, #0B3D2E 0%, #0E5A45 40%, rgba(7, 30, 47, 0) 100%)'
             }} />

@@ -50,7 +50,7 @@ export function DashboardShell({ children, title = "Overview", noScroll = false 
                     noScroll ? "overflow-hidden h-full" : "overflow-y-auto"
                 )}>
                     {/* Background decorative elements */}
-                    <div className="absolute inset-0 bg-grid-pattern opacity-[0.02] pointer-events-none z-0" />
+
                     <div className="absolute top-0 right-0 w-96 h-96 bg-accent-mint/5 rounded-full blur-[140px] pointer-events-none z-0" />
 
                     <div className={clsx(

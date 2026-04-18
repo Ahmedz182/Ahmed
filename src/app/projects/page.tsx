@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { motion } from "framer-motion";
 import { Github, ExternalLink, Search, Filter, Layout } from "lucide-react";
@@ -26,7 +26,11 @@ export default function ProjectsListPage() {
     const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
-        const q = query(collection(db, "projects"), orderBy("createdAt", "desc"));
+        const q = query(
+            collection(db, "projects"),
+            where("isActive", "==", true),
+            orderBy("createdAt", "desc")
+        );
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const data = snapshot.docs.map(doc => ({
                 id: doc.id,
@@ -46,8 +50,6 @@ export default function ProjectsListPage() {
     return (
         <div className="min-h-screen bg-theme-dark text-white selection:bg-accent-mint/30">
             {/* Background pattern */}
-            <div className="fixed inset-0 z-0 bg-grid-pattern opacity-10 pointer-events-none" />
-
             <main className="relative z-10 pt-32 pb-24 px-6 md:px-12 max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">

@@ -44,6 +44,21 @@ export const HireMeModal = () => {
                 createdAt: serverTimestamp(),
                 status: "pending"
             });
+
+            // Trigger Email Notification
+            fetch('/api/send-notification', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    type: 'hire', 
+                    data: { 
+                        ...formData, 
+                        message: formData.details,
+                        service: formData.bookCall ? "Consultation + Development" : "Development Request"
+                    } 
+                })
+            }).catch(e => console.error("Email notification failed:", e));
+
             sileo.success({ description: "Project request sent successfully!" });
             setIsOpen(false);
             setFormData({
