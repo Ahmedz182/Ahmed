@@ -464,10 +464,10 @@ function ResumeWorkshop({
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
-            className={clsx("h-full grid gap-8", showPreview ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1")}
+            className="h-full relative"
         >
             {/* Left: Editor */}
-            <div className="relative h-full overflow-y-auto custom-scrollbar pr-4 space-y-12 pb-32">
+            <div className="h-full overflow-y-auto custom-scrollbar pr-4 space-y-12 pb-32">
                 {adapted && (
                     <div className="bg-accent-mint/10 border border-accent-mint/20 p-4 rounded-2xl flex items-center justify-between">
                         <span className="text-[10px] font-black uppercase tracking-widest text-accent-mint">Editing JD-optimized version</span>
@@ -568,63 +568,69 @@ function ResumeWorkshop({
                 </ArraySection>
             </div>
 
-            {/* Preview toggle button — shown when preview is hidden */}
-            {!showPreview && (
-                <button
-                    onClick={() => setShowPreview(true)}
-                    className="absolute bottom-8 right-8 z-10 flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-accent-mint/10 hover:border-accent-mint/20 transition-all text-accent-mint/60 hover:text-accent-mint"
-                >
-                    <Eye className="w-3.5 h-3.5" />
-                    Preview
-                </button>
-            )}
+            {/* Preview button — floats bottom-right of editor */}
+            <button
+                onClick={() => setShowPreview(true)}
+                className="absolute bottom-8 right-8 z-10 flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-accent-mint/10 hover:border-accent-mint/20 transition-all text-accent-mint/60 hover:text-accent-mint"
+            >
+                <Eye className="w-3.5 h-3.5" />
+                Preview
+            </button>
 
-            {/* Right: Preview */}
-            {showPreview && (
-                <div className="h-full flex flex-col gap-4">
-                    <div className="flex items-center justify-between shrink-0">
-                        <div className="flex items-center gap-3">
-                            <SectionHeader icon={Eye} title="Live Preview" />
-                            <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 -mt-6">
-                                {(["standard", "international"] as const).map(tpl => (
-                                    <button
-                                        key={tpl}
-                                        onClick={() => onSetCvTemplate(tpl)}
-                                        className={clsx(
-                                            "px-3 py-1.5 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all capitalize",
-                                            cvTemplate === tpl ? "bg-accent-mint text-theme-dark" : "text-white/40 hover:text-white"
-                                        )}
-                                    >
-                                        {tpl}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-accent-mint animate-pulse" />
-                                <span className="text-[8px] font-black uppercase tracking-widest text-accent-mint/40">Live</span>
+            {/* Full-screen preview overlay */}
+            <AnimatePresence>
+                {showPreview && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex flex-col"
+                    >
+                        {/* Header bar */}
+                        <div className="flex items-center justify-between px-10 py-5 border-b border-white/5 shrink-0">
+                            <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-accent-mint animate-pulse" />
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-white/60">Live Preview</span>
+                                </div>
+                                {/* Template toggle */}
+                                <div className="flex bg-white/5 p-1 rounded-xl border border-white/10">
+                                    {(["standard", "international"] as const).map(tpl => (
+                                        <button
+                                            key={tpl}
+                                            onClick={() => onSetCvTemplate(tpl)}
+                                            className={clsx(
+                                                "px-4 py-1.5 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all capitalize",
+                                                cvTemplate === tpl ? "bg-accent-mint text-theme-dark" : "text-white/40 hover:text-white"
+                                            )}
+                                        >
+                                            {tpl}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                             <button
                                 onClick={() => setShowPreview(false)}
-                                className="text-[8px] font-black uppercase tracking-widest text-white/20 hover:text-white/60 transition-colors"
+                                className="flex items-center gap-2 px-5 py-2 bg-white/5 border border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-white/10 transition-all text-white/40 hover:text-white"
                             >
                                 ✕ Close
                             </button>
                         </div>
-                    </div>
-                    <div className="flex-1 bg-white/[0.02] border border-white/5 rounded-[3rem] overflow-hidden relative">
-                        <div className="absolute inset-0 overflow-y-auto custom-scrollbar p-12">
-                            <div ref={resumeRef} className="bg-white shadow-2xl origin-top scale-[0.85] xl:scale-100">
-                                {cvTemplate === "standard"
-                                    ? <StandardTemplate data={resumeData} />
-                                    : <InternationalTemplate data={resumeData} />
-                                }
+
+                        {/* Scrollable preview content */}
+                        <div className="flex-1 overflow-y-auto custom-scrollbar">
+                            <div className="max-w-4xl mx-auto py-12 px-6">
+                                <div ref={resumeRef} className="bg-white shadow-2xl">
+                                    {cvTemplate === "standard"
+                                        ? <StandardTemplate data={resumeData} />
+                                        : <InternationalTemplate data={resumeData} />
+                                    }
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </motion.div>
     );
 }

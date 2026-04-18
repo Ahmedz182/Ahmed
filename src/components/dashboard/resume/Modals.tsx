@@ -73,7 +73,7 @@ export function PdfUploadModal({ onClose, onUpload, uploading, extracting, activ
     );
 }
 
-export function JDAdapterModal({ onClose, jobDescription, setJobDescription, onAdapt, isAdapting, adaptedData, onReset }: any) {
+export function JDAdapterModal({ onClose, jobDescription, onChange, onAdapt, isAdapting, adaptedData, onReset }: any) {
     return (
         <motion.div
             initial={{ opacity: 0 }}
@@ -108,7 +108,7 @@ export function JDAdapterModal({ onClose, jobDescription, setJobDescription, onA
                         <label className="text-[9px] font-black uppercase text-white/30 ml-2">Job Description (Requirements & Stack)</label>
                         <textarea
                             value={jobDescription}
-                            onChange={(e) => setJobDescription(e.target.value)}
+                            onChange={(e) => onChange(e.target.value)}
                             placeholder="Paste the Job Description here to trigger AI-driven adaptation..."
                             className="w-full bg-black/40 border border-white/5 rounded-3xl p-6 text-sm h-64 outline-none focus:border-accent-mint/30 transition-all text-white/80 placeholder:text-white/5 leading-relaxed"
                         />
